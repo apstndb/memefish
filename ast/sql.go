@@ -2,6 +2,7 @@ package ast
 
 import (
 	"github.com/cloudspannerecosystem/memefish/token"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -32,26 +33,32 @@ func sqlOpt[T interface {
 
 // strOpt outputs:
 //
-//	when cond != zero value : s
-//	else                    : ""
+//	when cond != zero value or len(cond) > 0 : s
+//	else                                     : ""
 //
 // This function corresponds to {{if cond}}s{{end}} in ast.go
-func strOpt[T comparable](cond T, s string) string {
+func strOpt(cond any, s string) string {
 	return strIfElse(cond, s, "")
 }
 
 // strIfElse outputs:
 //
-//	when cond != zero value : ifStr
-//	else                    : elseStr
+//	when cond != zero value or len(cond) > 0 : ifStr
+//	else                                     : elseStr
 //
 // This function corresponds to {{if cond}}ifStr{{else}}elseStr{{end}} in ast.go
-func strIfElse[T comparable](cond T, ifStr string, elseStr string) string {
-	var zero T
-	if cond != zero {
+func strIfElse(cond any, ifStr string, elseStr string) string {
+	v := reflect.ValueOf(cond)
+	kind := v.Kind()
+
+	switch {
+	case !v.IsZero():
+		fallthrough
+	case (kind == reflect.Slice || kind == reflect.Map || kind == reflect.Array) && v.Len() > 0:
 		return ifStr
+	default:
+		return elseStr
 	}
-	return elseStr
 }
 
 // sqlJoin outputs joined string of SQL() of all elems by sep.
@@ -491,7 +498,7 @@ func (a *ArrayLiteral) SQL() string {
 func (s *StructLiteral) SQL() string {
 	// TODO: len(s.Fields) > 0 is better than s.Fields != nil, but it need to update current testdata.
 	return "STRUCT" +
-		strOpt(s.Fields != nil, "<"+sqlJoin(s.Fields, ", ")+">") +
+		strOpt(s.Fields, "<"+sqlJoin(s.Fields, ", ")+">") +
 		"(" + sqlJoin(s.Values, ", ") + ")"
 }
 
@@ -815,7 +822,7 @@ func (a ChangeStreamSetOptions) SQL() string {
 }
 
 func (c *ChangeStreamForTable) SQL() string {
-	return c.TableName.SQL() + strOpt(len(c.Columns), "("+sqlJoin(c.Columns, ", ")+")")
+	return c.TableName.SQL() + strOpt(c.Columns, "("+sqlJoin(c.Columns, ", ")+")")
 }
 
 func (d *DropChangeStream) SQL() string {
@@ -876,17 +883,17 @@ func (p *PrivilegeOnTable) SQL() string {
 
 func (s *SelectPrivilege) SQL() string {
 	return "SELECT" +
-		strOpt(len(s.Columns), "("+sqlJoin(s.Columns, ", ")+")")
+		strOpt(s.Columns, "("+sqlJoin(s.Columns, ", ")+")")
 }
 
 func (i *InsertPrivilege) SQL() string {
 	return "INSERT" +
-		strOpt(len(i.Columns), "("+sqlJoin(i.Columns, ", ")+")")
+		strOpt(i.Columns, "("+sqlJoin(i.Columns, ", ")+")")
 }
 
 func (u *UpdatePrivilege) SQL() string {
 	return "UPDATE" +
-		strOpt(len(u.Columns), "("+sqlJoin(u.Columns, ", ")+")")
+		strOpt(u.Columns, "("+sqlJoin(u.Columns, ", ")+")")
 }
 
 func (d *DeletePrivilege) SQL() string {
