@@ -32,25 +32,23 @@ func sqlOpt[T interface {
 
 // strOpt outputs:
 //
-//	when pred == true: s
-//	else             : ""
+//	when cond != zero value : s
+//	else                    : ""
 //
-// This function corresponds to {{if pred}}s{{end}} in ast.go
-func strOpt(pred bool, s string) string {
-	if pred {
-		return s
-	}
-	return ""
+// This function corresponds to {{if cond}}s{{end}} in ast.go
+func strOpt[T comparable](cond T, s string) string {
+	return strIfElse(cond, s, "")
 }
 
 // strIfElse outputs:
 //
-//	when pred == true: ifStr
-//	else             : elseStr
+//	when cond != zero value : ifStr
+//	else                    : elseStr
 //
-// This function corresponds to {{if pred}}ifStr{{else}}elseStr{{end}} in ast.go
-func strIfElse(pred bool, ifStr string, elseStr string) string {
-	if pred {
+// This function corresponds to {{if cond}}ifStr{{else}}elseStr{{end}} in ast.go
+func strIfElse[T comparable](cond T, ifStr string, elseStr string) string {
+	var zero T
+	if cond != zero {
 		return ifStr
 	}
 	return elseStr
@@ -245,7 +243,7 @@ func (o *OrderBy) SQL() string {
 func (o *OrderByItem) SQL() string {
 	return o.Expr.SQL() +
 		sqlOpt(" ", o.Collate, "") +
-		strOpt(o.Dir != "", " "+string(o.Dir))
+		strOpt(o.Dir, " "+string(o.Dir))
 }
 
 func (c *Collate) SQL() string {
@@ -669,7 +667,7 @@ func (f *ForeignKey) SQL() string {
 	return "FOREIGN KEY (" + sqlJoin(f.Columns, ", ") + ") " +
 		"REFERENCES " + f.ReferenceTable.SQL() + " (" +
 		sqlJoin(f.ReferenceColumns, ", ") + ")" +
-		strOpt(f.OnDelete != "", " "+string(f.OnDelete))
+		strOpt(f.OnDelete, " "+string(f.OnDelete))
 }
 
 func (c *Check) SQL() string {
@@ -685,12 +683,12 @@ func (g *GeneratedColumnExpr) SQL() string {
 }
 
 func (i *IndexKey) SQL() string {
-	return i.Name.SQL() + strOpt(i.Dir != "", " "+string(i.Dir))
+	return i.Name.SQL() + strOpt(i.Dir, " "+string(i.Dir))
 }
 
 func (c *Cluster) SQL() string {
 	return ", INTERLEAVE IN PARENT " + c.TableName.SQL() +
-		strOpt(c.OnDelete != "", " "+string(c.OnDelete))
+		strOpt(c.OnDelete, " "+string(c.OnDelete))
 }
 
 func (c *CreateRowDeletionPolicy) SQL() string {
@@ -817,7 +815,7 @@ func (a ChangeStreamSetOptions) SQL() string {
 }
 
 func (c *ChangeStreamForTable) SQL() string {
-	return c.TableName.SQL() + strOpt(len(c.Columns) > 0, "("+sqlJoin(c.Columns, ", ")+")")
+	return c.TableName.SQL() + strOpt(len(c.Columns), "("+sqlJoin(c.Columns, ", ")+")")
 }
 
 func (d *DropChangeStream) SQL() string {
@@ -878,17 +876,17 @@ func (p *PrivilegeOnTable) SQL() string {
 
 func (s *SelectPrivilege) SQL() string {
 	return "SELECT" +
-		strOpt(len(s.Columns) > 0, "("+sqlJoin(s.Columns, ", ")+")")
+		strOpt(len(s.Columns), "("+sqlJoin(s.Columns, ", ")+")")
 }
 
 func (i *InsertPrivilege) SQL() string {
 	return "INSERT" +
-		strOpt(len(i.Columns) > 0, "("+sqlJoin(i.Columns, ", ")+")")
+		strOpt(len(i.Columns), "("+sqlJoin(i.Columns, ", ")+")")
 }
 
 func (u *UpdatePrivilege) SQL() string {
 	return "UPDATE" +
-		strOpt(len(u.Columns) > 0, "("+sqlJoin(u.Columns, ", ")+")")
+		strOpt(len(u.Columns), "("+sqlJoin(u.Columns, ", ")+")")
 }
 
 func (d *DeletePrivilege) SQL() string {
@@ -933,7 +931,7 @@ func (a *ArraySchemaType) SQL() string {
 // ================================================================================
 
 func (i *Insert) SQL() string {
-	return "INSERT " + strOpt(i.InsertOrType != "", "OR "+string(i.InsertOrType)+" ") +
+	return "INSERT " + strOpt(i.InsertOrType, "OR "+string(i.InsertOrType)+" ") +
 		"INTO " + i.TableName.SQL() + " (" +
 		sqlJoin(i.Columns, ", ") + ") " + i.Input.SQL()
 }
