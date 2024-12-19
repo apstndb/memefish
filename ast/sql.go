@@ -103,7 +103,7 @@ func sqlJoinCtx[T Node](fc *FormatContext, elems []T, sep string) string {
 }
 
 // NodeFormat is Node with FormatContext support.
-// If it is implemented, (*FormatContext).SQL calls sqlContext() instead of SQL()
+// If it is implemented, (*FormatContext).SQL() calls sqlContext() instead of SQL()
 type NodeFormat interface {
 	Node
 
