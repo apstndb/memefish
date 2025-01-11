@@ -97,6 +97,8 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 						return false
 					}
 
+					lastEnd := token.InvalidPos
+
 					internal.Inspect(node, func(childPath []string, child ast.Node) bool {
 						if child == nil {
 							return false
@@ -107,9 +109,15 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 							return true
 						}
 
+						if child.Pos() < lastEnd {
+							t.Errorf("pos must be larger or equal than end of last node %v, but got pos: %v on %v: %v", lastEnd, child.Pos(), strings.Join(slices.Concat(path, childPath[1:]), ""), child.SQL())
+						}
+						lastEnd = child.End()
+
 						if child.Pos() < node.Pos() || node.End() < child.End() {
 							t.Errorf("child position must be in node position (%v, %v], but got (%v, %v] on %v: %v", node.Pos(), node.End(), child.Pos(), child.End(), strings.Join(slices.Concat(path, childPath[1:]), ""), child.SQL())
 						}
+
 						return false
 					})
 					return true
