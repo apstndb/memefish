@@ -602,15 +602,18 @@ select 1 + 2, 1 - 2,
             },
             &ast.ExprArg{
               Expr: &ast.IntervalLiteralSingle{
-                Interval:        542,
-                DateTimePartEnd: 556,
-                Value:           &ast.IntLiteral{
+                Interval: 542,
+                Value:    &ast.IntLiteral{
                   ValuePos: 551,
                   ValueEnd: 552,
                   Base:     10,
                   Value:    "5",
                 },
-                DateTimePart: "DAY",
+                DateTimePart: &ast.Const[github.com/cloudspannerecosystem/memefish/ast.DateTimePart]{
+                  Value:    "DAY",
+                  ValuePos: 553,
+                  ValueEnd: 556,
+                },
               },
             },
           },
@@ -641,15 +644,18 @@ select 1 + 2, 1 - 2,
             },
             &ast.ExprArg{
               Expr: &ast.IntervalLiteralSingle{
-                Interval:        613,
-                DateTimePartEnd: 628,
-                Value:           &ast.IntLiteral{
+                Interval: 613,
+                Value:    &ast.IntLiteral{
                   ValuePos: 622,
                   ValueEnd: 623,
                   Base:     10,
                   Value:    "5",
                 },
-                DateTimePart: "HOUR",
+                DateTimePart: &ast.Const[github.com/cloudspannerecosystem/memefish/ast.DateTimePart]{
+                  Value:    "HOUR",
+                  ValuePos: 624,
+                  ValueEnd: 628,
+                },
               },
             },
           },

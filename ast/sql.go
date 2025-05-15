@@ -656,11 +656,11 @@ func (t *JSONLiteral) SQL() string {
 }
 
 func (n *IntervalLiteralSingle) SQL() string {
-	return "INTERVAL " + n.Value.SQL() + " " + string(n.DateTimePart)
+	return "INTERVAL " + n.Value.SQL() + " " + n.DateTimePart.SQL()
 }
 
 func (n *IntervalLiteralRange) SQL() string {
-	return "INTERVAL " + n.Value.SQL() + " " + string(n.StartingDateTimePart) + " TO " + string(n.EndingDateTimePart)
+	return "INTERVAL " + n.Value.SQL() + " " + n.StartingDateTimePart.SQL() + " TO " + n.EndingDateTimePart.SQL()
 }
 
 // ================================================================================

@@ -2032,14 +2032,13 @@ type JSONLiteral struct {
 //	INTERVAL {{.Value}} {{.DateTimePart | sql}}
 type IntervalLiteralSingle struct {
 	// pos = Interval
-	// end = DateTimePartEnd
+	// end = DateTimePart.end
 
-	Interval        token.Pos // position of "INTERVAL" keyword
-	DateTimePartEnd token.Pos
+	Interval token.Pos // position of "INTERVAL" keyword
 
 	Value IntValue
 
-	DateTimePart DateTimePart
+	DateTimePart *Const[DateTimePart]
 }
 
 // IntervalLiteralRange represents an interval literal with a datetime part range.
@@ -2047,15 +2046,14 @@ type IntervalLiteralSingle struct {
 //	INTERVAL {{.Value}} {{.StartingDateTimePart | sql}} TO {{.EndingDateTimePart | sql}}
 type IntervalLiteralRange struct {
 	// pos = Interval
-	// end = EndingDateTimePartEnd
+	// end = EndingDateTimePart.end
 
-	Interval              token.Pos // position of "INTERVAL" keyword
-	EndingDateTimePartEnd token.Pos
+	Interval token.Pos // position of "INTERVAL" keyword
 
 	Value *StringLiteral
 
-	StartingDateTimePart DateTimePart
-	EndingDateTimePart   DateTimePart
+	StartingDateTimePart *Const[DateTimePart]
+	EndingDateTimePart   *Const[DateTimePart]
 }
 
 // ================================================================================

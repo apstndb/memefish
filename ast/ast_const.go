@@ -1,5 +1,7 @@
 package ast
 
+import "github.com/cloudspannerecosystem/memefish/token"
+
 // NOTE: This file defines constants used in AST nodes and they are used for automatic generation,
 //       so this file is conventional.
 //
@@ -190,3 +192,23 @@ const (
 	DateTimePartWeekFriday    DateTimePart = "WEEK(FRIDAY)"
 	DateTimePartWeekSaturday  DateTimePart = "WEEK(SATURDAY)"
 )
+
+type Const[T ~string] struct {
+	// pos = ValuePos
+	// end = ValueEnd
+
+	Value              T
+	ValuePos, ValueEnd token.Pos
+}
+
+func (c Const[T]) Pos() token.Pos {
+	return c.ValuePos
+}
+
+func (c Const[T]) End() token.Pos {
+	return c.ValueEnd
+}
+
+func (c Const[T]) SQL() string {
+	return string(c.Value)
+}

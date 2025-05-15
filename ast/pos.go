@@ -875,7 +875,7 @@ func (i *IntervalLiteralSingle) Pos() token.Pos {
 }
 
 func (i *IntervalLiteralSingle) End() token.Pos {
-	return i.DateTimePartEnd
+	return i.DateTimePart.End()
 }
 
 func (i *IntervalLiteralRange) Pos() token.Pos {
@@ -883,7 +883,7 @@ func (i *IntervalLiteralRange) Pos() token.Pos {
 }
 
 func (i *IntervalLiteralRange) End() token.Pos {
-	return i.EndingDateTimePartEnd
+	return i.EndingDateTimePart.End()
 }
 
 func (n *NewConstructor) Pos() token.Pos {

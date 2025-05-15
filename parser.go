@@ -2502,14 +2502,19 @@ var validDateTimePartNames = []ast.DateTimePart{
 	ast.DateTimePartTime,
 }
 
-func (p *Parser) parseDateTimePart() (part ast.DateTimePart, pos, end token.Pos) {
+func (p *Parser) parseDateTimePart() *ast.Const[ast.DateTimePart] {
 	// Note: This function will support WEEKDAY(weekday) when it is released in Spanner
 
 	ident := p.parseIdent()
 
 	for _, dateTimePart := range validDateTimePartNames {
 		if char.EqualFold(ident.Name, string(dateTimePart)) {
-			return dateTimePart, ident.Pos(), ident.End()
+			return &ast.Const[ast.DateTimePart]{
+				Value:    dateTimePart,
+				ValuePos: ident.Pos(),
+				ValueEnd: ident.End(),
+			}
+			// return dateTimePart, ident.Pos(), ident.End()
 		}
 	}
 
@@ -2523,30 +2528,27 @@ func (p *Parser) parseIntervalLiteral() ast.Expr {
 	// string parameter is not supported, so ast.Param will be caught as ast.IntValue.
 	switch e := expr.(type) {
 	case ast.IntValue:
-		unit, _, end := p.parseDateTimePart()
+		unit := p.parseDateTimePart()
 
 		return &ast.IntervalLiteralSingle{
-			Interval:        interval,
-			Value:           e,
-			DateTimePart:    unit,
-			DateTimePartEnd: end,
+			Interval:     interval,
+			Value:        e,
+			DateTimePart: unit,
 		}
 	case *ast.StringLiteral:
-		starting, _, _ := p.parseDateTimePart()
+		starting := p.parseDateTimePart()
 
-		var ending ast.DateTimePart
-		var endingEnd token.Pos
+		var ending *ast.Const[ast.DateTimePart]
 		if p.Token.Kind == "TO" {
 			p.nextToken()
-			ending, _, endingEnd = p.parseDateTimePart()
+			ending = p.parseDateTimePart()
 		}
 
 		return &ast.IntervalLiteralRange{
-			Interval:              interval,
-			Value:                 e,
-			StartingDateTimePart:  starting,
-			EndingDateTimePart:    ending,
-			EndingDateTimePartEnd: endingEnd,
+			Interval:             interval,
+			Value:                e,
+			StartingDateTimePart: starting,
+			EndingDateTimePart:   ending,
 		}
 	default:
 		panic(p.errorfAtToken(&p.Token, `expect int64_expression or datetime_parts_string, but: %v`, p.Token.Kind))
