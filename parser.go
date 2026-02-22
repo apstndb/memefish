@@ -6401,25 +6401,19 @@ func (p *Parser) parseGQLMatch() *ast.GQLMatch {
 	pattern := p.parseGQLGraphPattern()
 
 	return &ast.GQLMatch{
-		OptionalPos:  optional,
-		Match:        match,
-		Hint:         hint,
-		Pattern:      pattern,
+		OptionalPos: optional,
+		Match:       match,
+		Hint:        hint,
+		Pattern:     pattern,
 	}
 }
 
 func (p *Parser) parseGQLGraphPattern() *ast.GQLGraphPattern {
-	var paths []*ast.GQLTopLevelPathPattern
-	paths = append(paths, p.parseGQLTopLevelPathPattern())
-
-	for p.Token.Kind == "," {
-		p.nextToken()
-		hint := p.tryParseHint()
-		path := p.parseGQLTopLevelPathPattern()
-		path.Hint = hint
-		paths = append(paths, path)
+	if p.Token.Kind == "@" {
+		p.panicfAtToken(&p.Token, "traversal hint cannot be used at the beginning of a graph pattern")
 	}
 
+	paths := parseCommaSeparatedList(p, p.parseGQLTopLevelPathPattern)
 	where := p.tryParseWhere()
 
 	return &ast.GQLGraphPattern{
@@ -6429,6 +6423,8 @@ func (p *Parser) parseGQLGraphPattern() *ast.GQLGraphPattern {
 }
 
 func (p *Parser) parseGQLTopLevelPathPattern() *ast.GQLTopLevelPathPattern {
+	hint := p.tryParseHint()
+
 	var variable *ast.Ident
 	var searchPrefix *ast.GQLPathSearchPrefix
 	var mode *ast.GQLPathMode
@@ -6462,6 +6458,7 @@ func (p *Parser) parseGQLTopLevelPathPattern() *ast.GQLTopLevelPathPattern {
 	pattern := p.parseGQLPathPattern()
 
 	return &ast.GQLTopLevelPathPattern{
+		Hint:         hint,
 		Variable:     variable,
 		SearchPrefix: searchPrefix,
 		Mode:         mode,
@@ -6929,7 +6926,6 @@ func (p *Parser) parseGQLLabelPrimary() ast.GQLLabelExpression {
 	}
 	return nil
 }
-
 
 func (p *Parser) parseGQLProperties() *ast.GQLProperties {
 	lbrace := p.expect("{").Pos
