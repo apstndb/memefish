@@ -197,3 +197,47 @@ const (
 	DateTimePartWeekFriday    DateTimePart = "WEEK(FRIDAY)"
 	DateTimePartWeekSaturday  DateTimePart = "WEEK(SATURDAY)"
 )
+
+type GQLPathModeEnum string
+
+const (
+	GQLPathModeWalk    GQLPathModeEnum = "WALK"
+	GQLPathModeTrail   GQLPathModeEnum = "TRAIL"
+	GQLPathModeSimple  GQLPathModeEnum = "SIMPLE"
+	GQLPathModeAcyclic GQLPathModeEnum = "ACYCLIC"
+)
+
+type GQLSearchPrefixEnum string
+
+const (
+	GQLSearchPrefixAny         GQLSearchPrefixEnum = "ANY"
+	GQLSearchPrefixShortest    GQLSearchPrefixEnum = "SHORTEST"
+	GQLSearchPrefixCheapest    GQLSearchPrefixEnum = "CHEAPEST"
+	GQLSearchPrefixAll         GQLSearchPrefixEnum = "ALL"
+	GQLSearchPrefixAnyShortest GQLSearchPrefixEnum = "ANY SHORTEST"
+	GQLSearchPrefixAnyCheapest GQLSearchPrefixEnum = "ANY CHEAPEST"
+)
+
+type GQLEdgeDirection string
+
+const (
+	GQLEdgeDirectionAny   GQLEdgeDirection = "ANY"
+	GQLEdgeDirectionLeft  GQLEdgeDirection = "LEFT"
+	GQLEdgeDirectionRight GQLEdgeDirection = "RIGHT"
+	GQLEdgeDirectionBoth  GQLEdgeDirection = "BOTH"
+)
+
+type GQLLabelOp string
+
+const (
+	GQLLabelOpAnd GQLLabelOp = "&"
+	GQLLabelOpOr  GQLLabelOp = "|"
+	GQLLabelOpNot GQLLabelOp = "!"
+)
+
+type GQLQuantifierOp string
+
+const (
+	GQLQuantifierOpZeroOrMore GQLQuantifierOp = "*"
+	GQLQuantifierOpOneOrMore  GQLQuantifierOp = "+"
+)

@@ -1472,6 +1472,10 @@ func (s *GQLCompoundLinearQueryStatement) SQL() string {
 	return sqlJoin(s.Statements, sep)
 }
 
+func (n *GQLMatch) SQL() string {
+	return strOpt(!n.OptionalPos.Invalid(), "OPTIONAL ") + "MATCH" + sqlOpt(" ", n.Hint, "") + " " + n.Pattern.SQL()
+}
+
 func (s *GQLReturn) SQL() string {
 	return "RETURN " + strOpt(s.AllOrDistinct != "", string(s.AllOrDistinct)+" ") + sqlJoin(s.Items, ", ") +
 		sqlOpt(" ", s.GroupBy, "") + sqlOpt(" ", s.OrderBy, "") + sqlOpt(" ", s.Offset, "") + sqlOpt(" ", s.Limit, "")
@@ -1519,4 +1523,98 @@ func (s *GQLLimit) SQL() string {
 
 func (s *GQLOffset) SQL() string {
 	return s.Keyword + " " + s.Offset.SQL()
+}
+
+// ================================================================================
+//
+// GQL patterns
+//
+// ================================================================================
+
+func (n *GQLGraphPattern) SQL() string {
+	return sqlJoin(n.Paths, ", ") + sqlOpt(" ", n.Where, "")
+}
+
+func (n *GQLTopLevelPathPattern) SQL() string {
+	return sqlOpt("", n.Variable, " = ") + sqlOpt("", n.SearchPrefix, " ") + sqlOpt("", n.Mode, " ") + n.Path.SQL()
+}
+
+func (n *GQLPathSearchPrefix) SQL() string {
+	return string(n.Prefix)
+}
+
+func (n *GQLPathMode) SQL() string {
+	return string(n.Mode) + strIfElse(n.Paths, " PATHS", " PATH")
+}
+
+func (n *GQLPathPattern) SQL() string {
+	return sqlJoin(n.Terms, "")
+}
+
+func (n *GQLPathTerm) SQL() string {
+	return sqlOpt("", n.Hint, " ") + n.Primary.SQL() + sqlOpt("", n.Quantifier, "")
+}
+
+func (n *GQLSubpathPattern) SQL() string {
+	return "(" + sqlOpt("", n.Hint, " ") + sqlOpt("", n.Mode, " ") + n.Path.SQL() + sqlOpt(" ", n.Where, "") + ")"
+}
+
+func (n *GQLNodePattern) SQL() string {
+	return "(" + n.Pattern.SQL() + ")"
+}
+
+func (n *GQLEdgePattern) SQL() string {
+	lArrow := strOpt(n.Direction == GQLEdgeDirectionLeft || n.Direction == GQLEdgeDirectionBoth, "<")
+	rArrow := strOpt(n.Direction == GQLEdgeDirectionRight || n.Direction == GQLEdgeDirectionBoth, ">")
+
+	return lArrow + strIfElse(n.Filler != nil, sqlOpt("-[", n.Filler, "]-"), "-") + rArrow
+}
+
+func (n *GQLElementPatternFiller) SQL() string {
+	return sqlOpt("", n.Hint, " ") + sqlOpt("", n.Variable, "") + sqlOpt("", n.Label, "") +
+		sqlOpt(" ", n.Properties, "") + sqlOpt(" ", n.Where, "") + sqlOpt(" COST ", n.Cost, "")
+}
+
+func (n *GQLLabelFilter) SQL() string {
+	return strIfElse(n.Colon.Invalid(), "IS ", ":") + n.Expr.SQL()
+}
+
+func (n *GQLNameLabel) SQL() string {
+	return n.Name.SQL()
+}
+
+func (n *GQLWildcardLabel) SQL() string {
+	return "%"
+}
+
+func (n *GQLLabelBinaryExpr) SQL() string {
+	return n.Left.SQL() + " " + string(n.Op) + " " + n.Right.SQL()
+}
+
+func (n *GQLLabelUnaryExpr) SQL() string {
+	return string(n.Op) + n.Expr.SQL()
+}
+
+func (n *GQLLabelParenExpr) SQL() string {
+	return "(" + n.Expr.SQL() + ")"
+}
+
+func (n *GQLProperties) SQL() string {
+	return "{" + sqlJoin(n.Fields, ", ") + "}"
+}
+
+func (n *GQLPropertyField) SQL() string {
+	return n.Name.SQL() + ": " + n.Value.SQL()
+}
+
+func (n *GQLSymbolQuantifier) SQL() string {
+	return string(n.Op)
+}
+
+func (n *GQLFixedQuantifier) SQL() string {
+	return "{" + n.Count.SQL() + "}"
+}
+
+func (n *GQLBoundedQuantifier) SQL() string {
+	return "{" + sqlOpt("", n.Low, "") + "," + sqlOpt("", n.High, "") + "}"
 }
