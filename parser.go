@@ -6409,11 +6409,21 @@ func (p *Parser) parseGQLMatch() *ast.GQLMatch {
 }
 
 func (p *Parser) parseGQLGraphPattern() *ast.GQLGraphPattern {
-	patterns := parseCommaSeparatedList(p, p.parseGQLTopLevelPathPattern)
+	var paths []*ast.GQLTopLevelPathPattern
+	paths = append(paths, p.parseGQLTopLevelPathPattern())
+
+	for p.Token.Kind == "," {
+		p.nextToken()
+		hint := p.tryParseHint()
+		path := p.parseGQLTopLevelPathPattern()
+		path.Hint = hint
+		paths = append(paths, path)
+	}
+
 	where := p.tryParseWhere()
 
 	return &ast.GQLGraphPattern{
-		Paths: patterns,
+		Paths: paths,
 		Where: where,
 	}
 }
@@ -6518,13 +6528,8 @@ func (p *Parser) parseGQLPathMode() *ast.GQLPathMode {
 		p.panicfAtToken(id, "expected WALK, TRAIL, SIMPLE, or ACYCLIC, but: %s", id.AsString)
 	}
 
-	isPaths := false
 	end := id.End
-	if p.Token.IsKeywordLike("PATHS") {
-		end = p.Token.End
-		p.nextToken()
-		isPaths = true
-	} else if p.Token.IsKeywordLike("PATH") {
+	if p.Token.IsKeywordLike("PATHS") || p.Token.IsKeywordLike("PATH") {
 		end = p.Token.End
 		p.nextToken()
 	}
@@ -6533,7 +6538,6 @@ func (p *Parser) parseGQLPathMode() *ast.GQLPathMode {
 		StartPos: start,
 		EndPos:   end,
 		Mode:     mode,
-		Paths:    isPaths,
 	}
 }
 
@@ -6542,7 +6546,7 @@ func (p *Parser) parseGQLPathPattern() *ast.GQLPathPattern {
 	terms = append(terms, p.parseGQLPathTerm())
 
 	for {
-		if p.lookaheadGQLEdgePattern() || p.lookaheadGQLPathPrimary() {
+		if p.Token.Kind == "@" || p.lookaheadGQLEdgePattern() || p.lookaheadGQLPathPrimary() {
 			terms = append(terms, p.parseGQLPathTerm())
 		} else {
 			break
@@ -6841,6 +6845,10 @@ func (p *Parser) parseGQLElementPatternFiller() *ast.GQLElementPatternFiller {
 	}
 
 	where := p.tryParseWhere()
+
+	if props != nil && where != nil {
+		p.panicfAtPosition(where.Pos(), where.End(), "WHERE clause cannot be used together with property specification")
+	}
 
 	var cost ast.Expr
 	if p.Token.IsKeywordLike("COST") {

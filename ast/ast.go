@@ -4605,11 +4605,12 @@ type GQLGraphPattern struct {
 
 // GQLTopLevelPathPattern represents a top-level path pattern in GQL.
 //
-//	{{if .Variable}}{{.Variable}} = {{end}}{{.SearchPrefix | sqlOpt}}{{.Mode | sqlOpt}}{{.Path | sql}}
+//	{{.Hint | sqlOpt}}{{if .Variable}}{{.Variable}} = {{end}}{{.SearchPrefix | sqlOpt}}{{.Mode | sqlOpt}}{{.Path | sql}}
 type GQLTopLevelPathPattern struct {
-	// pos = (Variable ?? SearchPrefix ?? Mode ?? Path).pos
+	// pos = (Hint ?? Variable ?? SearchPrefix ?? Mode ?? Path).pos
 	// end = Path.end
 
+	Hint         *Hint                // optional
 	Variable     *Ident               // optional
 	SearchPrefix *GQLPathSearchPrefix // optional
 	Mode         *GQLPathMode         // optional
@@ -4632,7 +4633,7 @@ type GQLPathSearchPrefix struct {
 
 // GQLPathMode represents a path mode in GQL.
 //
-//	{{.Mode}} {{if .Paths}}PATHS{{else}}PATH{{end}}
+//	{{.Mode}}
 type GQLPathMode struct {
 	// pos = StartPos
 	// end = EndPos
@@ -4640,8 +4641,7 @@ type GQLPathMode struct {
 	StartPos token.Pos
 	EndPos   token.Pos
 
-	Mode  GQLPathModeEnum
-	Paths bool // true if "PATHS", false if "PATH"
+	Mode GQLPathModeEnum
 }
 
 // GQLPathPattern represents a sequence of path terms in GQL.

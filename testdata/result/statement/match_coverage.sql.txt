@@ -35,7 +35,10 @@ MATCH (nl5:(Person|Employee)&!Student)
 MATCH (nl6 IS Person)
 MATCH (nl7:Person)
 -- Element Filler with Variable, Properties, WHERE, and COST
-MATCH path = (ne:Person {age: 20} WHERE ne.name = 'Alice')-[ee:Knows WHERE ee.since > 2020 COST ee.since]->(me)
+MATCH path = (ne:Person {age: 20})-[ee:Knows WHERE ee.since > 2020 COST ee.since]->(me)
+RETURN *
+NEXT
+MATCH (ne:Person WHERE ne.name = 'Alice')
 -- Quantifiers
 MATCH (aq1)-[:Knows]->* (bq1)
 MATCH (aq2)-[:Knows]->+ (bq2)
@@ -45,7 +48,33 @@ MATCH (aq6)-[:Knows]->{,5} (bq6)
 MATCH (aq7)-[:Knows]->{2,5} (bq7)
 -- Subpath Patterns with everything
 MATCH ( @{a=1} WALK (asub)-[esub]->(bsub) WHERE asub.id > 0 ){2,3}
-RETURN 1
+RETURN *
+-- More Path Modes and Subpaths
+NEXT
+MATCH TRAIL (a)->{2,}(b)
+RETURN *
+NEXT
+MATCH TRAIL ((a)-[e]->(b)){0, }
+RETURN *
+NEXT
+MATCH ANY SHORTEST (TRAIL ->{1,4})
+RETURN *
+-- Hints coverage
+NEXT
+MATCH (a:Person {name: "Alex"}), @{JOIN_METHOD=HASH_JOIN} (a)-[:Owns]->(acc:Account)
+RETURN *
+NEXT
+MATCH (p:Person {id:1})-[e:Owns]->@{JOIN_METHOD=APPLY_JOIN}(a:Account)
+RETURN *
+NEXT
+MATCH (p:Person {id: 1})@{JOIN_METHOD=APPLY_JOIN}-[e:Owns]->(a:Account)
+RETURN *
+NEXT
+MATCH (a:Account {id:7})-[@{INDEX_STRATEGY=FORCE_INDEX_UNION} :Transfers]-(oa:Account)
+RETURN *
+NEXT
+RETURN p.name, COUNT(*) AS num_account
+GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
 
 --- AST
 &ast.GQLGraphQuery{
@@ -710,7 +739,6 @@ RETURN 1
                     StartPos: 522,
                     EndPos:   532,
                     Mode:     "WALK",
-                    Paths:    true,
                   },
                   Path: &ast.GQLPathPattern{
                     Terms: []*ast.GQLPathTerm{
@@ -1730,7 +1758,7 @@ RETURN 1
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLNodePattern{
                           Lparen:  1171,
-                          Rparen:  1215,
+                          Rparen:  1191,
                           Pattern: &ast.GQLElementPatternFiller{
                             Variable: &ast.Ident{
                               NamePos: 1172,
@@ -1766,76 +1794,51 @@ RETURN 1
                                 },
                               },
                             },
-                            Where: &ast.Where{
-                              Where: 1192,
-                              Expr:  &ast.BinaryExpr{
-                                Op:   "=",
-                                Left: &ast.Path{
-                                  Idents: []*ast.Ident{
-                                    &ast.Ident{
-                                      NamePos: 1198,
-                                      NameEnd: 1200,
-                                      Name:    "ne",
-                                    },
-                                    &ast.Ident{
-                                      NamePos: 1201,
-                                      NameEnd: 1205,
-                                      Name:    "name",
-                                    },
-                                  },
-                                },
-                                Right: &ast.StringLiteral{
-                                  ValuePos: 1208,
-                                  ValueEnd: 1215,
-                                  Value:    "Alice",
-                                },
-                              },
-                            },
                           },
                         },
                       },
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLEdgePattern{
-                          StartPos:  1216,
-                          EndPos:    1265,
+                          StartPos:  1192,
+                          EndPos:    1241,
                           Direction: "RIGHT",
                           Filler:    &ast.GQLElementPatternFiller{
                             Variable: &ast.Ident{
-                              NamePos: 1218,
-                              NameEnd: 1220,
+                              NamePos: 1194,
+                              NameEnd: 1196,
                               Name:    "ee",
                             },
                             Label: &ast.GQLLabelFilter{
-                              Colon: 1220,
+                              Colon: 1196,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
-                                  NamePos: 1221,
-                                  NameEnd: 1226,
+                                  NamePos: 1197,
+                                  NameEnd: 1202,
                                   Name:    "Knows",
                                 },
                               },
                             },
                             Where: &ast.Where{
-                              Where: 1227,
+                              Where: 1203,
                               Expr:  &ast.BinaryExpr{
                                 Op:   ">",
                                 Left: &ast.Path{
                                   Idents: []*ast.Ident{
                                     &ast.Ident{
-                                      NamePos: 1233,
-                                      NameEnd: 1235,
+                                      NamePos: 1209,
+                                      NameEnd: 1211,
                                       Name:    "ee",
                                     },
                                     &ast.Ident{
-                                      NamePos: 1236,
-                                      NameEnd: 1241,
+                                      NamePos: 1212,
+                                      NameEnd: 1217,
                                       Name:    "since",
                                     },
                                   },
                                 },
                                 Right: &ast.IntLiteral{
-                                  ValuePos: 1244,
-                                  ValueEnd: 1248,
+                                  ValuePos: 1220,
+                                  ValueEnd: 1224,
                                   Base:     10,
                                   Value:    "2020",
                                 },
@@ -1844,13 +1847,13 @@ RETURN 1
                             Cost: &ast.Path{
                               Idents: []*ast.Ident{
                                 &ast.Ident{
-                                  NamePos: 1254,
-                                  NameEnd: 1256,
+                                  NamePos: 1230,
+                                  NameEnd: 1232,
                                   Name:    "ee",
                                 },
                                 &ast.Ident{
-                                  NamePos: 1257,
-                                  NameEnd: 1262,
+                                  NamePos: 1233,
+                                  NameEnd: 1238,
                                   Name:    "since",
                                 },
                               },
@@ -1860,13 +1863,87 @@ RETURN 1
                       },
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLNodePattern{
-                          Lparen:  1265,
-                          Rparen:  1268,
+                          Lparen:  1241,
+                          Rparen:  1244,
                           Pattern: &ast.GQLElementPatternFiller{
                             Variable: &ast.Ident{
-                              NamePos: 1266,
-                              NameEnd: 1268,
+                              NamePos: 1242,
+                              NameEnd: 1244,
                               Name:    "me",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 1246,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 1253,
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       1260,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  1266,
+                          Rparen:  1300,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 1267,
+                              NameEnd: 1269,
+                              Name:    "ne",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 1269,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 1270,
+                                  NameEnd: 1276,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                            Where: &ast.Where{
+                              Where: 1277,
+                              Expr:  &ast.BinaryExpr{
+                                Op:   "=",
+                                Left: &ast.Path{
+                                  Idents: []*ast.Ident{
+                                    &ast.Ident{
+                                      NamePos: 1283,
+                                      NameEnd: 1285,
+                                      Name:    "ne",
+                                    },
+                                    &ast.Ident{
+                                      NamePos: 1286,
+                                      NameEnd: 1290,
+                                      Name:    "name",
+                                    },
+                                  },
+                                },
+                                Right: &ast.StringLiteral{
+                                  ValuePos: 1293,
+                                  ValueEnd: 1300,
+                                  Value:    "Alice",
+                                },
+                              },
                             },
                           },
                         },
@@ -1879,7 +1956,7 @@ RETURN 1
           },
           &ast.GQLMatch{
             OptionalPos: -1,
-            Match:       1285,
+            Match:       1317,
             Pattern:     &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
@@ -1887,12 +1964,12 @@ RETURN 1
                     Terms: []*ast.GQLPathTerm{
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLNodePattern{
-                          Lparen:  1291,
-                          Rparen:  1295,
+                          Lparen:  1323,
+                          Rparen:  1327,
                           Pattern: &ast.GQLElementPatternFiller{
                             Variable: &ast.Ident{
-                              NamePos: 1292,
-                              NameEnd: 1295,
+                              NamePos: 1324,
+                              NameEnd: 1327,
                               Name:    "aq1",
                             },
                           },
@@ -1900,16 +1977,16 @@ RETURN 1
                       },
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLEdgePattern{
-                          StartPos:  1296,
-                          EndPos:    1307,
+                          StartPos:  1328,
+                          EndPos:    1339,
                           Direction: "RIGHT",
                           Filler:    &ast.GQLElementPatternFiller{
                             Label: &ast.GQLLabelFilter{
-                              Colon: 1298,
+                              Colon: 1330,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
-                                  NamePos: 1299,
-                                  NameEnd: 1304,
+                                  NamePos: 1331,
+                                  NameEnd: 1336,
                                   Name:    "Knows",
                                 },
                               },
@@ -1917,18 +1994,18 @@ RETURN 1
                           },
                         },
                         Quantifier: &ast.GQLSymbolQuantifier{
-                          OpPos: 1307,
+                          OpPos: 1339,
                           Op:    "*",
                         },
                       },
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLNodePattern{
-                          Lparen:  1309,
-                          Rparen:  1313,
+                          Lparen:  1341,
+                          Rparen:  1345,
                           Pattern: &ast.GQLElementPatternFiller{
                             Variable: &ast.Ident{
-                              NamePos: 1310,
-                              NameEnd: 1313,
+                              NamePos: 1342,
+                              NameEnd: 1345,
                               Name:    "bq1",
                             },
                           },
@@ -1942,7 +2019,7 @@ RETURN 1
           },
           &ast.GQLMatch{
             OptionalPos: -1,
-            Match:       1315,
+            Match:       1347,
             Pattern:     &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
@@ -1950,12 +2027,12 @@ RETURN 1
                     Terms: []*ast.GQLPathTerm{
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLNodePattern{
-                          Lparen:  1321,
-                          Rparen:  1325,
+                          Lparen:  1353,
+                          Rparen:  1357,
                           Pattern: &ast.GQLElementPatternFiller{
                             Variable: &ast.Ident{
-                              NamePos: 1322,
-                              NameEnd: 1325,
+                              NamePos: 1354,
+                              NameEnd: 1357,
                               Name:    "aq2",
                             },
                           },
@@ -1963,16 +2040,16 @@ RETURN 1
                       },
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLEdgePattern{
-                          StartPos:  1326,
-                          EndPos:    1337,
+                          StartPos:  1358,
+                          EndPos:    1369,
                           Direction: "RIGHT",
                           Filler:    &ast.GQLElementPatternFiller{
                             Label: &ast.GQLLabelFilter{
-                              Colon: 1328,
+                              Colon: 1360,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
-                                  NamePos: 1329,
-                                  NameEnd: 1334,
+                                  NamePos: 1361,
+                                  NameEnd: 1366,
                                   Name:    "Knows",
                                 },
                               },
@@ -1980,77 +2057,8 @@ RETURN 1
                           },
                         },
                         Quantifier: &ast.GQLSymbolQuantifier{
-                          OpPos: 1337,
+                          OpPos: 1369,
                           Op:    "+",
-                        },
-                      },
-                      &ast.GQLPathTerm{
-                        Primary: &ast.GQLNodePattern{
-                          Lparen:  1339,
-                          Rparen:  1343,
-                          Pattern: &ast.GQLElementPatternFiller{
-                            Variable: &ast.Ident{
-                              NamePos: 1340,
-                              NameEnd: 1343,
-                              Name:    "bq2",
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       1345,
-            Pattern:     &ast.GQLGraphPattern{
-              Paths: []*ast.GQLTopLevelPathPattern{
-                &ast.GQLTopLevelPathPattern{
-                  Path: &ast.GQLPathPattern{
-                    Terms: []*ast.GQLPathTerm{
-                      &ast.GQLPathTerm{
-                        Primary: &ast.GQLNodePattern{
-                          Lparen:  1351,
-                          Rparen:  1355,
-                          Pattern: &ast.GQLElementPatternFiller{
-                            Variable: &ast.Ident{
-                              NamePos: 1352,
-                              NameEnd: 1355,
-                              Name:    "aq4",
-                            },
-                          },
-                        },
-                      },
-                      &ast.GQLPathTerm{
-                        Primary: &ast.GQLEdgePattern{
-                          StartPos:  1356,
-                          EndPos:    1367,
-                          Direction: "RIGHT",
-                          Filler:    &ast.GQLElementPatternFiller{
-                            Label: &ast.GQLLabelFilter{
-                              Colon: 1358,
-                              Expr:  &ast.GQLNameLabel{
-                                Name: &ast.Ident{
-                                  NamePos: 1359,
-                                  NameEnd: 1364,
-                                  Name:    "Knows",
-                                },
-                              },
-                            },
-                          },
-                        },
-                        Quantifier: &ast.GQLFixedQuantifier{
-                          Lbrace: 1367,
-                          Rbrace: 1369,
-                          Count:  &ast.IntLiteral{
-                            ValuePos: 1368,
-                            ValueEnd: 1369,
-                            Base:     10,
-                            Value:    "2",
-                          },
                         },
                       },
                       &ast.GQLPathTerm{
@@ -2061,7 +2069,7 @@ RETURN 1
                             Variable: &ast.Ident{
                               NamePos: 1372,
                               NameEnd: 1375,
-                              Name:    "bq4",
+                              Name:    "bq2",
                             },
                           },
                         },
@@ -2088,7 +2096,7 @@ RETURN 1
                             Variable: &ast.Ident{
                               NamePos: 1384,
                               NameEnd: 1387,
-                              Name:    "aq5",
+                              Name:    "aq4",
                             },
                           },
                         },
@@ -2111,26 +2119,95 @@ RETURN 1
                             },
                           },
                         },
-                        Quantifier: &ast.GQLBoundedQuantifier{
+                        Quantifier: &ast.GQLFixedQuantifier{
                           Lbrace: 1399,
-                          Rbrace: 1402,
-                          Low:    &ast.IntLiteral{
+                          Rbrace: 1401,
+                          Count:  &ast.IntLiteral{
                             ValuePos: 1400,
                             ValueEnd: 1401,
                             Base:     10,
                             Value:    "2",
                           },
-                          Comma: 1401,
                         },
                       },
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLNodePattern{
-                          Lparen:  1404,
-                          Rparen:  1408,
+                          Lparen:  1403,
+                          Rparen:  1407,
                           Pattern: &ast.GQLElementPatternFiller{
                             Variable: &ast.Ident{
-                              NamePos: 1405,
-                              NameEnd: 1408,
+                              NamePos: 1404,
+                              NameEnd: 1407,
+                              Name:    "bq4",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       1409,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  1415,
+                          Rparen:  1419,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 1416,
+                              NameEnd: 1419,
+                              Name:    "aq5",
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  1420,
+                          EndPos:    1431,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 1422,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 1423,
+                                  NameEnd: 1428,
+                                  Name:    "Knows",
+                                },
+                              },
+                            },
+                          },
+                        },
+                        Quantifier: &ast.GQLBoundedQuantifier{
+                          Lbrace: 1431,
+                          Rbrace: 1434,
+                          Low:    &ast.IntLiteral{
+                            ValuePos: 1432,
+                            ValueEnd: 1433,
+                            Base:     10,
+                            Value:    "2",
+                          },
+                          Comma: 1433,
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  1436,
+                          Rparen:  1440,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 1437,
+                              NameEnd: 1440,
                               Name:    "bq5",
                             },
                           },
@@ -2144,7 +2221,7 @@ RETURN 1
           },
           &ast.GQLMatch{
             OptionalPos: -1,
-            Match:       1410,
+            Match:       1442,
             Pattern:     &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
@@ -2152,12 +2229,12 @@ RETURN 1
                     Terms: []*ast.GQLPathTerm{
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLNodePattern{
-                          Lparen:  1416,
-                          Rparen:  1420,
+                          Lparen:  1448,
+                          Rparen:  1452,
                           Pattern: &ast.GQLElementPatternFiller{
                             Variable: &ast.Ident{
-                              NamePos: 1417,
-                              NameEnd: 1420,
+                              NamePos: 1449,
+                              NameEnd: 1452,
                               Name:    "aq6",
                             },
                           },
@@ -2165,16 +2242,16 @@ RETURN 1
                       },
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLEdgePattern{
-                          StartPos:  1421,
-                          EndPos:    1432,
+                          StartPos:  1453,
+                          EndPos:    1464,
                           Direction: "RIGHT",
                           Filler:    &ast.GQLElementPatternFiller{
                             Label: &ast.GQLLabelFilter{
-                              Colon: 1423,
+                              Colon: 1455,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
-                                  NamePos: 1424,
-                                  NameEnd: 1429,
+                                  NamePos: 1456,
+                                  NameEnd: 1461,
                                   Name:    "Knows",
                                 },
                               },
@@ -2182,25 +2259,25 @@ RETURN 1
                           },
                         },
                         Quantifier: &ast.GQLBoundedQuantifier{
-                          Lbrace: 1432,
-                          Rbrace: 1435,
+                          Lbrace: 1464,
+                          Rbrace: 1467,
                           High:   &ast.IntLiteral{
-                            ValuePos: 1434,
-                            ValueEnd: 1435,
+                            ValuePos: 1466,
+                            ValueEnd: 1467,
                             Base:     10,
                             Value:    "5",
                           },
-                          Comma: 1433,
+                          Comma: 1465,
                         },
                       },
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLNodePattern{
-                          Lparen:  1437,
-                          Rparen:  1441,
+                          Lparen:  1469,
+                          Rparen:  1473,
                           Pattern: &ast.GQLElementPatternFiller{
                             Variable: &ast.Ident{
-                              NamePos: 1438,
-                              NameEnd: 1441,
+                              NamePos: 1470,
+                              NameEnd: 1473,
                               Name:    "bq6",
                             },
                           },
@@ -2214,7 +2291,7 @@ RETURN 1
           },
           &ast.GQLMatch{
             OptionalPos: -1,
-            Match:       1443,
+            Match:       1475,
             Pattern:     &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
@@ -2222,12 +2299,12 @@ RETURN 1
                     Terms: []*ast.GQLPathTerm{
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLNodePattern{
-                          Lparen:  1449,
-                          Rparen:  1453,
+                          Lparen:  1481,
+                          Rparen:  1485,
                           Pattern: &ast.GQLElementPatternFiller{
                             Variable: &ast.Ident{
-                              NamePos: 1450,
-                              NameEnd: 1453,
+                              NamePos: 1482,
+                              NameEnd: 1485,
                               Name:    "aq7",
                             },
                           },
@@ -2235,16 +2312,16 @@ RETURN 1
                       },
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLEdgePattern{
-                          StartPos:  1454,
-                          EndPos:    1465,
+                          StartPos:  1486,
+                          EndPos:    1497,
                           Direction: "RIGHT",
                           Filler:    &ast.GQLElementPatternFiller{
                             Label: &ast.GQLLabelFilter{
-                              Colon: 1456,
+                              Colon: 1488,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
-                                  NamePos: 1457,
-                                  NameEnd: 1462,
+                                  NamePos: 1489,
+                                  NameEnd: 1494,
                                   Name:    "Knows",
                                 },
                               },
@@ -2252,31 +2329,31 @@ RETURN 1
                           },
                         },
                         Quantifier: &ast.GQLBoundedQuantifier{
-                          Lbrace: 1465,
-                          Rbrace: 1469,
+                          Lbrace: 1497,
+                          Rbrace: 1501,
                           Low:    &ast.IntLiteral{
-                            ValuePos: 1466,
-                            ValueEnd: 1467,
+                            ValuePos: 1498,
+                            ValueEnd: 1499,
                             Base:     10,
                             Value:    "2",
                           },
                           High: &ast.IntLiteral{
-                            ValuePos: 1468,
-                            ValueEnd: 1469,
+                            ValuePos: 1500,
+                            ValueEnd: 1501,
                             Base:     10,
                             Value:    "5",
                           },
-                          Comma: 1467,
+                          Comma: 1499,
                         },
                       },
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLNodePattern{
-                          Lparen:  1471,
-                          Rparen:  1475,
+                          Lparen:  1503,
+                          Rparen:  1507,
                           Pattern: &ast.GQLElementPatternFiller{
                             Variable: &ast.Ident{
-                              NamePos: 1472,
-                              NameEnd: 1475,
+                              NamePos: 1504,
+                              NameEnd: 1507,
                               Name:    "bq7",
                             },
                           },
@@ -2290,7 +2367,7 @@ RETURN 1
           },
           &ast.GQLMatch{
             OptionalPos: -1,
-            Match:       1513,
+            Match:       1545,
             Pattern:     &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
@@ -2298,25 +2375,25 @@ RETURN 1
                     Terms: []*ast.GQLPathTerm{
                       &ast.GQLPathTerm{
                         Primary: &ast.GQLSubpathPattern{
-                          Lparen: 1519,
-                          Rparen: 1573,
+                          Lparen: 1551,
+                          Rparen: 1605,
                           Hint:   &ast.Hint{
-                            Atmark:  1521,
-                            Rbrace:  1526,
+                            Atmark:  1553,
+                            Rbrace:  1558,
                             Records: []*ast.HintRecord{
                               &ast.HintRecord{
                                 Key: &ast.Path{
                                   Idents: []*ast.Ident{
                                     &ast.Ident{
-                                      NamePos: 1523,
-                                      NameEnd: 1524,
+                                      NamePos: 1555,
+                                      NameEnd: 1556,
                                       Name:    "a",
                                     },
                                   },
                                 },
                                 Value: &ast.IntLiteral{
-                                  ValuePos: 1525,
-                                  ValueEnd: 1526,
+                                  ValuePos: 1557,
+                                  ValueEnd: 1558,
                                   Base:     10,
                                   Value:    "1",
                                 },
@@ -2324,20 +2401,20 @@ RETURN 1
                             },
                           },
                           Mode: &ast.GQLPathMode{
-                            StartPos: 1528,
-                            EndPos:   1532,
+                            StartPos: 1560,
+                            EndPos:   1564,
                             Mode:     "WALK",
                           },
                           Path: &ast.GQLPathPattern{
                             Terms: []*ast.GQLPathTerm{
                               &ast.GQLPathTerm{
                                 Primary: &ast.GQLNodePattern{
-                                  Lparen:  1533,
-                                  Rparen:  1538,
+                                  Lparen:  1565,
+                                  Rparen:  1570,
                                   Pattern: &ast.GQLElementPatternFiller{
                                     Variable: &ast.Ident{
-                                      NamePos: 1534,
-                                      NameEnd: 1538,
+                                      NamePos: 1566,
+                                      NameEnd: 1570,
                                       Name:    "asub",
                                     },
                                   },
@@ -2345,13 +2422,13 @@ RETURN 1
                               },
                               &ast.GQLPathTerm{
                                 Primary: &ast.GQLEdgePattern{
-                                  StartPos:  1539,
-                                  EndPos:    1548,
+                                  StartPos:  1571,
+                                  EndPos:    1580,
                                   Direction: "RIGHT",
                                   Filler:    &ast.GQLElementPatternFiller{
                                     Variable: &ast.Ident{
-                                      NamePos: 1541,
-                                      NameEnd: 1545,
+                                      NamePos: 1573,
+                                      NameEnd: 1577,
                                       Name:    "esub",
                                     },
                                   },
@@ -2359,12 +2436,12 @@ RETURN 1
                               },
                               &ast.GQLPathTerm{
                                 Primary: &ast.GQLNodePattern{
-                                  Lparen:  1548,
-                                  Rparen:  1553,
+                                  Lparen:  1580,
+                                  Rparen:  1585,
                                   Pattern: &ast.GQLElementPatternFiller{
                                     Variable: &ast.Ident{
-                                      NamePos: 1549,
-                                      NameEnd: 1553,
+                                      NamePos: 1581,
+                                      NameEnd: 1585,
                                       Name:    "bsub",
                                     },
                                   },
@@ -2373,26 +2450,26 @@ RETURN 1
                             },
                           },
                           Where: &ast.Where{
-                            Where: 1555,
+                            Where: 1587,
                             Expr:  &ast.BinaryExpr{
                               Op:   ">",
                               Left: &ast.Path{
                                 Idents: []*ast.Ident{
                                   &ast.Ident{
-                                    NamePos: 1561,
-                                    NameEnd: 1565,
+                                    NamePos: 1593,
+                                    NameEnd: 1597,
                                     Name:    "asub",
                                   },
                                   &ast.Ident{
-                                    NamePos: 1566,
-                                    NameEnd: 1568,
+                                    NamePos: 1598,
+                                    NameEnd: 1600,
                                     Name:    "id",
                                   },
                                 },
                               },
                               Right: &ast.IntLiteral{
-                                ValuePos: 1571,
-                                ValueEnd: 1572,
+                                ValuePos: 1603,
+                                ValueEnd: 1604,
                                 Base:     10,
                                 Value:    "0",
                               },
@@ -2400,21 +2477,21 @@ RETURN 1
                           },
                         },
                         Quantifier: &ast.GQLBoundedQuantifier{
-                          Lbrace: 1574,
-                          Rbrace: 1578,
+                          Lbrace: 1606,
+                          Rbrace: 1610,
                           Low:    &ast.IntLiteral{
-                            ValuePos: 1575,
-                            ValueEnd: 1576,
+                            ValuePos: 1607,
+                            ValueEnd: 1608,
                             Base:     10,
                             Value:    "2",
                           },
                           High: &ast.IntLiteral{
-                            ValuePos: 1577,
-                            ValueEnd: 1578,
+                            ValuePos: 1609,
+                            ValueEnd: 1610,
                             Base:     10,
                             Value:    "3",
                           },
-                          Comma: 1576,
+                          Comma: 1608,
                         },
                       },
                     },
@@ -2424,15 +2501,884 @@ RETURN 1
             },
           },
           &ast.GQLReturn{
-            Return: 1580,
+            Return: 1612,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 1619,
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       1658,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Mode: &ast.GQLPathMode{
+                    StartPos: 1664,
+                    EndPos:   1669,
+                    Mode:     "TRAIL",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  1670,
+                          Rparen:  1672,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 1671,
+                              NameEnd: 1672,
+                              Name:    "a",
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  1673,
+                          EndPos:    1675,
+                          Direction: "RIGHT",
+                        },
+                        Quantifier: &ast.GQLBoundedQuantifier{
+                          Lbrace: 1675,
+                          Rbrace: 1678,
+                          Low:    &ast.IntLiteral{
+                            ValuePos: 1676,
+                            ValueEnd: 1677,
+                            Base:     10,
+                            Value:    "2",
+                          },
+                          Comma: 1677,
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  1679,
+                          Rparen:  1681,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 1680,
+                              NameEnd: 1681,
+                              Name:    "b",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 1683,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 1690,
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       1697,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Mode: &ast.GQLPathMode{
+                    StartPos: 1703,
+                    EndPos:   1708,
+                    Mode:     "TRAIL",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 1709,
+                          Rparen: 1722,
+                          Path:   &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  1710,
+                                  Rparen:  1712,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    Variable: &ast.Ident{
+                                      NamePos: 1711,
+                                      NameEnd: 1712,
+                                      Name:    "a",
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLEdgePattern{
+                                  StartPos:  1713,
+                                  EndPos:    1719,
+                                  Direction: "RIGHT",
+                                  Filler:    &ast.GQLElementPatternFiller{
+                                    Variable: &ast.Ident{
+                                      NamePos: 1715,
+                                      NameEnd: 1716,
+                                      Name:    "e",
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  1719,
+                                  Rparen:  1721,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    Variable: &ast.Ident{
+                                      NamePos: 1720,
+                                      NameEnd: 1721,
+                                      Name:    "b",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                        Quantifier: &ast.GQLBoundedQuantifier{
+                          Lbrace: 1723,
+                          Rbrace: 1727,
+                          Low:    &ast.IntLiteral{
+                            ValuePos: 1724,
+                            ValueEnd: 1725,
+                            Base:     10,
+                            Value:    "0",
+                          },
+                          Comma: 1725,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 1729,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 1736,
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       1743,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  SearchPrefix: &ast.GQLPathSearchPrefix{
+                    StartPos: 1749,
+                    EndPos:   1761,
+                    Prefix:   "ANY SHORTEST",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 1762,
+                          Rparen: 1776,
+                          Mode:   &ast.GQLPathMode{
+                            StartPos: 1763,
+                            EndPos:   1768,
+                            Mode:     "TRAIL",
+                          },
+                          Path: &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLEdgePattern{
+                                  StartPos:  1769,
+                                  EndPos:    1771,
+                                  Direction: "RIGHT",
+                                },
+                                Quantifier: &ast.GQLBoundedQuantifier{
+                                  Lbrace: 1771,
+                                  Rbrace: 1775,
+                                  Low:    &ast.IntLiteral{
+                                    ValuePos: 1772,
+                                    ValueEnd: 1773,
+                                    Base:     10,
+                                    Value:    "1",
+                                  },
+                                  High: &ast.IntLiteral{
+                                    ValuePos: 1774,
+                                    ValueEnd: 1775,
+                                    Base:     10,
+                                    Value:    "4",
+                                  },
+                                  Comma: 1773,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 1778,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 1785,
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       1810,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  1816,
+                          Rparen:  1840,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 1817,
+                              NameEnd: 1818,
+                              Name:    "a",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 1818,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 1819,
+                                  NameEnd: 1825,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                            Properties: &ast.GQLProperties{
+                              Lbrace: 1826,
+                              Rbrace: 1839,
+                              Fields: []*ast.GQLPropertyField{
+                                &ast.GQLPropertyField{
+                                  Name: &ast.Ident{
+                                    NamePos: 1827,
+                                    NameEnd: 1831,
+                                    Name:    "name",
+                                  },
+                                  Value: &ast.StringLiteral{
+                                    ValuePos: 1833,
+                                    ValueEnd: 1839,
+                                    Value:    "Alex",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                &ast.GQLTopLevelPathPattern{
+                  Hint: &ast.Hint{
+                    Atmark:  1843,
+                    Rbrace:  1866,
+                    Records: []*ast.HintRecord{
+                      &ast.HintRecord{
+                        Key: &ast.Path{
+                          Idents: []*ast.Ident{
+                            &ast.Ident{
+                              NamePos: 1845,
+                              NameEnd: 1856,
+                              Name:    "JOIN_METHOD",
+                            },
+                          },
+                        },
+                        Value: &ast.Ident{
+                          NamePos: 1857,
+                          NameEnd: 1866,
+                          Name:    "HASH_JOIN",
+                        },
+                      },
+                    },
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  1868,
+                          Rparen:  1870,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 1869,
+                              NameEnd: 1870,
+                              Name:    "a",
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  1871,
+                          EndPos:    1881,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 1873,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 1874,
+                                  NameEnd: 1878,
+                                  Name:    "Owns",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  1881,
+                          Rparen:  1893,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 1882,
+                              NameEnd: 1885,
+                              Name:    "acc",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 1885,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 1886,
+                                  NameEnd: 1893,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 1895,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 1902,
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       1909,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  1915,
+                          Rparen:  1931,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 1916,
+                              NameEnd: 1917,
+                              Name:    "p",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 1917,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 1918,
+                                  NameEnd: 1924,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                            Properties: &ast.GQLProperties{
+                              Lbrace: 1925,
+                              Rbrace: 1930,
+                              Fields: []*ast.GQLPropertyField{
+                                &ast.GQLPropertyField{
+                                  Name: &ast.Ident{
+                                    NamePos: 1926,
+                                    NameEnd: 1928,
+                                    Name:    "id",
+                                  },
+                                  Value: &ast.IntLiteral{
+                                    ValuePos: 1929,
+                                    ValueEnd: 1930,
+                                    Base:     10,
+                                    Value:    "1",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  1932,
+                          EndPos:    1943,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 1934,
+                              NameEnd: 1935,
+                              Name:    "e",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 1935,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 1936,
+                                  NameEnd: 1940,
+                                  Name:    "Owns",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Hint: &ast.Hint{
+                          Atmark:  1943,
+                          Rbrace:  1967,
+                          Records: []*ast.HintRecord{
+                            &ast.HintRecord{
+                              Key: &ast.Path{
+                                Idents: []*ast.Ident{
+                                  &ast.Ident{
+                                    NamePos: 1945,
+                                    NameEnd: 1956,
+                                    Name:    "JOIN_METHOD",
+                                  },
+                                },
+                              },
+                              Value: &ast.Ident{
+                                NamePos: 1957,
+                                NameEnd: 1967,
+                                Name:    "APPLY_JOIN",
+                              },
+                            },
+                          },
+                        },
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  1968,
+                          Rparen:  1978,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 1969,
+                              NameEnd: 1970,
+                              Name:    "a",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 1970,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 1971,
+                                  NameEnd: 1978,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 1980,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 1987,
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       1994,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  2000,
+                          Rparen:  2017,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 2001,
+                              NameEnd: 2002,
+                              Name:    "p",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 2002,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 2003,
+                                  NameEnd: 2009,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                            Properties: &ast.GQLProperties{
+                              Lbrace: 2010,
+                              Rbrace: 2016,
+                              Fields: []*ast.GQLPropertyField{
+                                &ast.GQLPropertyField{
+                                  Name: &ast.Ident{
+                                    NamePos: 2011,
+                                    NameEnd: 2013,
+                                    Name:    "id",
+                                  },
+                                  Value: &ast.IntLiteral{
+                                    ValuePos: 2015,
+                                    ValueEnd: 2016,
+                                    Base:     10,
+                                    Value:    "1",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Hint: &ast.Hint{
+                          Atmark:  2018,
+                          Rbrace:  2042,
+                          Records: []*ast.HintRecord{
+                            &ast.HintRecord{
+                              Key: &ast.Path{
+                                Idents: []*ast.Ident{
+                                  &ast.Ident{
+                                    NamePos: 2020,
+                                    NameEnd: 2031,
+                                    Name:    "JOIN_METHOD",
+                                  },
+                                },
+                              },
+                              Value: &ast.Ident{
+                                NamePos: 2032,
+                                NameEnd: 2042,
+                                Name:    "APPLY_JOIN",
+                              },
+                            },
+                          },
+                        },
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  2043,
+                          EndPos:    2054,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 2045,
+                              NameEnd: 2046,
+                              Name:    "e",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 2046,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 2047,
+                                  NameEnd: 2051,
+                                  Name:    "Owns",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  2054,
+                          Rparen:  2064,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 2055,
+                              NameEnd: 2056,
+                              Name:    "a",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 2056,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 2057,
+                                  NameEnd: 2064,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 2066,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 2073,
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       2080,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  2086,
+                          Rparen:  2103,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 2087,
+                              NameEnd: 2088,
+                              Name:    "a",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 2088,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 2089,
+                                  NameEnd: 2096,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                            Properties: &ast.GQLProperties{
+                              Lbrace: 2097,
+                              Rbrace: 2102,
+                              Fields: []*ast.GQLPropertyField{
+                                &ast.GQLPropertyField{
+                                  Name: &ast.Ident{
+                                    NamePos: 2098,
+                                    NameEnd: 2100,
+                                    Name:    "id",
+                                  },
+                                  Value: &ast.IntLiteral{
+                                    ValuePos: 2101,
+                                    ValueEnd: 2102,
+                                    Base:     10,
+                                    Value:    "7",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  2104,
+                          EndPos:    2154,
+                          Direction: "ANY",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            Hint: &ast.Hint{
+                              Atmark:  2106,
+                              Rbrace:  2140,
+                              Records: []*ast.HintRecord{
+                                &ast.HintRecord{
+                                  Key: &ast.Path{
+                                    Idents: []*ast.Ident{
+                                      &ast.Ident{
+                                        NamePos: 2108,
+                                        NameEnd: 2122,
+                                        Name:    "INDEX_STRATEGY",
+                                      },
+                                    },
+                                  },
+                                  Value: &ast.Ident{
+                                    NamePos: 2123,
+                                    NameEnd: 2140,
+                                    Name:    "FORCE_INDEX_UNION",
+                                  },
+                                },
+                              },
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 2142,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 2143,
+                                  NameEnd: 2152,
+                                  Name:    "Transfers",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  2154,
+                          Rparen:  2165,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            Variable: &ast.Ident{
+                              NamePos: 2155,
+                              NameEnd: 2157,
+                              Name:    "oa",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Colon: 2157,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 2158,
+                                  NameEnd: 2165,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 2167,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 2174,
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturn{
+            Return: 2181,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
                 Star: -1,
-                Expr: &ast.IntLiteral{
-                  ValuePos: 1587,
-                  ValueEnd: 1588,
-                  Base:     10,
-                  Value:    "1",
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 2188,
+                      NameEnd: 2189,
+                      Name:    "p",
+                    },
+                    &ast.Ident{
+                      NamePos: 2190,
+                      NameEnd: 2194,
+                      Name:    "name",
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.CountStarExpr{
+                  Count:  2196,
+                  Rparen: 2203,
+                },
+                Alias: &ast.AsAlias{
+                  As:    2205,
+                  Alias: &ast.Ident{
+                    NamePos: 2208,
+                    NameEnd: 2219,
+                    Name:    "num_account",
+                  },
+                },
+              },
+            },
+            GroupBy: &ast.GroupBy{
+              Group: 2220,
+              Hint:  &ast.Hint{
+                Atmark:  2226,
+                Rbrace:  2251,
+                Records: []*ast.HintRecord{
+                  &ast.HintRecord{
+                    Key: &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 2228,
+                          NameEnd: 2240,
+                          Name:    "GROUP_METHOD",
+                        },
+                      },
+                    },
+                    Value: &ast.Ident{
+                      NamePos: 2241,
+                      NameEnd: 2251,
+                      Name:    "HASH_GROUP",
+                    },
+                  },
+                },
+              },
+              Exprs: []ast.Expr{
+                &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 2256,
+                      NameEnd: 2257,
+                      Name:    "p",
+                    },
+                    &ast.Ident{
+                      NamePos: 2258,
+                      NameEnd: 2262,
+                      Name:    "name",
+                    },
+                  },
                 },
               },
             },
@@ -2444,4 +3390,4 @@ RETURN 1
 }
 
 --- SQL
-GRAPH FinGraph OPTIONAL MATCH (n:Person) MATCH @{join_method=hash_join} (src:Account)-[:Transfers]->(dst:Account), (src)<-[:Owns]-(p:Person) WHERE p.id > 0 MATCH ALL (p1:Person)-[:Knows]->+(f1:Person) MATCH ANY (p2:Person)-[:Knows]->+(f2:Person) MATCH ANY SHORTEST (p3:Person)-[:Knows]->+(f3:Person) MATCH ANY CHEAPEST (p4:Person)-[:Knows]->+(f4:Person) MATCH WALK PATH (aw)-[ew]->(bw) MATCH WALK PATHS (aws)-[ews]->(bws) MATCH TRAIL PATH (atvar)-[et]->(btvar) MATCH SIMPLE PATH (asvar)-[es]->(bsvar) MATCH ACYCLIC PATH (aa)-[ea]->(ba) MATCH (ad1)-[:Knows]-(bd1) MATCH (ad2)<-[:Knows]-(bd2) MATCH (ad3)-[:Knows]->(bd3) MATCH (ad4)<-[:Knows]->(bd4) MATCH (ad5)-[]-(bd5) MATCH (ad6)-(bd6) MATCH (ad7)<-(bd7) MATCH (ad8)->(bd8) MATCH (ad9)<->(bd9) MATCH (nl1:Person | Employee) MATCH (nl2:Person & Employee) MATCH (nl3:!Person) MATCH (nl4:%) MATCH (nl5:(Person | Employee) & !Student) MATCH (nl6:Person) MATCH (nl7:Person) MATCH path = (ne:Person {age: 20} WHERE ne.name = "Alice")-[ee:Knows WHERE ee.since > 2020 COST ee.since]->(me) MATCH (aq1)-[:Knows]->*(bq1) MATCH (aq2)-[:Knows]->+(bq2) MATCH (aq4)-[:Knows]->{2}(bq4) MATCH (aq5)-[:Knows]->{2,}(bq5) MATCH (aq6)-[:Knows]->{,5}(bq6) MATCH (aq7)-[:Knows]->{2,5}(bq7) MATCH (@{a=1} WALK PATH (asub)-[esub]->(bsub) WHERE asub.id > 0){2,3} RETURN 1
+GRAPH FinGraph OPTIONAL MATCH (n:Person) MATCH @{join_method=hash_join} (src:Account)-[:Transfers]->(dst:Account), (src)<-[:Owns]-(p:Person) WHERE p.id > 0 MATCH ALL (p1:Person)-[:Knows]->+(f1:Person) MATCH ANY (p2:Person)-[:Knows]->+(f2:Person) MATCH ANY SHORTEST (p3:Person)-[:Knows]->+(f3:Person) MATCH ANY CHEAPEST (p4:Person)-[:Knows]->+(f4:Person) MATCH WALK (aw)-[ew]->(bw) MATCH WALK (aws)-[ews]->(bws) MATCH TRAIL (atvar)-[et]->(btvar) MATCH SIMPLE (asvar)-[es]->(bsvar) MATCH ACYCLIC (aa)-[ea]->(ba) MATCH (ad1)-[:Knows]-(bd1) MATCH (ad2)<-[:Knows]-(bd2) MATCH (ad3)-[:Knows]->(bd3) MATCH (ad4)<-[:Knows]->(bd4) MATCH (ad5)-[]-(bd5) MATCH (ad6)-(bd6) MATCH (ad7)<-(bd7) MATCH (ad8)->(bd8) MATCH (ad9)<->(bd9) MATCH (nl1:Person | Employee) MATCH (nl2:Person & Employee) MATCH (nl3:!Person) MATCH (nl4:%) MATCH (nl5:(Person | Employee) & !Student) MATCH (nl6:Person) MATCH (nl7:Person) MATCH path = (ne:Person {age: 20})-[ee:Knows WHERE ee.since > 2020 COST ee.since]->(me) RETURN * NEXT MATCH (ne:Person WHERE ne.name = "Alice") MATCH (aq1)-[:Knows]->*(bq1) MATCH (aq2)-[:Knows]->+(bq2) MATCH (aq4)-[:Knows]->{2}(bq4) MATCH (aq5)-[:Knows]->{2,}(bq5) MATCH (aq6)-[:Knows]->{,5}(bq6) MATCH (aq7)-[:Knows]->{2,5}(bq7) MATCH (@{a=1} WALK (asub)-[esub]->(bsub) WHERE asub.id > 0){2,3} RETURN * NEXT MATCH TRAIL (a)->{2,}(b) RETURN * NEXT MATCH TRAIL ((a)-[e]->(b)){0,} RETURN * NEXT MATCH ANY SHORTEST (TRAIL ->{1,4}) RETURN * NEXT MATCH (a:Person {name: "Alex"}), @{JOIN_METHOD=HASH_JOIN} (a)-[:Owns]->(acc:Account) RETURN * NEXT MATCH (p:Person {id: 1})-[e:Owns]->@{JOIN_METHOD=APPLY_JOIN} (a:Account) RETURN * NEXT MATCH (p:Person {id: 1})@{JOIN_METHOD=APPLY_JOIN} -[e:Owns]->(a:Account) RETURN * NEXT MATCH (a:Account {id: 7})-[@{INDEX_STRATEGY=FORCE_INDEX_UNION} :Transfers]-(oa:Account) RETURN * NEXT RETURN p.name, COUNT(*) AS num_account GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name

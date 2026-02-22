@@ -1086,6 +1086,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Mode), visitor: v.Field("Mode")})
 		stack = append(stack, &stackItem{node: wrapNode(n.SearchPrefix), visitor: v.Field("SearchPrefix")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Variable), visitor: v.Field("Variable")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *GQLPathSearchPrefix:
 		// nothing to do

@@ -2335,7 +2335,7 @@ func (g *GQLGraphPattern) End() token.Pos {
 }
 
 func (g *GQLTopLevelPathPattern) Pos() token.Pos {
-	return nodePos(nodeChoice(wrapNode(g.Variable), wrapNode(g.SearchPrefix), wrapNode(g.Mode), wrapNode(g.Path)))
+	return nodePos(nodeChoice(wrapNode(g.Hint), wrapNode(g.Variable), wrapNode(g.SearchPrefix), wrapNode(g.Mode), wrapNode(g.Path)))
 }
 
 func (g *GQLTopLevelPathPattern) End() token.Pos {

@@ -1536,7 +1536,7 @@ func (n *GQLGraphPattern) SQL() string {
 }
 
 func (n *GQLTopLevelPathPattern) SQL() string {
-	return sqlOpt("", n.Variable, " = ") + sqlOpt("", n.SearchPrefix, " ") + sqlOpt("", n.Mode, " ") + n.Path.SQL()
+	return sqlOpt("", n.Hint, " ") + sqlOpt("", n.Variable, " = ") + sqlOpt("", n.SearchPrefix, " ") + sqlOpt("", n.Mode, " ") + n.Path.SQL()
 }
 
 func (n *GQLPathSearchPrefix) SQL() string {
@@ -1544,7 +1544,7 @@ func (n *GQLPathSearchPrefix) SQL() string {
 }
 
 func (n *GQLPathMode) SQL() string {
-	return string(n.Mode) + strIfElse(n.Paths, " PATHS", " PATH")
+	return string(n.Mode)
 }
 
 func (n *GQLPathPattern) SQL() string {

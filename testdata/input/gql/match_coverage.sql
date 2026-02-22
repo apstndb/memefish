@@ -34,7 +34,10 @@ MATCH (nl5:(Person|Employee)&!Student)
 MATCH (nl6 IS Person)
 MATCH (nl7:Person)
 -- Element Filler with Variable, Properties, WHERE, and COST
-MATCH path = (ne:Person {age: 20} WHERE ne.name = 'Alice')-[ee:Knows WHERE ee.since > 2020 COST ee.since]->(me)
+MATCH path = (ne:Person {age: 20})-[ee:Knows WHERE ee.since > 2020 COST ee.since]->(me)
+RETURN *
+NEXT
+MATCH (ne:Person WHERE ne.name = 'Alice')
 -- Quantifiers
 MATCH (aq1)-[:Knows]->* (bq1)
 MATCH (aq2)-[:Knows]->+ (bq2)
@@ -44,4 +47,30 @@ MATCH (aq6)-[:Knows]->{,5} (bq6)
 MATCH (aq7)-[:Knows]->{2,5} (bq7)
 -- Subpath Patterns with everything
 MATCH ( @{a=1} WALK (asub)-[esub]->(bsub) WHERE asub.id > 0 ){2,3}
-RETURN 1
+RETURN *
+-- More Path Modes and Subpaths
+NEXT
+MATCH TRAIL (a)->{2,}(b)
+RETURN *
+NEXT
+MATCH TRAIL ((a)-[e]->(b)){0, }
+RETURN *
+NEXT
+MATCH ANY SHORTEST (TRAIL ->{1,4})
+RETURN *
+-- Hints coverage
+NEXT
+MATCH (a:Person {name: "Alex"}), @{JOIN_METHOD=HASH_JOIN} (a)-[:Owns]->(acc:Account)
+RETURN *
+NEXT
+MATCH (p:Person {id:1})-[e:Owns]->@{JOIN_METHOD=APPLY_JOIN}(a:Account)
+RETURN *
+NEXT
+MATCH (p:Person {id: 1})@{JOIN_METHOD=APPLY_JOIN}-[e:Owns]->(a:Account)
+RETURN *
+NEXT
+MATCH (a:Account {id:7})-[@{INDEX_STRATEGY=FORCE_INDEX_UNION} :Transfers]-(oa:Account)
+RETURN *
+NEXT
+RETURN p.name, COUNT(*) AS num_account
+GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
