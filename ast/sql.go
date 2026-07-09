@@ -1451,6 +1451,10 @@ func (c *Call) SQL() string {
 //
 // ================================================================================
 
+func (n *GQLGraphTableExpr) SQL() string {
+	return "GRAPH_TABLE(" + n.GraphName.SQL() + " " + n.Query.SQL() + ")" + sqlOpt(" ", n.As, "") + sqlOpt(" ", n.Sample, "")
+}
+
 func (q *GQLGraphQuery) SQL() string {
 	return sqlOpt("", q.Hint, " ") + q.GraphClause.SQL() + " " + q.Query.SQL()
 }

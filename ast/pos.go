@@ -2174,6 +2174,14 @@ func (c *Call) End() token.Pos {
 	return posAdd(c.Rparen, 1)
 }
 
+func (g *GQLGraphTableExpr) Pos() token.Pos {
+	return g.GraphTable
+}
+
+func (g *GQLGraphTableExpr) End() token.Pos {
+	return posChoice(nodeEnd(nodeChoice(wrapNode(g.Sample), wrapNode(g.As))), posAdd(g.RParen, 1))
+}
+
 func (g *GQLGraphQuery) Pos() token.Pos {
 	return nodePos(nodeChoice(wrapNode(g.Hint), wrapNode(g.GraphClause)))
 }

@@ -1156,6 +1156,23 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		return p.parseUnnestSuffix(expr, unnest, rparen)
 	}
 
+	if p.Token.Kind == "GRAPH_TABLE" {
+		graphTable := p.expect("GRAPH_TABLE").Pos
+		lparen := p.expect("(").Pos
+		graphName := p.parsePath()
+		query := p.parseGQLMultiLinearQueryStatement()
+		rparen := p.expect(")").Pos
+		as := p.tryParseAsAlias(withOptionalAs)
+		return p.parseTableExprSuffix(&ast.GQLGraphTableExpr{
+			GraphTable: graphTable,
+			LParen:     lparen,
+			GraphName:  graphName,
+			Query:      query,
+			RParen:     rparen,
+			As:         as,
+		})
+	}
+
 	if p.Token.Kind == token.TokenIdent {
 		ids := p.parseIdentOrPath()
 		if p.Token.Kind == "(" {
@@ -1340,6 +1357,8 @@ func (p *Parser) parseTableExprSuffix(join ast.TableExpr) ast.TableExpr {
 	case *ast.SubQueryTableExpr:
 		j.Sample = sample
 	case *ast.ParenTableExpr:
+		j.Sample = sample
+	case *ast.GQLGraphTableExpr:
 		j.Sample = sample
 	default:
 		panic(fmt.Sprintf("BUG: unexpected join: %#v", join))

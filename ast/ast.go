@@ -184,6 +184,7 @@ func (SubQueryTableExpr) isTableExpr() {}
 func (ParenTableExpr) isTableExpr()    {}
 func (Join) isTableExpr()              {}
 func (TVFCallExpr) isTableExpr()       {}
+func (GQLGraphTableExpr) isTableExpr() {}
 
 // JoinCondition represents condition part of JOIN expression.
 type JoinCondition interface {
@@ -4359,6 +4360,23 @@ func (GQLOrderBy) isGQLPrimitiveQueryStatement()                    {}
 func (GQLLimit) isGQLPrimitiveQueryStatement()                      {}
 func (GQLOffset) isGQLPrimitiveQueryStatement()                     {}
 func (BadGQLPrimitiveQueryStatement) isGQLPrimitiveQueryStatement() {}
+
+// GQLGraphTableExpr represents GRAPH_TABLE operator in SQL.
+//
+//	GRAPH_TABLE({{.GraphName | sql}} {{.Query | sql}}) {{.As | sqlOpt}} {{.Sample | sqlOpt}}
+type GQLGraphTableExpr struct {
+	// pos = GraphTable
+	// end = (Sample ?? As).end || RParen + 1
+
+	GraphTable token.Pos // position of "GRAPH_TABLE"
+	LParen     token.Pos // position of "("
+	RParen     token.Pos // position of ")"
+
+	GraphName *Path
+	Query     *GQLMultiLinearQueryStatement
+	As        *AsAlias     // optional
+	Sample    *TableSample // optional
+}
 
 // GQLGraphQuery is a top-level GQL query.
 //
