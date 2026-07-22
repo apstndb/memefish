@@ -750,6 +750,38 @@ func (e *ExistsSubQuery) End() token.Pos {
 	return posAdd(e.Rparen, 1)
 }
 
+func (e *ExistsGQLSubQuery) Pos() token.Pos {
+	return e.Exists
+}
+
+func (e *ExistsGQLSubQuery) End() token.Pos {
+	return posAdd(e.Rbrace, 1)
+}
+
+func (a *ArrayGQLSubQuery) Pos() token.Pos {
+	return a.Array
+}
+
+func (a *ArrayGQLSubQuery) End() token.Pos {
+	return posAdd(a.Rbrace, 1)
+}
+
+func (v *ValueGQLSubQuery) Pos() token.Pos {
+	return v.Value
+}
+
+func (v *ValueGQLSubQuery) End() token.Pos {
+	return posAdd(v.Rbrace, 1)
+}
+
+func (g *GQLSubQueryInCondition) Pos() token.Pos {
+	return g.Lbrace
+}
+
+func (g *GQLSubQueryInCondition) End() token.Pos {
+	return posAdd(g.Rbrace, 1)
+}
+
 func (p *Param) Pos() token.Pos {
 	return p.Atmark
 }

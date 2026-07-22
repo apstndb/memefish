@@ -1,0 +1,24 @@
+--- gql_braced_ambiguity_exists_paren.sql
+-- Regression: EXISTS(...) SQL subquery must still parse after EXISTS { gql } support.
+EXISTS(SELECT 1)
+--- AST
+&ast.ExistsSubQuery{
+  Exists: 87,
+  Rparen: 102,
+  Query:  &ast.Select{
+    Select:  94,
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.IntLiteral{
+          ValuePos: 101,
+          ValueEnd: 102,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+EXISTS(SELECT 1)

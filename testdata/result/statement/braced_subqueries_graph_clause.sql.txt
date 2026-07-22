@@ -1,0 +1,548 @@
+--- braced_subqueries_graph_clause.sql
+GRAPH FinGraph
+MATCH (n)
+RETURN
+  EXISTS { GRAPH FinGraph MATCH (m) RETURN m } AS has_match,
+  EXISTS { MATCH (m) RETURN m UNION ALL RETURN m } AS compound_match,
+  EXISTS { MATCH (m) RETURN m NEXT RETURN m } AS chained_match,
+  ARRAY { GRAPH FinGraph MATCH (m) RETURN m } AS matches,
+  VALUE { GRAPH FinGraph MATCH (m) RETURN m } AS value,
+  n IN { GRAPH FinGraph MATCH (m) RETURN m } AS contained
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  21,
+                          Rparen:  23,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "n",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 25,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.ExistsGQLSubQuery{
+                  Exists:      34,
+                  Rbrace:      77,
+                  GraphClause: &ast.GQLGraphClause{
+                    Graph:             43,
+                    PropertyGraphName: &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 49,
+                          NameEnd: 57,
+                          Name:    "FinGraph",
+                        },
+                      },
+                    },
+                  },
+                  Query: &ast.GQLMultiLinearQueryStatement{
+                    Statements: []ast.GQLLinearQueryStatement{
+                      &ast.GQLSimpleLinearQueryStatement{
+                        Statements: []ast.GQLPrimitiveQueryStatement{
+                          &ast.GQLMatch{
+                            Optional: -1,
+                            Match:    58,
+                            Pattern:  &ast.GQLGraphPattern{
+                              Paths: []*ast.GQLTopLevelPathPattern{
+                                &ast.GQLTopLevelPathPattern{
+                                  Path: &ast.GQLPathPattern{
+                                    Terms: []*ast.GQLPathTerm{
+                                      &ast.GQLPathTerm{
+                                        Primary: &ast.GQLNodePattern{
+                                          Lparen:  64,
+                                          Rparen:  66,
+                                          Pattern: &ast.GQLElementPatternFiller{
+                                            EmptyPos: -1,
+                                            Variable: &ast.Ident{
+                                              NamePos: 65,
+                                              NameEnd: 66,
+                                              Name:    "m",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          &ast.GQLReturn{
+                            Return: 68,
+                            Items:  []*ast.GQLReturnItem{
+                              &ast.GQLReturnItem{
+                                Star: -1,
+                                Expr: &ast.Ident{
+                                  NamePos: 75,
+                                  NameEnd: 76,
+                                  Name:    "m",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                Alias: &ast.AsAlias{
+                  As:    79,
+                  Alias: &ast.Ident{
+                    NamePos: 82,
+                    NameEnd: 91,
+                    Name:    "has_match",
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.ExistsGQLSubQuery{
+                  Exists: 95,
+                  Rbrace: 142,
+                  Query:  &ast.GQLMultiLinearQueryStatement{
+                    Statements: []ast.GQLLinearQueryStatement{
+                      &ast.GQLCompoundLinearQueryStatement{
+                        Op:            "UNION",
+                        AllOrDistinct: "ALL",
+                        Statements:    []ast.GQLLinearQueryStatement{
+                          &ast.GQLSimpleLinearQueryStatement{
+                            Statements: []ast.GQLPrimitiveQueryStatement{
+                              &ast.GQLMatch{
+                                Optional: -1,
+                                Match:    104,
+                                Pattern:  &ast.GQLGraphPattern{
+                                  Paths: []*ast.GQLTopLevelPathPattern{
+                                    &ast.GQLTopLevelPathPattern{
+                                      Path: &ast.GQLPathPattern{
+                                        Terms: []*ast.GQLPathTerm{
+                                          &ast.GQLPathTerm{
+                                            Primary: &ast.GQLNodePattern{
+                                              Lparen:  110,
+                                              Rparen:  112,
+                                              Pattern: &ast.GQLElementPatternFiller{
+                                                EmptyPos: -1,
+                                                Variable: &ast.Ident{
+                                                  NamePos: 111,
+                                                  NameEnd: 112,
+                                                  Name:    "m",
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLReturn{
+                                Return: 114,
+                                Items:  []*ast.GQLReturnItem{
+                                  &ast.GQLReturnItem{
+                                    Star: -1,
+                                    Expr: &ast.Ident{
+                                      NamePos: 121,
+                                      NameEnd: 122,
+                                      Name:    "m",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          &ast.GQLSimpleLinearQueryStatement{
+                            Statements: []ast.GQLPrimitiveQueryStatement{
+                              &ast.GQLReturn{
+                                Return: 133,
+                                Items:  []*ast.GQLReturnItem{
+                                  &ast.GQLReturnItem{
+                                    Star: -1,
+                                    Expr: &ast.Ident{
+                                      NamePos: 140,
+                                      NameEnd: 141,
+                                      Name:    "m",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                Alias: &ast.AsAlias{
+                  As:    144,
+                  Alias: &ast.Ident{
+                    NamePos: 147,
+                    NameEnd: 161,
+                    Name:    "compound_match",
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.ExistsGQLSubQuery{
+                  Exists: 165,
+                  Rbrace: 207,
+                  Query:  &ast.GQLMultiLinearQueryStatement{
+                    Statements: []ast.GQLLinearQueryStatement{
+                      &ast.GQLSimpleLinearQueryStatement{
+                        Statements: []ast.GQLPrimitiveQueryStatement{
+                          &ast.GQLMatch{
+                            Optional: -1,
+                            Match:    174,
+                            Pattern:  &ast.GQLGraphPattern{
+                              Paths: []*ast.GQLTopLevelPathPattern{
+                                &ast.GQLTopLevelPathPattern{
+                                  Path: &ast.GQLPathPattern{
+                                    Terms: []*ast.GQLPathTerm{
+                                      &ast.GQLPathTerm{
+                                        Primary: &ast.GQLNodePattern{
+                                          Lparen:  180,
+                                          Rparen:  182,
+                                          Pattern: &ast.GQLElementPatternFiller{
+                                            EmptyPos: -1,
+                                            Variable: &ast.Ident{
+                                              NamePos: 181,
+                                              NameEnd: 182,
+                                              Name:    "m",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          &ast.GQLReturn{
+                            Return: 184,
+                            Items:  []*ast.GQLReturnItem{
+                              &ast.GQLReturnItem{
+                                Star: -1,
+                                Expr: &ast.Ident{
+                                  NamePos: 191,
+                                  NameEnd: 192,
+                                  Name:    "m",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLSimpleLinearQueryStatement{
+                        Statements: []ast.GQLPrimitiveQueryStatement{
+                          &ast.GQLReturn{
+                            Return: 198,
+                            Items:  []*ast.GQLReturnItem{
+                              &ast.GQLReturnItem{
+                                Star: -1,
+                                Expr: &ast.Ident{
+                                  NamePos: 205,
+                                  NameEnd: 206,
+                                  Name:    "m",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                Alias: &ast.AsAlias{
+                  As:    209,
+                  Alias: &ast.Ident{
+                    NamePos: 212,
+                    NameEnd: 225,
+                    Name:    "chained_match",
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.ArrayGQLSubQuery{
+                  Array:       229,
+                  Rbrace:      271,
+                  GraphClause: &ast.GQLGraphClause{
+                    Graph:             237,
+                    PropertyGraphName: &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 243,
+                          NameEnd: 251,
+                          Name:    "FinGraph",
+                        },
+                      },
+                    },
+                  },
+                  Query: &ast.GQLMultiLinearQueryStatement{
+                    Statements: []ast.GQLLinearQueryStatement{
+                      &ast.GQLSimpleLinearQueryStatement{
+                        Statements: []ast.GQLPrimitiveQueryStatement{
+                          &ast.GQLMatch{
+                            Optional: -1,
+                            Match:    252,
+                            Pattern:  &ast.GQLGraphPattern{
+                              Paths: []*ast.GQLTopLevelPathPattern{
+                                &ast.GQLTopLevelPathPattern{
+                                  Path: &ast.GQLPathPattern{
+                                    Terms: []*ast.GQLPathTerm{
+                                      &ast.GQLPathTerm{
+                                        Primary: &ast.GQLNodePattern{
+                                          Lparen:  258,
+                                          Rparen:  260,
+                                          Pattern: &ast.GQLElementPatternFiller{
+                                            EmptyPos: -1,
+                                            Variable: &ast.Ident{
+                                              NamePos: 259,
+                                              NameEnd: 260,
+                                              Name:    "m",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          &ast.GQLReturn{
+                            Return: 262,
+                            Items:  []*ast.GQLReturnItem{
+                              &ast.GQLReturnItem{
+                                Star: -1,
+                                Expr: &ast.Ident{
+                                  NamePos: 269,
+                                  NameEnd: 270,
+                                  Name:    "m",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                Alias: &ast.AsAlias{
+                  As:    273,
+                  Alias: &ast.Ident{
+                    NamePos: 276,
+                    NameEnd: 283,
+                    Name:    "matches",
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.ValueGQLSubQuery{
+                  Value:       287,
+                  Rbrace:      329,
+                  GraphClause: &ast.GQLGraphClause{
+                    Graph:             295,
+                    PropertyGraphName: &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 301,
+                          NameEnd: 309,
+                          Name:    "FinGraph",
+                        },
+                      },
+                    },
+                  },
+                  Query: &ast.GQLMultiLinearQueryStatement{
+                    Statements: []ast.GQLLinearQueryStatement{
+                      &ast.GQLSimpleLinearQueryStatement{
+                        Statements: []ast.GQLPrimitiveQueryStatement{
+                          &ast.GQLMatch{
+                            Optional: -1,
+                            Match:    310,
+                            Pattern:  &ast.GQLGraphPattern{
+                              Paths: []*ast.GQLTopLevelPathPattern{
+                                &ast.GQLTopLevelPathPattern{
+                                  Path: &ast.GQLPathPattern{
+                                    Terms: []*ast.GQLPathTerm{
+                                      &ast.GQLPathTerm{
+                                        Primary: &ast.GQLNodePattern{
+                                          Lparen:  316,
+                                          Rparen:  318,
+                                          Pattern: &ast.GQLElementPatternFiller{
+                                            EmptyPos: -1,
+                                            Variable: &ast.Ident{
+                                              NamePos: 317,
+                                              NameEnd: 318,
+                                              Name:    "m",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          &ast.GQLReturn{
+                            Return: 320,
+                            Items:  []*ast.GQLReturnItem{
+                              &ast.GQLReturnItem{
+                                Star: -1,
+                                Expr: &ast.Ident{
+                                  NamePos: 327,
+                                  NameEnd: 328,
+                                  Name:    "m",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                Alias: &ast.AsAlias{
+                  As:    331,
+                  Alias: &ast.Ident{
+                    NamePos: 334,
+                    NameEnd: 339,
+                    Name:    "value",
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.InExpr{
+                  Left: &ast.Ident{
+                    NamePos: 343,
+                    NameEnd: 344,
+                    Name:    "n",
+                  },
+                  Right: &ast.GQLSubQueryInCondition{
+                    Lbrace:      348,
+                    Rbrace:      384,
+                    GraphClause: &ast.GQLGraphClause{
+                      Graph:             350,
+                      PropertyGraphName: &ast.Path{
+                        Idents: []*ast.Ident{
+                          &ast.Ident{
+                            NamePos: 356,
+                            NameEnd: 364,
+                            Name:    "FinGraph",
+                          },
+                        },
+                      },
+                    },
+                    Query: &ast.GQLMultiLinearQueryStatement{
+                      Statements: []ast.GQLLinearQueryStatement{
+                        &ast.GQLSimpleLinearQueryStatement{
+                          Statements: []ast.GQLPrimitiveQueryStatement{
+                            &ast.GQLMatch{
+                              Optional: -1,
+                              Match:    365,
+                              Pattern:  &ast.GQLGraphPattern{
+                                Paths: []*ast.GQLTopLevelPathPattern{
+                                  &ast.GQLTopLevelPathPattern{
+                                    Path: &ast.GQLPathPattern{
+                                      Terms: []*ast.GQLPathTerm{
+                                        &ast.GQLPathTerm{
+                                          Primary: &ast.GQLNodePattern{
+                                            Lparen:  371,
+                                            Rparen:  373,
+                                            Pattern: &ast.GQLElementPatternFiller{
+                                              EmptyPos: -1,
+                                              Variable: &ast.Ident{
+                                                NamePos: 372,
+                                                NameEnd: 373,
+                                                Name:    "m",
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                            &ast.GQLReturn{
+                              Return: 375,
+                              Items:  []*ast.GQLReturnItem{
+                                &ast.GQLReturnItem{
+                                  Star: -1,
+                                  Expr: &ast.Ident{
+                                    NamePos: 382,
+                                    NameEnd: 383,
+                                    Name:    "m",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                Alias: &ast.AsAlias{
+                  As:    386,
+                  Alias: &ast.Ident{
+                    NamePos: 389,
+                    NameEnd: 398,
+                    Name:    "contained",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (n) RETURN EXISTS { GRAPH FinGraph MATCH (m) RETURN m } AS has_match, EXISTS { MATCH (m) RETURN m UNION ALL RETURN m } AS compound_match, EXISTS { MATCH (m) RETURN m NEXT RETURN m } AS chained_match, ARRAY { GRAPH FinGraph MATCH (m) RETURN m } AS matches, VALUE { GRAPH FinGraph MATCH (m) RETURN m } AS value, n IN { GRAPH FinGraph MATCH (m) RETURN m } AS contained

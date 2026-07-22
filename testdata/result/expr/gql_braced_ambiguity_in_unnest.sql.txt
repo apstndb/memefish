@@ -1,0 +1,44 @@
+--- gql_braced_ambiguity_in_unnest.sql
+-- Regression: IN UNNEST(...) must still parse after IN { gql } support.
+1 IN UNNEST([1, 2, 3])
+--- AST
+&ast.InExpr{
+  Left: &ast.IntLiteral{
+    ValuePos: 73,
+    ValueEnd: 74,
+    Base:     10,
+    Value:    "1",
+  },
+  Right: &ast.UnnestInCondition{
+    Unnest: 78,
+    Rparen: 94,
+    Expr:   &ast.ArrayLiteral{
+      Array:  -1,
+      Lbrack: 85,
+      Rbrack: 93,
+      Values: []ast.Expr{
+        &ast.IntLiteral{
+          ValuePos: 86,
+          ValueEnd: 87,
+          Base:     10,
+          Value:    "1",
+        },
+        &ast.IntLiteral{
+          ValuePos: 89,
+          ValueEnd: 90,
+          Base:     10,
+          Value:    "2",
+        },
+        &ast.IntLiteral{
+          ValuePos: 92,
+          ValueEnd: 93,
+          Base:     10,
+          Value:    "3",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+1 IN UNNEST([1, 2, 3])

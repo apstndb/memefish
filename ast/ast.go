@@ -230,6 +230,9 @@ func (ParenExpr) isExpr()             {}
 func (ScalarSubQuery) isExpr()        {}
 func (ArraySubQuery) isExpr()         {}
 func (ExistsSubQuery) isExpr()        {}
+func (ExistsGQLSubQuery) isExpr()     {}
+func (ArrayGQLSubQuery) isExpr()      {}
+func (ValueGQLSubQuery) isExpr()      {}
 func (Param) isExpr()                 {}
 func (Ident) isExpr()                 {}
 func (Path) isExpr()                  {}
@@ -305,9 +308,10 @@ type InCondition interface {
 	isInCondition()
 }
 
-func (UnnestInCondition) isInCondition()   {}
-func (SubQueryInCondition) isInCondition() {}
-func (ValuesInCondition) isInCondition()   {}
+func (UnnestInCondition) isInCondition()      {}
+func (SubQueryInCondition) isInCondition()    {}
+func (GQLSubQueryInCondition) isInCondition() {}
+func (ValuesInCondition) isInCondition()      {}
 
 // TypelessStructLiteralArg represents an argument of typeless STRUCT literals.
 type TypelessStructLiteralArg interface {
@@ -1900,6 +1904,74 @@ type ExistsSubQuery struct {
 
 	Hint  *Hint
 	Query QueryExpr
+}
+
+// GQLExistsContent is the body of EXISTS { ... }.
+type GQLExistsContent interface {
+	Node
+	isGQLExistsContent()
+}
+
+func (GQLMultiLinearQueryStatement) isGQLExistsContent() {}
+func (GQLMatch) isGQLExistsContent()                     {}
+func (GQLGraphPattern) isGQLExistsContent()              {}
+
+// ExistsGQLSubQuery is EXISTS { ... } GQL subquery expression.
+//
+//	EXISTS {{.Hint | sqlOpt}} { {{.GraphClause | sqlOpt}} {{.Query | sql}} }
+type ExistsGQLSubQuery struct {
+	// pos = Exists
+	// end = Rbrace + 1
+
+	Exists token.Pos // position of "EXISTS"
+	Rbrace token.Pos // position of "}"
+
+	Hint        *Hint           // optional
+	GraphClause *GQLGraphClause // optional
+	Query       GQLExistsContent
+}
+
+// ArrayGQLSubQuery is ARRAY { gql_query_expr } expression.
+//
+//	ARRAY { {{.GraphClause | sqlOpt}} {{.Query | sql}} }
+type ArrayGQLSubQuery struct {
+	// pos = Array
+	// end = Rbrace + 1
+
+	Array  token.Pos // position of "ARRAY"
+	Rbrace token.Pos // position of "}"
+
+	GraphClause *GQLGraphClause // optional
+	Query       *GQLMultiLinearQueryStatement
+}
+
+// ValueGQLSubQuery is VALUE { gql_query_expr } expression.
+//
+//	VALUE {{.Hint | sqlOpt}} { {{.GraphClause | sqlOpt}} {{.Query | sql}} }
+type ValueGQLSubQuery struct {
+	// pos = Value
+	// end = Rbrace + 1
+
+	Value  token.Pos // position of "VALUE"
+	Rbrace token.Pos // position of "}"
+
+	Hint        *Hint           // optional
+	GraphClause *GQLGraphClause // optional
+	Query       *GQLMultiLinearQueryStatement
+}
+
+// GQLSubQueryInCondition is IN { gql_query_expr } condition.
+//
+//	{ {{.GraphClause | sqlOpt}} {{.Query | sql}} }
+type GQLSubQueryInCondition struct {
+	// pos = Lbrace
+	// end = Rbrace + 1
+
+	Lbrace token.Pos // position of "{"
+	Rbrace token.Pos // position of "}"
+
+	GraphClause *GQLGraphClause // optional
+	Query       *GQLMultiLinearQueryStatement
 }
 
 // ================================================================================
