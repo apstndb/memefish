@@ -4783,6 +4783,8 @@ type GQLPrimitiveQueryStatement interface {
 }
 
 func (GQLMatch) isGQLPrimitiveQueryStatement()                      {}
+func (GQLInlineCall) isGQLPrimitiveQueryStatement()                 {}
+func (GQLTVFCall) isGQLPrimitiveQueryStatement()                    {}
 func (GQLReturn) isGQLPrimitiveQueryStatement()                     {}
 func (GQLWith) isGQLPrimitiveQueryStatement()                       {}
 func (GQLFilter) isGQLPrimitiveQueryStatement()                     {}
@@ -5069,6 +5071,62 @@ type GQLGraphPatternNode interface {
 
 func (GQLGraphPattern) isGQLGraphPatternNode()    {}
 func (BadGQLGraphPattern) isGQLGraphPatternNode() {}
+
+// GQLInlineCall represents an inline CALL subquery in GQL.
+//
+//	{{if .Optional.Invalid | not}}OPTIONAL{{end}} CALL ({{.Vars | sqlJoin ", "}}) { {{.GraphClause | sqlOpt}} {{.Query | sql}} }
+type GQLInlineCall struct {
+	// pos = Optional || Call
+	// end = Rbrace + 1
+
+	Optional token.Pos // position of "OPTIONAL", optional
+	Call     token.Pos // position of "CALL"
+	Lparen   token.Pos
+	Rparen   token.Pos
+	Lbrace   token.Pos
+	Rbrace   token.Pos
+
+	Vars        []*Ident
+	GraphClause *GQLGraphClause
+	Query       *GQLMultiLinearQueryStatement
+}
+
+// GQLTVFCall represents a named table-valued function CALL statement in GQL.
+//
+//	{{if .Optional.Invalid | not}}OPTIONAL{{end}} CALL {{if .Per.Invalid | not}}PER (){{end}} {{.TVF | sql}} {{.Yield | sqlOpt}}
+type GQLTVFCall struct {
+	// pos = Optional || Call
+	// end = Yield.end || TVF.end
+
+	Optional token.Pos // position of "OPTIONAL", optional
+	Call     token.Pos // position of "CALL"
+	Per      token.Pos // position of "PER", optional
+
+	TVF   *TVFCallExpr
+	Yield *GQLCallYield
+}
+
+// GQLCallYield is YIELD clause of named CALL.
+//
+//	YIELD {{.Items | sqlJoin ", "}}
+type GQLCallYield struct {
+	// pos = Yield
+	// end = Items[$].end
+
+	Yield token.Pos
+	Items []*GQLCallYieldItem
+}
+
+// GQLCallYieldItem is a YIELD item.
+//
+//	{{.Name | sql}} {{.Alias | sqlOpt}}
+type GQLCallYieldItem struct {
+	// pos = Name.pos
+	// end = (Alias ?? Name).end
+
+	Name  *Ident
+	Alias *AsAlias // optional
+}
 
 // GQLMatch represents a MATCH statement in GQL.
 //

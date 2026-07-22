@@ -1,0 +1,159 @@
+--- call_named_tvf.sql
+GRAPH FinGraph
+MATCH (p:Person)
+CALL graph.neighbors(p, 2) YIELD neighbor AS friend
+RETURN p.name, friend
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  21,
+                          Rparen:  30,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "p",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 23,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLTVFCall{
+            Optional: -1,
+            Call:     32,
+            Per:      -1,
+            TVF:      &ast.TVFCallExpr{
+              Rparen: 57,
+              Name:   &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 37,
+                    NameEnd: 42,
+                    Name:    "graph",
+                  },
+                  &ast.Ident{
+                    NamePos: 43,
+                    NameEnd: 52,
+                    Name:    "neighbors",
+                  },
+                },
+              },
+              Args: []ast.TVFArg{
+                &ast.ExprArg{
+                  Expr: &ast.Ident{
+                    NamePos: 53,
+                    NameEnd: 54,
+                    Name:    "p",
+                  },
+                },
+                &ast.ExprArg{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 56,
+                    ValueEnd: 57,
+                    Base:     10,
+                    Value:    "2",
+                  },
+                },
+              },
+            },
+            Yield: &ast.GQLCallYield{
+              Yield: 59,
+              Items: []*ast.GQLCallYieldItem{
+                &ast.GQLCallYieldItem{
+                  Name: &ast.Ident{
+                    NamePos: 65,
+                    NameEnd: 73,
+                    Name:    "neighbor",
+                  },
+                  Alias: &ast.AsAlias{
+                    As:    74,
+                    Alias: &ast.Ident{
+                      NamePos: 77,
+                      NameEnd: 83,
+                      Name:    "friend",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 84,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 91,
+                      NameEnd: 92,
+                      Name:    "p",
+                    },
+                    &ast.Ident{
+                      NamePos: 93,
+                      NameEnd: 97,
+                      Name:    "name",
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 99,
+                  NameEnd: 105,
+                  Name:    "friend",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (p:Person) CALL graph.neighbors(p, 2) YIELD neighbor AS friend RETURN p.name, friend

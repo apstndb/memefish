@@ -1,0 +1,158 @@
+--- call_named_tvf_arguments.sql
+GRAPH FinGraph
+CALL FutureTVF(TABLE Singers, MODEL FutureModel, DESCRIPTOR(Id), arg => 1) @{spanner_join_method=HASH_JOIN} YIELD value
+RETURN value
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLTVFCall{
+            Optional: -1,
+            Call:     15,
+            Per:      -1,
+            TVF:      &ast.TVFCallExpr{
+              Rparen: 88,
+              Name:   &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 20,
+                    NameEnd: 29,
+                    Name:    "FutureTVF",
+                  },
+                },
+              },
+              Args: []ast.TVFArg{
+                &ast.TableArg{
+                  Table: 30,
+                  Name:  &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 36,
+                        NameEnd: 43,
+                        Name:    "Singers",
+                      },
+                    },
+                  },
+                },
+                &ast.ModelArg{
+                  Model: 45,
+                  Name:  &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 51,
+                        NameEnd: 62,
+                        Name:    "FutureModel",
+                      },
+                    },
+                  },
+                },
+                &ast.ExprArg{
+                  Expr: &ast.CallExpr{
+                    Rparen: 77,
+                    Func:   &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 64,
+                          NameEnd: 74,
+                          Name:    "DESCRIPTOR",
+                        },
+                      },
+                    },
+                    Args: []ast.Arg{
+                      &ast.ExprArg{
+                        Expr: &ast.Ident{
+                          NamePos: 75,
+                          NameEnd: 77,
+                          Name:    "Id",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              NamedArgs: []*ast.NamedArg{
+                &ast.NamedArg{
+                  Name: &ast.Ident{
+                    NamePos: 80,
+                    NameEnd: 83,
+                    Name:    "arg",
+                  },
+                  Value: &ast.IntLiteral{
+                    ValuePos: 87,
+                    ValueEnd: 88,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                },
+              },
+              Hint: &ast.Hint{
+                Atmark:  90,
+                Rbrace:  121,
+                Records: []*ast.HintRecord{
+                  &ast.HintRecord{
+                    Key: &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 92,
+                          NameEnd: 111,
+                          Name:    "spanner_join_method",
+                        },
+                      },
+                    },
+                    Value: &ast.Ident{
+                      NamePos: 112,
+                      NameEnd: 121,
+                      Name:    "HASH_JOIN",
+                    },
+                  },
+                },
+              },
+            },
+            Yield: &ast.GQLCallYield{
+              Yield: 123,
+              Items: []*ast.GQLCallYieldItem{
+                &ast.GQLCallYieldItem{
+                  Name: &ast.Ident{
+                    NamePos: 129,
+                    NameEnd: 134,
+                    Name:    "value",
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 135,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 142,
+                  NameEnd: 147,
+                  Name:    "value",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph CALL FutureTVF(TABLE Singers, MODEL FutureModel, DESCRIPTOR(Id), arg => 1) @{spanner_join_method=HASH_JOIN} YIELD value RETURN value

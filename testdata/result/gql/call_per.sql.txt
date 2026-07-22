@@ -1,0 +1,189 @@
+--- call_per.sql
+GRAPH FinGraph
+MATCH (n)-[e]->(m)
+RETURN n, e, m
+NEXT
+CALL PER () PageRank() YIELD n, rank
+RETURN n.id, rank
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  21,
+                          Rparen:  23,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "n",
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  24,
+                          EndPos:    30,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 26,
+                              NameEnd: 27,
+                              Name:    "e",
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  30,
+                          Rparen:  32,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 31,
+                              NameEnd: 32,
+                              Name:    "m",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 34,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 41,
+                  NameEnd: 42,
+                  Name:    "n",
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 44,
+                  NameEnd: 45,
+                  Name:    "e",
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 47,
+                  NameEnd: 48,
+                  Name:    "m",
+                },
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLTVFCall{
+            Optional: -1,
+            Call:     54,
+            Per:      59,
+            TVF:      &ast.TVFCallExpr{
+              Rparen: 75,
+              Name:   &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 66,
+                    NameEnd: 74,
+                    Name:    "PageRank",
+                  },
+                },
+              },
+            },
+            Yield: &ast.GQLCallYield{
+              Yield: 77,
+              Items: []*ast.GQLCallYieldItem{
+                &ast.GQLCallYieldItem{
+                  Name: &ast.Ident{
+                    NamePos: 83,
+                    NameEnd: 84,
+                    Name:    "n",
+                  },
+                },
+                &ast.GQLCallYieldItem{
+                  Name: &ast.Ident{
+                    NamePos: 86,
+                    NameEnd: 90,
+                    Name:    "rank",
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 91,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 98,
+                      NameEnd: 99,
+                      Name:    "n",
+                    },
+                    &ast.Ident{
+                      NamePos: 100,
+                      NameEnd: 102,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 104,
+                  NameEnd: 108,
+                  Name:    "rank",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (n)-[e]->(m) RETURN n, e, m NEXT CALL PER () PageRank() YIELD n, rank RETURN n.id, rank

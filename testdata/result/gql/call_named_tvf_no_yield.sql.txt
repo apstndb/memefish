@@ -1,0 +1,123 @@
+--- call_named_tvf_no_yield.sql
+GRAPH FinGraph
+MATCH (p:Person)
+CALL graph.neighbors(p)
+RETURN p.name
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  21,
+                          Rparen:  30,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "p",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 23,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLTVFCall{
+            Optional: -1,
+            Call:     32,
+            Per:      -1,
+            TVF:      &ast.TVFCallExpr{
+              Rparen: 54,
+              Name:   &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 37,
+                    NameEnd: 42,
+                    Name:    "graph",
+                  },
+                  &ast.Ident{
+                    NamePos: 43,
+                    NameEnd: 52,
+                    Name:    "neighbors",
+                  },
+                },
+              },
+              Args: []ast.TVFArg{
+                &ast.ExprArg{
+                  Expr: &ast.Ident{
+                    NamePos: 53,
+                    NameEnd: 54,
+                    Name:    "p",
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 56,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 63,
+                      NameEnd: 64,
+                      Name:    "p",
+                    },
+                    &ast.Ident{
+                      NamePos: 65,
+                      NameEnd: 69,
+                      Name:    "name",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (p:Person) CALL graph.neighbors(p) RETURN p.name

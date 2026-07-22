@@ -1,0 +1,243 @@
+--- !bad_call_inline_yield.sql
+GRAPH FinGraph
+CALL (p) {
+  MATCH (p:Person)-[:Owns]->(a:Account)
+  RETURN a
+} YIELD a
+RETURN a
+
+--- Error
+syntax error: testdata/input/gql/!bad_call_inline_yield.sql:5:3: yield is not supported with inline CALL (...) { ... }
+  5|  } YIELD a
+   |    ^~~~~
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.BadGQLLinearQueryStatement{
+        BadNode: &ast.BadNode{
+          NodePos: 15,
+          NodeEnd: 95,
+          Tokens:  []*token.Token{
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "CALL",
+              AsString: "CALL",
+              Pos:      15,
+              End:      19,
+            },
+            &token.Token{
+              Kind:  "(",
+              Space: " ",
+              Raw:   "(",
+              Pos:   20,
+              End:   21,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "p",
+              AsString: "p",
+              Pos:      21,
+              End:      22,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  22,
+              End:  23,
+            },
+            &token.Token{
+              Kind:  "{",
+              Space: " ",
+              Raw:   "{",
+              Pos:   24,
+              End:   25,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n  ",
+              Raw:      "MATCH",
+              AsString: "MATCH",
+              Pos:      28,
+              End:      33,
+            },
+            &token.Token{
+              Kind:  "(",
+              Space: " ",
+              Raw:   "(",
+              Pos:   34,
+              End:   35,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "p",
+              AsString: "p",
+              Pos:      35,
+              End:      36,
+            },
+            &token.Token{
+              Kind: ":",
+              Raw:  ":",
+              Pos:  36,
+              End:  37,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "Person",
+              AsString: "Person",
+              Pos:      37,
+              End:      43,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  43,
+              End:  44,
+            },
+            &token.Token{
+              Kind: "-",
+              Raw:  "-",
+              Pos:  44,
+              End:  45,
+            },
+            &token.Token{
+              Kind: "[",
+              Raw:  "[",
+              Pos:  45,
+              End:  46,
+            },
+            &token.Token{
+              Kind: ":",
+              Raw:  ":",
+              Pos:  46,
+              End:  47,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "Owns",
+              AsString: "Owns",
+              Pos:      47,
+              End:      51,
+            },
+            &token.Token{
+              Kind: "]",
+              Raw:  "]",
+              Pos:  51,
+              End:  52,
+            },
+            &token.Token{
+              Kind: "->",
+              Raw:  "->",
+              Pos:  52,
+              End:  54,
+            },
+            &token.Token{
+              Kind: "(",
+              Raw:  "(",
+              Pos:  54,
+              End:  55,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      55,
+              End:      56,
+            },
+            &token.Token{
+              Kind: ":",
+              Raw:  ":",
+              Pos:  56,
+              End:  57,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "Account",
+              AsString: "Account",
+              Pos:      57,
+              End:      64,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  64,
+              End:  65,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n  ",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      68,
+              End:      74,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      75,
+              End:      76,
+            },
+            &token.Token{
+              Kind:  "}",
+              Space: "\n",
+              Raw:   "}",
+              Pos:   77,
+              End:   78,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "YIELD",
+              AsString: "YIELD",
+              Pos:      79,
+              End:      84,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      85,
+              End:      86,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      87,
+              End:      93,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      94,
+              End:      95,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph CALL (p) { MATCH (p:Person)-[:Owns]->(a:Account) RETURN a } YIELD a RETURN a

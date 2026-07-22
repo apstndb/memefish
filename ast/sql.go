@@ -1615,6 +1615,26 @@ func (n *GQLMatch) SQL() string {
 	return strOpt(!n.Optional.Invalid(), "OPTIONAL ") + "MATCH" + sqlOpt(" ", n.Hint, "") + " " + n.Pattern.SQL()
 }
 
+func (n *GQLInlineCall) SQL() string {
+	return strOpt(!n.Optional.Invalid(), "OPTIONAL ") + "CALL (" + sqlJoin(n.Vars, ", ") + ") { " + sqlOpt("", n.GraphClause, " ") + n.Query.SQL() + " }"
+}
+
+func (n *GQLTVFCall) SQL() string {
+	s := strOpt(!n.Optional.Invalid(), "OPTIONAL ") + "CALL"
+	if !n.Per.Invalid() {
+		s += " PER ()"
+	}
+	return s + " " + n.TVF.SQL() + sqlOpt(" ", n.Yield, "")
+}
+
+func (n *GQLCallYield) SQL() string {
+	return "YIELD " + sqlJoin(n.Items, ", ")
+}
+
+func (n *GQLCallYieldItem) SQL() string {
+	return n.Name.SQL() + sqlOpt(" ", n.Alias, "")
+}
+
 func (s *GQLReturn) SQL() string {
 	return "RETURN " + strOpt(s.AllOrDistinct != "", string(s.AllOrDistinct)+" ") + sqlJoin(s.Items, ", ") +
 		sqlOpt(" ", s.GroupBy, "") + sqlOpt(" ", s.OrderBy, "") + sqlOpt(" ", s.Offset, "") + sqlOpt(" ", s.Limit, "")

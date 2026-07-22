@@ -1289,6 +1289,12 @@ func (p *Parser) parseGraphTableColumns() *ast.GraphTableColumns {
 }
 
 func (p *Parser) parseTVFCallExpr(ids []*ast.Ident) *ast.TVFCallExpr {
+	tvf := p.parseTVFCall(ids)
+	tvf.Sample = p.tryParseTableSample()
+	return tvf
+}
+
+func (p *Parser) parseTVFCall(ids []*ast.Ident) *ast.TVFCallExpr {
 	p.expect("(")
 
 	var args []ast.TVFArg
@@ -1309,7 +1315,6 @@ func (p *Parser) parseTVFCallExpr(ids []*ast.Ident) *ast.TVFCallExpr {
 
 	rparen := p.expect(")").Pos
 	hint := p.tryParseHint()
-	sample := p.tryParseTableSample()
 
 	return &ast.TVFCallExpr{
 		Rparen:    rparen,
@@ -1317,7 +1322,6 @@ func (p *Parser) parseTVFCallExpr(ids []*ast.Ident) *ast.TVFCallExpr {
 		Args:      args,
 		NamedArgs: namedArgs,
 		Hint:      hint,
-		Sample:    sample,
 	}
 }
 
@@ -7107,12 +7111,20 @@ func (p *Parser) tryParseGQLGraphClause() *ast.GQLGraphClause {
 }
 
 func (p *Parser) parseGQLMultiLinearQueryStatement() *ast.GQLMultiLinearQueryStatement {
+	return p.parseGQLMultiLinearQueryStatementWithRbraceRecovery(false)
+}
+
+func (p *Parser) parseGQLMultiLinearQueryStatementUntilRbrace() *ast.GQLMultiLinearQueryStatement {
+	return p.parseGQLMultiLinearQueryStatementWithRbraceRecovery(true)
+}
+
+func (p *Parser) parseGQLMultiLinearQueryStatementWithRbraceRecovery(stopAtRbrace bool) *ast.GQLMultiLinearQueryStatement {
 	var stmts []ast.GQLLinearQueryStatement
-	stmts = append(stmts, p.parseGQLLinearQueryStatement())
+	stmts = append(stmts, p.parseGQLLinearQueryStatementWithRbraceRecovery(stopAtRbrace))
 
 	for p.Token.IsKeywordLike("NEXT") {
 		p.nextToken()
-		stmts = append(stmts, p.parseGQLLinearQueryStatement())
+		stmts = append(stmts, p.parseGQLLinearQueryStatementWithRbraceRecovery(stopAtRbrace))
 	}
 
 	return &ast.GQLMultiLinearQueryStatement{
@@ -7120,11 +7132,16 @@ func (p *Parser) parseGQLMultiLinearQueryStatement() *ast.GQLMultiLinearQuerySta
 	}
 }
 
-func (p *Parser) parseGQLLinearQueryStatement() (stmt ast.GQLLinearQueryStatement) {
+func (p *Parser) parseGQLLinearQueryStatementWithRbraceRecovery(stopAtRbrace bool) (stmt ast.GQLLinearQueryStatement) {
 	l := p.cloneLexer()
 	defer func() {
 		if r := recover(); r != nil {
-			stmt = &ast.BadGQLLinearQueryStatement{BadNode: p.handleParseStatementError(r, l)}
+			if !stopAtRbrace {
+				stmt = &ast.BadGQLLinearQueryStatement{BadNode: p.handleParseStatementError(r, l)}
+				return
+			}
+			p.handleError(r, l)
+			stmt = &ast.BadGQLLinearQueryStatement{BadNode: p.consumeBadGQLLinearQueryStatementUntilRbrace()}
 		}
 	}()
 
@@ -7148,6 +7165,34 @@ func (p *Parser) parseGQLLinearQueryStatement() (stmt ast.GQLLinearQueryStatemen
 		}
 	}
 	return stmt
+}
+
+func (p *Parser) consumeBadGQLLinearQueryStatementUntilRbrace() *ast.BadNode {
+	var tokens []*token.Token
+	pos := p.Token.Pos
+	end := p.Token.Pos
+	nesting := 0
+skip:
+	for p.Token.Kind != token.TokenEOF {
+		switch p.Token.Kind {
+		case "{":
+			nesting++
+		case "}":
+			if nesting == 0 {
+				break skip
+			}
+			nesting--
+		}
+		end = p.Token.End
+		tokens = append(tokens, p.Token.Clone())
+		p.Lexer.nextToken(true)
+	}
+
+	return &ast.BadNode{
+		NodePos: pos,
+		NodeEnd: end,
+		Tokens:  tokens,
+	}
 }
 
 func (p *Parser) parseGQLSimpleLinearQueryStatement() *ast.GQLSimpleLinearQueryStatement {
@@ -7178,8 +7223,19 @@ func (p *Parser) parseGQLSimpleLinearQueryStatement() *ast.GQLSimpleLinearQueryS
 
 func (p *Parser) tryParseGQLPrimitiveQueryStatement() ast.GQLPrimitiveQueryStatement {
 	switch {
-	case p.Token.IsKeywordLike("MATCH") || p.Token.IsKeywordLike("OPTIONAL"):
+	case p.Token.IsKeywordLike("OPTIONAL"):
+		lexer := p.cloneLexer()
+		p.nextToken() // OPTIONAL
+		if p.Token.IsKeywordLike("CALL") {
+			p.Lexer = lexer
+			return p.parseGQLCall()
+		}
+		p.Lexer = lexer
 		return p.parseGQLMatch()
+	case p.Token.IsKeywordLike("MATCH"):
+		return p.parseGQLMatch()
+	case p.Token.IsKeywordLike("CALL"):
+		return p.parseGQLCall()
 	case p.Token.IsKeywordLike("RETURN"):
 		return p.parseGQLReturn()
 	case p.Token.Kind == "WITH":
@@ -7199,6 +7255,129 @@ func (p *Parser) tryParseGQLPrimitiveQueryStatement() ast.GQLPrimitiveQueryState
 	default:
 		return nil
 	}
+}
+
+func (p *Parser) parseGQLCall() ast.GQLPrimitiveQueryStatement {
+	optional := token.InvalidPos
+	if p.Token.IsKeywordLike("OPTIONAL") {
+		optional = p.expectKeywordLike("OPTIONAL").Pos
+	}
+	call := p.expectKeywordLike("CALL").Pos
+
+	per := token.InvalidPos
+	if p.Token.IsKeywordLike("PER") {
+		// Preserve syntax acceptance: OPTIONAL CALL PER () is rejected during analysis, not parsing.
+		per = p.expectKeywordLike("PER").Pos
+		p.expect("(")
+		p.expect(")")
+	}
+
+	// PER selects a named TVF. Without PER, "(" begins an inline call only for (vars) { ... }.
+	// Every other form is a named TVF.
+	if !per.Invalid() {
+		return p.parseGQLCallNamedTVF(optional, call, per)
+	}
+
+	if p.Token.Kind == "(" {
+		// Could be inline vars list or start of something else — look ahead for "{" after ")"
+		if p.lookaheadGQLCallInline() {
+			return p.parseGQLCallInline(optional, call)
+		}
+	}
+
+	return p.parseGQLCallNamedTVF(optional, call, per)
+}
+
+func (p *Parser) lookaheadGQLCallInline() bool {
+	lexer := p.cloneLexer()
+	defer func() { p.Lexer = lexer }()
+	if p.Token.Kind != "(" {
+		return false
+	}
+	p.nextToken()
+	// skip comma-separated idents
+	if p.Token.Kind != ")" {
+		for {
+			if p.Token.Kind != token.TokenIdent {
+				return false
+			}
+			p.nextToken()
+			if p.Token.Kind == "," {
+				p.nextToken()
+				continue
+			}
+			break
+		}
+	}
+	if p.Token.Kind != ")" {
+		return false
+	}
+	p.nextToken()
+	return p.Token.Kind == "{"
+}
+
+func (p *Parser) parseGQLCallInline(optional, call token.Pos) *ast.GQLInlineCall {
+	lparen := p.expect("(").Pos
+	var vars []*ast.Ident
+	if p.Token.Kind != ")" {
+		vars = parseCommaSeparatedList(p, p.parseIdent)
+	}
+	rparen := p.expect(")").Pos
+	lbrace := p.expect("{").Pos
+	var graphClause *ast.GQLGraphClause
+	if p.Token.IsKeywordLike("GRAPH") {
+		graphClause = p.parseGQLGraphClause()
+	}
+	query := p.parseGQLMultiLinearQueryStatementUntilRbrace()
+	rbrace := p.expect("}").Pos
+	if p.Token.IsKeywordLike("YIELD") {
+		p.panicfAtToken(&p.Token, "yield is not supported with inline CALL (...) { ... }")
+	}
+	return &ast.GQLInlineCall{
+		Optional:    optional,
+		Call:        call,
+		Lparen:      lparen,
+		Rparen:      rparen,
+		Lbrace:      lbrace,
+		Rbrace:      rbrace,
+		Vars:        vars,
+		GraphClause: graphClause,
+		Query:       query,
+	}
+}
+
+func (p *Parser) parseGQLCallNamedTVF(optional, call, per token.Pos) *ast.GQLTVFCall {
+	// PER () applies only to named TVF CALL, never to inline (vars) { ... }.
+	if !per.Invalid() && p.Token.Kind == "(" {
+		if p.lookaheadGQLCallInline() {
+			p.panicfAtToken(&p.Token, "per () is not supported with inline CALL (...) { ... }")
+		}
+	}
+	name := p.parsePath()
+	tvf := p.parseTVFCall(name.Idents)
+	yield := p.tryParseGQLCallYield()
+	return &ast.GQLTVFCall{
+		Optional: optional,
+		Call:     call,
+		Per:      per,
+		TVF:      tvf,
+		Yield:    yield,
+	}
+}
+
+func (p *Parser) tryParseGQLCallYield() *ast.GQLCallYield {
+	if !p.Token.IsKeywordLike("YIELD") {
+		return nil
+	}
+	yield := p.expectKeywordLike("YIELD").Pos
+	items := parseCommaSeparatedList(p, p.parseGQLCallYieldItem)
+	return &ast.GQLCallYield{Yield: yield, Items: items}
+}
+
+func (p *Parser) parseGQLCallYieldItem() *ast.GQLCallYieldItem {
+	name := p.parseIdent()
+	alias := p.tryParseAsAlias(withRequiredAs)
+	return &ast.GQLCallYieldItem{Name: name, Alias: alias}
 }
 
 func (p *Parser) parseGQLMatch() *ast.GQLMatch {

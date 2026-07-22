@@ -1,0 +1,99 @@
+--- !bad_call_inline_missing_return.sql
+GRAPH FinGraph
+CALL () {
+  MATCH (n)
+}
+RETURN n
+
+--- Error
+syntax error: testdata/input/gql/!bad_call_inline_missing_return.sql:4:1: linear query must end with RETURN
+  4|  }
+   |  ^
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLInlineCall{
+            Optional: -1,
+            Call:     15,
+            Lparen:   20,
+            Rparen:   21,
+            Lbrace:   23,
+            Rbrace:   37,
+            Query:    &ast.GQLMultiLinearQueryStatement{
+              Statements: []ast.GQLLinearQueryStatement{
+                &ast.BadGQLLinearQueryStatement{
+                  BadNode: &ast.BadNode{
+                    NodePos: 27,
+                    NodeEnd: 36,
+                    Tokens:  []*token.Token{
+                      &token.Token{
+                        Kind:     "<ident>",
+                        Space:    "\n  ",
+                        Raw:      "MATCH",
+                        AsString: "MATCH",
+                        Pos:      27,
+                        End:      32,
+                      },
+                      &token.Token{
+                        Kind:  "(",
+                        Space: " ",
+                        Raw:   "(",
+                        Pos:   33,
+                        End:   34,
+                      },
+                      &token.Token{
+                        Kind:     "<ident>",
+                        Raw:      "n",
+                        AsString: "n",
+                        Pos:      34,
+                        End:      35,
+                      },
+                      &token.Token{
+                        Kind: ")",
+                        Raw:  ")",
+                        Pos:  35,
+                        End:  36,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 39,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 46,
+                  NameEnd: 47,
+                  Name:    "n",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph CALL () { MATCH (n) } RETURN n

@@ -1191,6 +1191,22 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Collate), visitor: v.Field("Collate")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
+	case *GQLInlineCall:
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphClause), visitor: v.Field("GraphClause")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Vars), visitor: v.Field("Vars")})
+
+	case *GQLTVFCall:
+		stack = append(stack, &stackItem{node: wrapNode(n.Yield), visitor: v.Field("Yield")})
+		stack = append(stack, &stackItem{node: wrapNode(n.TVF), visitor: v.Field("TVF")})
+
+	case *GQLCallYield:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
+
+	case *GQLCallYieldItem:
+		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
 	case *GQLMatch:
 		stack = append(stack, &stackItem{node: wrapNode(n.Pattern), visitor: v.Field("Pattern")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})

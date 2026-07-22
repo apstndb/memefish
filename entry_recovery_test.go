@@ -302,3 +302,38 @@ func requireSafeEntryNodes(t *testing.T, nodes []ast.Node) {
 		}()
 	}
 }
+
+func TestParseGQLQueryInlineCallRecoveryStopsAtRbrace(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+	}{
+		{
+			name:  "simple body",
+			input: "GRAPH FinGraph CALL () { MATCH (n) } RETURN n",
+		},
+		{
+			name:  "nested property braces",
+			input: "GRAPH FinGraph CALL () { MATCH (n {x: 1}) } RETURN n",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := newEntryTestParser(tt.input)
+
+			node, err := p.ParseGQLQuery()
+			errs, ok := err.(memefish.MultiError)
+			if !ok {
+				t.Fatalf("ParseGQLQuery() error = %T, want memefish.MultiError", err)
+			}
+			if len(errs) != 1 {
+				t.Fatalf("len(ParseGQLQuery() errors) = %d, want 1: %v", len(errs), err)
+			}
+			if got := node.SQL(); got != tt.input {
+				t.Errorf("ParseGQLQuery() SQL() = %q, want %q", got, tt.input)
+			}
+			requireSafeEntryNodes(t, []ast.Node{node})
+		})
+	}
+}

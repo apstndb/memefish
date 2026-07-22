@@ -2566,6 +2566,38 @@ func (g *GQLOrderByItem) End() token.Pos {
 	return posChoice(g.DirEnd, nodeEnd(wrapNode(g.Collate)), nodeEnd(wrapNode(g.Expr)))
 }
 
+func (g *GQLInlineCall) Pos() token.Pos {
+	return posChoice(g.Optional, g.Call)
+}
+
+func (g *GQLInlineCall) End() token.Pos {
+	return posAdd(g.Rbrace, 1)
+}
+
+func (g *GQLTVFCall) Pos() token.Pos {
+	return posChoice(g.Optional, g.Call)
+}
+
+func (g *GQLTVFCall) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(g.Yield)), nodeEnd(wrapNode(g.TVF)))
+}
+
+func (g *GQLCallYield) Pos() token.Pos {
+	return g.Yield
+}
+
+func (g *GQLCallYield) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.Items))
+}
+
+func (g *GQLCallYieldItem) Pos() token.Pos {
+	return nodePos(wrapNode(g.Name))
+}
+
+func (g *GQLCallYieldItem) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.Alias), wrapNode(g.Name)))
+}
+
 func (g *GQLMatch) Pos() token.Pos {
 	return posChoice(g.Optional, g.Match)
 }

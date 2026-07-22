@@ -1,0 +1,240 @@
+--- call_optional_inline.sql
+GRAPH FinGraph
+MATCH (p:Person)
+OPTIONAL CALL (p) {
+  MATCH (p)-[:Owns]->(a:Account)
+  RETURN a.Id AS account_Id
+  LIMIT 1
+}
+RETURN p.name, account_Id
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  21,
+                          Rparen:  30,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "p",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 23,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLInlineCall{
+            Optional: 32,
+            Call:     41,
+            Lparen:   46,
+            Rparen:   48,
+            Lbrace:   50,
+            Rbrace:   123,
+            Vars:     []*ast.Ident{
+              &ast.Ident{
+                NamePos: 47,
+                NameEnd: 48,
+                Name:    "p",
+              },
+            },
+            Query: &ast.GQLMultiLinearQueryStatement{
+              Statements: []ast.GQLLinearQueryStatement{
+                &ast.GQLSimpleLinearQueryStatement{
+                  Statements: []ast.GQLPrimitiveQueryStatement{
+                    &ast.GQLMatch{
+                      Optional: -1,
+                      Match:    54,
+                      Pattern:  &ast.GQLGraphPattern{
+                        Paths: []*ast.GQLTopLevelPathPattern{
+                          &ast.GQLTopLevelPathPattern{
+                            Path: &ast.GQLPathPattern{
+                              Terms: []*ast.GQLPathTerm{
+                                &ast.GQLPathTerm{
+                                  Primary: &ast.GQLNodePattern{
+                                    Lparen:  60,
+                                    Rparen:  62,
+                                    Pattern: &ast.GQLElementPatternFiller{
+                                      EmptyPos: -1,
+                                      Variable: &ast.Ident{
+                                        NamePos: 61,
+                                        NameEnd: 62,
+                                        Name:    "p",
+                                      },
+                                    },
+                                  },
+                                },
+                                &ast.GQLPathTerm{
+                                  Primary: &ast.GQLEdgePattern{
+                                    StartPos:  63,
+                                    EndPos:    73,
+                                    Direction: "RIGHT",
+                                    Filler:    &ast.GQLElementPatternFiller{
+                                      EmptyPos: -1,
+                                      Label:    &ast.GQLLabelFilter{
+                                        Is:    -1,
+                                        Colon: 65,
+                                        Expr:  &ast.GQLNameLabel{
+                                          Name: &ast.Ident{
+                                            NamePos: 66,
+                                            NameEnd: 70,
+                                            Name:    "Owns",
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                &ast.GQLPathTerm{
+                                  Primary: &ast.GQLNodePattern{
+                                    Lparen:  73,
+                                    Rparen:  83,
+                                    Pattern: &ast.GQLElementPatternFiller{
+                                      EmptyPos: -1,
+                                      Variable: &ast.Ident{
+                                        NamePos: 74,
+                                        NameEnd: 75,
+                                        Name:    "a",
+                                      },
+                                      Label: &ast.GQLLabelFilter{
+                                        Is:    -1,
+                                        Colon: 75,
+                                        Expr:  &ast.GQLNameLabel{
+                                          Name: &ast.Ident{
+                                            NamePos: 76,
+                                            NameEnd: 83,
+                                            Name:    "Account",
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                    &ast.GQLReturn{
+                      Return: 87,
+                      Items:  []*ast.GQLReturnItem{
+                        &ast.GQLReturnItem{
+                          Star: -1,
+                          Expr: &ast.Path{
+                            Idents: []*ast.Ident{
+                              &ast.Ident{
+                                NamePos: 94,
+                                NameEnd: 95,
+                                Name:    "a",
+                              },
+                              &ast.Ident{
+                                NamePos: 96,
+                                NameEnd: 98,
+                                Name:    "Id",
+                              },
+                            },
+                          },
+                          Alias: &ast.AsAlias{
+                            As:    99,
+                            Alias: &ast.Ident{
+                              NamePos: 102,
+                              NameEnd: 112,
+                              Name:    "account_Id",
+                            },
+                          },
+                        },
+                      },
+                      Limit: &ast.GQLLimit{
+                        LimitPos: 115,
+                        Limit:    &ast.IntLiteral{
+                          ValuePos: 121,
+                          ValueEnd: 122,
+                          Base:     10,
+                          Value:    "1",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 125,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 132,
+                      NameEnd: 133,
+                      Name:    "p",
+                    },
+                    &ast.Ident{
+                      NamePos: 134,
+                      NameEnd: 138,
+                      Name:    "name",
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 140,
+                  NameEnd: 150,
+                  Name:    "account_Id",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (p:Person) OPTIONAL CALL (p) { MATCH (p)-[:Owns]->(a:Account) RETURN a.Id AS account_Id LIMIT 1 } RETURN p.name, account_Id

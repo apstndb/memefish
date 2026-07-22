@@ -1,0 +1,127 @@
+--- !bad_call_tablesample.sql
+GRAPH FinGraph
+CALL FutureTVF() TABLESAMPLE BERNOULLI (10 PERCENT)
+RETURN value
+
+--- Error
+syntax error: testdata/input/gql/!bad_call_tablesample.sql:2:18: linear query must end with RETURN
+  2|  CALL FutureTVF() TABLESAMPLE BERNOULLI (10 PERCENT)
+   |                   ^~~~~~~~~~~
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.BadGQLLinearQueryStatement{
+        BadNode: &ast.BadNode{
+          NodePos: 15,
+          NodeEnd: 79,
+          Tokens:  []*token.Token{
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "CALL",
+              AsString: "CALL",
+              Pos:      15,
+              End:      19,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "FutureTVF",
+              AsString: "FutureTVF",
+              Pos:      20,
+              End:      29,
+            },
+            &token.Token{
+              Kind: "(",
+              Raw:  "(",
+              Pos:  29,
+              End:  30,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  30,
+              End:  31,
+            },
+            &token.Token{
+              Kind:  "TABLESAMPLE",
+              Space: " ",
+              Raw:   "TABLESAMPLE",
+              Pos:   32,
+              End:   43,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "BERNOULLI",
+              AsString: "BERNOULLI",
+              Pos:      44,
+              End:      53,
+            },
+            &token.Token{
+              Kind:  "(",
+              Space: " ",
+              Raw:   "(",
+              Pos:   54,
+              End:   55,
+            },
+            &token.Token{
+              Kind: "<int>",
+              Raw:  "10",
+              Base: 10,
+              Pos:  55,
+              End:  57,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "PERCENT",
+              AsString: "PERCENT",
+              Pos:      58,
+              End:      65,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  65,
+              End:  66,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      67,
+              End:      73,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "value",
+              AsString: "value",
+              Pos:      74,
+              End:      79,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph CALL FutureTVF() TABLESAMPLE BERNOULLI (10 PERCENT) RETURN value

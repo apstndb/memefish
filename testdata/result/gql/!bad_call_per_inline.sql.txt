@@ -1,0 +1,248 @@
+--- !bad_call_per_inline.sql
+GRAPH FinGraph
+CALL PER () (p) {
+  MATCH (p:Person)-[:Owns]->(a:Account)
+  RETURN a
+}
+RETURN a
+
+--- Error
+syntax error: testdata/input/gql/!bad_call_per_inline.sql:2:13: per () is not supported with inline CALL (...) { ... }
+  2|  CALL PER () (p) {
+   |              ^
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.BadGQLLinearQueryStatement{
+        BadNode: &ast.BadNode{
+          NodePos: 15,
+          NodeEnd: 94,
+          Tokens:  []*token.Token{
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "CALL",
+              AsString: "CALL",
+              Pos:      15,
+              End:      19,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "PER",
+              AsString: "PER",
+              Pos:      20,
+              End:      23,
+            },
+            &token.Token{
+              Kind:  "(",
+              Space: " ",
+              Raw:   "(",
+              Pos:   24,
+              End:   25,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  25,
+              End:  26,
+            },
+            &token.Token{
+              Kind:  "(",
+              Space: " ",
+              Raw:   "(",
+              Pos:   27,
+              End:   28,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "p",
+              AsString: "p",
+              Pos:      28,
+              End:      29,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  29,
+              End:  30,
+            },
+            &token.Token{
+              Kind:  "{",
+              Space: " ",
+              Raw:   "{",
+              Pos:   31,
+              End:   32,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n  ",
+              Raw:      "MATCH",
+              AsString: "MATCH",
+              Pos:      35,
+              End:      40,
+            },
+            &token.Token{
+              Kind:  "(",
+              Space: " ",
+              Raw:   "(",
+              Pos:   41,
+              End:   42,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "p",
+              AsString: "p",
+              Pos:      42,
+              End:      43,
+            },
+            &token.Token{
+              Kind: ":",
+              Raw:  ":",
+              Pos:  43,
+              End:  44,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "Person",
+              AsString: "Person",
+              Pos:      44,
+              End:      50,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  50,
+              End:  51,
+            },
+            &token.Token{
+              Kind: "-",
+              Raw:  "-",
+              Pos:  51,
+              End:  52,
+            },
+            &token.Token{
+              Kind: "[",
+              Raw:  "[",
+              Pos:  52,
+              End:  53,
+            },
+            &token.Token{
+              Kind: ":",
+              Raw:  ":",
+              Pos:  53,
+              End:  54,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "Owns",
+              AsString: "Owns",
+              Pos:      54,
+              End:      58,
+            },
+            &token.Token{
+              Kind: "]",
+              Raw:  "]",
+              Pos:  58,
+              End:  59,
+            },
+            &token.Token{
+              Kind: "->",
+              Raw:  "->",
+              Pos:  59,
+              End:  61,
+            },
+            &token.Token{
+              Kind: "(",
+              Raw:  "(",
+              Pos:  61,
+              End:  62,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      62,
+              End:      63,
+            },
+            &token.Token{
+              Kind: ":",
+              Raw:  ":",
+              Pos:  63,
+              End:  64,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "Account",
+              AsString: "Account",
+              Pos:      64,
+              End:      71,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  71,
+              End:  72,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n  ",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      75,
+              End:      81,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      82,
+              End:      83,
+            },
+            &token.Token{
+              Kind:  "}",
+              Space: "\n",
+              Raw:   "}",
+              Pos:   84,
+              End:   85,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      86,
+              End:      92,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      93,
+              End:      94,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph CALL PER () (p) { MATCH (p:Person)-[:Owns]->(a:Account) RETURN a } RETURN a
