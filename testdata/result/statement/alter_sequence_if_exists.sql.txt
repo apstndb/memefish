@@ -1,0 +1,38 @@
+--- alter_sequence_if_exists.sql
+ALTER SEQUENCE IF EXISTS seq SET OPTIONS (start_with_counter = 1)
+
+--- AST
+&ast.AlterSequence{
+  IfExists: true,
+  Name:     &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 25,
+        NameEnd: 28,
+        Name:    "seq",
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 33,
+    Rparen:  64,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 42,
+          NameEnd: 60,
+          Name:    "start_with_counter",
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 63,
+          ValueEnd: 64,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER SEQUENCE IF EXISTS seq SET OPTIONS (start_with_counter = 1)

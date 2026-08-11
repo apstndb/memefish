@@ -867,7 +867,7 @@ func (s *BitReversedPositive) SQL() string {
 }
 
 func (c *AlterSequence) SQL() string {
-	return "ALTER SEQUENCE " + c.Name.SQL() +
+	return "ALTER SEQUENCE " + strOpt(c.IfExists, "IF EXISTS ") + c.Name.SQL() +
 		sqlOpt(" SET ", c.Options, "") +
 		sqlOpt(" ", c.RestartCounterWith, "") +
 		sqlOpt(" ", c.SkipRange, "") +

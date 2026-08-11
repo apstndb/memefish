@@ -2935,7 +2935,7 @@ type AlterIndex struct {
 
 // AlterSequence is ALTER SEQUENCE statement node.
 //
-//	ALTER SEQUENCE {{.Name | sql}}
+//	ALTER SEQUENCE {{if .IfExists}}IF EXISTS {{end}}{{.Name | sql}}
 //	{{if .Options}}SET {{.Options | sqlOpt}}{{end}}
 //	{{.RestartCounterWith | sqlOpt}}
 //	{{.SkipRange | sqlOpt}}
@@ -2946,8 +2946,9 @@ type AlterSequence struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name    *Path
-	Options *Options // optional
+	IfExists bool
+	Name     *Path
+	Options  *Options // optional
 
 	RestartCounterWith *RestartCounterWith // optional
 	SkipRange          *SkipRange          // optional

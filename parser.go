@@ -4899,6 +4899,7 @@ func (p *Parser) parseSequenceParam() ast.SequenceParam {
 
 func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 	p.expectKeywordLike("SEQUENCE")
+	ifExists := p.parseIfExists()
 	name := p.parsePath()
 
 	var options *ast.Options
@@ -4924,6 +4925,7 @@ func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 
 	return &ast.AlterSequence{
 		Alter:              pos,
+		IfExists:           ifExists,
 		Name:               name,
 		Options:            options,
 		RestartCounterWith: restartCounterWith,
