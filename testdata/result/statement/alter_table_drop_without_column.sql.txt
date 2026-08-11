@@ -1,0 +1,26 @@
+--- alter_table_drop_without_column.sql
+ALTER TABLE Singers DROP SingerInfo
+
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 19,
+        Name:    "Singers",
+      },
+    },
+  },
+  TableAlteration: &ast.DropColumn{
+    Drop: 20,
+    Name: &ast.Ident{
+      NamePos: 25,
+      NameEnd: 35,
+      Name:    "SingerInfo",
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE Singers DROP COLUMN SingerInfo
