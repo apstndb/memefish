@@ -5908,8 +5908,8 @@ func (p *Parser) tryParseCreateModelInputOutput() *ast.CreateModelInputOutput {
 
 func (p *Parser) parseCreateModel(pos token.Pos, orReplace bool) *ast.CreateModel {
 	p.expectKeywordLike("MODEL")
-	name := p.parseIdent()
 	ifNotExists := p.parseIfNotExists()
+	name := p.parseIdent()
 	inputOutput := p.tryParseCreateModelInputOutput()
 	remote := p.expectKeywordLike("REMOTE").Pos
 	options := p.tryParseOptions()
