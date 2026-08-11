@@ -1,0 +1,15 @@
+--- create_locality_group_if_not_exists.sql
+CREATE LOCALITY GROUP IF NOT EXISTS separate_storage
+
+--- AST
+&ast.CreateLocalityGroup{
+  IfNotExists: true,
+  Name:        &ast.Ident{
+    NamePos: 36,
+    NameEnd: 52,
+    Name:    "separate_storage",
+  },
+}
+
+--- SQL
+CREATE LOCALITY GROUP IF NOT EXISTS separate_storage

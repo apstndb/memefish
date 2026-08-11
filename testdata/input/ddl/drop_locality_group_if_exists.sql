@@ -1,0 +1,1 @@
+DROP LOCALITY GROUP IF EXISTS separate_storage

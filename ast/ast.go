@@ -2407,40 +2407,43 @@ type AlterDatabase struct {
 
 // CreateLocalityGroup is CREATE LOCALITY GROUP statement node.
 //
-//	CREATE LOCALITY GROUP {{.Name | sql}} {{.Options | sqlOpt}}
+//	CREATE LOCALITY GROUP {{if .IfNotExists}}IF NOT EXISTS {{end}}{{.Name | sql}} {{.Options | sqlOpt}}
 type CreateLocalityGroup struct {
 	// pos = Create
 	// end = (Options ?? Name).end
 
 	Create token.Pos // position of "CREATE" keyword
 
-	Name    *Ident
-	Options *Options // optional
+	IfNotExists bool
+	Name        *Ident
+	Options     *Options // optional
 }
 
 // AlterLocalityGroup is ALTER LOCALITY GROUP statement node.
 //
-//	ALTER LOCALITY GROUP {{.Name | sql}} SET {{.Options | sql}}
+//	ALTER LOCALITY GROUP {{if .IfExists}}IF EXISTS {{end}}{{.Name | sql}} SET {{.Options | sql}}
 type AlterLocalityGroup struct {
 	// pos = Alter
 	// end = Options.end
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name    *Ident
-	Options *Options
+	IfExists bool
+	Name     *Ident
+	Options  *Options
 }
 
 // DropLocalityGroup is DROP LOCALITY GROUP statement node.
 //
-//	DROP LOCALITY GROUP {{.Name | sql}}
+//	DROP LOCALITY GROUP {{if .IfExists}}IF EXISTS {{end}}{{.Name | sql}}
 type DropLocalityGroup struct {
 	// pos = Drop
 	// end = Name.end
 
 	Drop token.Pos // position of "DROP" keyword
 
-	Name *Ident
+	IfExists bool
+	Name     *Ident
 }
 
 // CreatePlacement is CREATE PLACEMENT statement node.

@@ -1,0 +1,33 @@
+--- alter_locality_group_if_exists.sql
+ALTER LOCALITY GROUP IF EXISTS `default` SET OPTIONS (storage = 'ssd')
+
+--- AST
+&ast.AlterLocalityGroup{
+  IfExists: true,
+  Name:     &ast.Ident{
+    NamePos: 31,
+    NameEnd: 40,
+    Name:    "default",
+  },
+  Options: &ast.Options{
+    Options: 45,
+    Rparen:  69,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 54,
+          NameEnd: 61,
+          Name:    "storage",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 64,
+          ValueEnd: 69,
+          Value:    "ssd",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER LOCALITY GROUP IF EXISTS `default` SET OPTIONS (storage = "ssd")

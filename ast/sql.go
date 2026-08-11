@@ -782,15 +782,15 @@ func (c *CreateDatabase) SQL() string {
 }
 
 func (c *CreateLocalityGroup) SQL() string {
-	return "CREATE LOCALITY GROUP " + c.Name.SQL() + sqlOpt(" ", c.Options, "")
+	return "CREATE LOCALITY GROUP " + strOpt(c.IfNotExists, "IF NOT EXISTS ") + c.Name.SQL() + sqlOpt(" ", c.Options, "")
 }
 
 func (a *AlterLocalityGroup) SQL() string {
-	return "ALTER LOCALITY GROUP " + a.Name.SQL() + " SET " + a.Options.SQL()
+	return "ALTER LOCALITY GROUP " + strOpt(a.IfExists, "IF EXISTS ") + a.Name.SQL() + " SET " + a.Options.SQL()
 }
 
 func (d *DropLocalityGroup) SQL() string {
-	return "DROP LOCALITY GROUP " + d.Name.SQL()
+	return "DROP LOCALITY GROUP " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
 }
 
 func (s *CreateSchema) SQL() string {

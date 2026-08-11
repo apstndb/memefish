@@ -1,0 +1,1 @@
+ALTER LOCALITY GROUP IF EXISTS `default` SET OPTIONS (storage = 'ssd')

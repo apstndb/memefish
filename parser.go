@@ -3326,40 +3326,46 @@ func (p *Parser) parseAlterDatabase(pos token.Pos) *ast.AlterDatabase {
 func (p *Parser) parseCreateLocalityGroup(pos token.Pos) *ast.CreateLocalityGroup {
 	p.expectKeywordLike("LOCALITY")
 	p.expect("GROUP")
+	ifNotExists := p.parseIfNotExists()
 	name := p.parseIdent()
 
 	options := p.tryParseOptions()
 
 	return &ast.CreateLocalityGroup{
-		Create:  pos,
-		Name:    name,
-		Options: options,
+		Create:      pos,
+		IfNotExists: ifNotExists,
+		Name:        name,
+		Options:     options,
 	}
 }
 
 func (p *Parser) parseAlterLocalityGroup(pos token.Pos) *ast.AlterLocalityGroup {
 	p.expectKeywordLike("LOCALITY")
 	p.expect("GROUP")
+	ifExists := p.parseIfExists()
 	name := p.parseIdent()
 
 	p.expect("SET")
 	options := p.parseOptions()
 
 	return &ast.AlterLocalityGroup{
-		Alter:   pos,
-		Name:    name,
-		Options: options,
+		Alter:    pos,
+		IfExists: ifExists,
+		Name:     name,
+		Options:  options,
 	}
 }
 
 func (p *Parser) parseDropLocalityGroup(pos token.Pos) *ast.DropLocalityGroup {
 	p.expectKeywordLike("LOCALITY")
 	p.expect("GROUP")
+	ifExists := p.parseIfExists()
 	name := p.parseIdent()
 
 	return &ast.DropLocalityGroup{
-		Drop: pos,
-		Name: name,
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
 	}
 }
 
