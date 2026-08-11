@@ -6376,16 +6376,19 @@ func (p *Parser) tryParseThenReturn() *ast.ThenReturn {
 
 func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint, nested bool) *ast.Insert {
 	var insertOrType ast.InsertOrType
-	if p.Token.Kind == "OR" {
+	hasOr := p.Token.Kind == "OR"
+	if hasOr {
 		p.nextToken()
-		switch {
-		case p.Token.IsKeywordLike("UPDATE"):
-			insertOrType = ast.InsertOrTypeUpdate
-		case p.Token.Kind == "IGNORE":
-			insertOrType = ast.InsertOrTypeIgnore
-		default:
-			p.panicfAtToken(&p.Token, "expected pseudo keyword: UPDATE, IGNORE, but: %s", p.Token.AsString)
-		}
+	}
+	switch {
+	case p.Token.IsKeywordLike("UPDATE"):
+		insertOrType = ast.InsertOrTypeUpdate
+	case p.Token.Kind == "IGNORE":
+		insertOrType = ast.InsertOrTypeIgnore
+	case hasOr:
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: UPDATE, IGNORE, but: %s", p.Token.AsString)
+	}
+	if insertOrType != "" {
 		p.nextToken()
 	}
 
