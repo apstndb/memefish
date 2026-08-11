@@ -4210,10 +4210,12 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 func (p *Parser) parseCreateChangeStream(pos token.Pos) *ast.CreateChangeStream {
 	p.expectKeywordLike("CHANGE")
 	p.expectKeywordLike("STREAM")
+	ifNotExists := p.parseIfNotExists()
 	name := p.parseIdent()
 	cs := &ast.CreateChangeStream{
-		Create: pos,
-		Name:   name,
+		Create:      pos,
+		IfNotExists: ifNotExists,
+		Name:        name,
 	}
 	if p.Token.Kind == "FOR" {
 		cs.For = p.parseChangeStreamFor()
@@ -4268,10 +4270,12 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 func (p *Parser) parseDropChangeStream(pos token.Pos) *ast.DropChangeStream {
 	p.expectKeywordLike("CHANGE")
 	p.expectKeywordLike("STREAM")
+	ifExists := p.parseIfExists()
 	name := p.parseIdent()
 	return &ast.DropChangeStream{
-		Drop: pos,
-		Name: name,
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
 	}
 }
 

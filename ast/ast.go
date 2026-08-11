@@ -3382,16 +3382,17 @@ type VectorIndexSetOptions struct {
 
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
 //
-//	CREATE CHANGE STREAM {{.Name | sql}} {{.For | sqlOpt}} {{.Options | sqlOpt}}
+//	CREATE CHANGE STREAM {{if .IfNotExists}}IF NOT EXISTS {{end}}{{.Name | sql}} {{.For | sqlOpt}} {{.Options | sqlOpt}}
 type CreateChangeStream struct {
 	// pos = Create
 	// end = (Options ?? For ?? Name).end
 
 	Create token.Pos // position of "CREATE" keyword
 
-	Name    *Ident
-	For     ChangeStreamFor // optional
-	Options *Options        // optional
+	IfNotExists bool
+	Name        *Ident
+	For         ChangeStreamFor // optional
+	Options     *Options        // optional
 }
 
 // ChangeStreamForAll is FOR ALL node in CREATE CHANGE STREAM
@@ -3578,14 +3579,15 @@ type DropRole struct {
 
 // DropChangeStream is DROP CHANGE STREAM  statement node.
 //
-//	DROP CHANGE STREAM {{.Name | sql}}
+//	DROP CHANGE STREAM {{if .IfExists}}IF EXISTS {{end}}{{.Name | sql}}
 type DropChangeStream struct {
 	// pos = Drop
 	// end = Name.end
 
 	Drop token.Pos // position of "DROP" keyword
 
-	Name *Ident
+	IfExists bool
+	Name     *Ident
 }
 
 // Grant is GRANT statement node.

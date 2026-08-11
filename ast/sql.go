@@ -1071,7 +1071,7 @@ func (a *AlterVectorIndex) SQL() string {
 func (a *VectorIndexSetOptions) SQL() string { return "SET " + a.Options.SQL() }
 
 func (c *CreateChangeStream) SQL() string {
-	return "CREATE CHANGE STREAM " + c.Name.SQL() +
+	return "CREATE CHANGE STREAM " + strOpt(c.IfNotExists, "IF NOT EXISTS ") + c.Name.SQL() +
 		sqlOpt(" ", c.For, "") +
 		sqlOpt(" ", c.Options, "")
 }
@@ -1105,7 +1105,7 @@ func (c *ChangeStreamForTable) SQL() string {
 }
 
 func (d *DropChangeStream) SQL() string {
-	return "DROP CHANGE STREAM " + d.Name.SQL()
+	return "DROP CHANGE STREAM " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
 }
 
 func (s *Storing) SQL() string {
