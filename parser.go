@@ -4132,8 +4132,19 @@ func (p *Parser) parseIndexAlteration() ast.IndexAlteration {
 		return p.parseAddStoredColumn()
 	case p.Token.IsKeywordLike("DROP"):
 		return p.parseDropStoredColumn()
+	case p.Token.Kind == "SET":
+		return p.parseIndexSetOptions()
 	default:
-		panic(p.errorfAtToken(&p.Token, "expected pseudo keyword: ADD, DROP, but: %s", p.Token.AsString))
+		panic(p.errorfAtToken(&p.Token, "expected token: SET, pseudo keyword: ADD, DROP, but: %s", p.Token.AsString))
+	}
+}
+
+func (p *Parser) parseIndexSetOptions() *ast.IndexSetOptions {
+	set := p.expect("SET").Pos
+	options := p.parseOptions()
+	return &ast.IndexSetOptions{
+		Set:     set,
+		Options: options,
 	}
 }
 

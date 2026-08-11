@@ -1124,6 +1124,10 @@ func (a *AddStoredColumn) SQL() string {
 	return "ADD STORED COLUMN " + a.Name.SQL()
 }
 
+func (a *IndexSetOptions) SQL() string {
+	return "SET " + a.Options.SQL()
+}
+
 func (a *DropStoredColumn) SQL() string {
 	return "DROP STORED COLUMN " + a.Name.SQL()
 }

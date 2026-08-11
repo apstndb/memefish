@@ -1702,6 +1702,14 @@ func (d *DropStoredColumn) End() token.Pos {
 	return nodeEnd(wrapNode(d.Name))
 }
 
+func (i *IndexSetOptions) Pos() token.Pos {
+	return i.Set
+}
+
+func (i *IndexSetOptions) End() token.Pos {
+	return nodeEnd(wrapNode(i.Options))
+}
+
 func (d *DropIndex) Pos() token.Pos {
 	return d.Drop
 }

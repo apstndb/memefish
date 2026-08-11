@@ -554,6 +554,7 @@ type IndexAlteration interface {
 
 func (AddStoredColumn) isIndexAlteration()  {}
 func (DropStoredColumn) isIndexAlteration() {}
+func (IndexSetOptions) isIndexAlteration()  {}
 
 // VectorIndexAlteration represents ALTER VECTOR INDEX action.
 // Note: Currently, it is same as IndexAlteration,
@@ -3512,6 +3513,18 @@ type DropStoredColumn struct {
 	Drop token.Pos // position of "DROP" keyword
 
 	Name *Ident
+}
+
+// IndexSetOptions is SET OPTIONS clause in ALTER INDEX.
+//
+//	SET {{.Options | sql}}
+type IndexSetOptions struct {
+	// pos = Set
+	// end = Options.end
+
+	Set token.Pos // position of "SET" keyword
+
+	Options *Options
 }
 
 // DropIndex is DROP INDEX statement node.

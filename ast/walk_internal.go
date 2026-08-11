@@ -776,6 +776,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *DropStoredColumn:
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
+	case *IndexSetOptions:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+
 	case *DropIndex:
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
