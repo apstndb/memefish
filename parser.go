@@ -4196,6 +4196,11 @@ func (p *Parser) parseCreateVectorIndex(pos token.Pos) *ast.CreateVectorIndex {
 	tableName := p.parseIdent()
 	p.expect("(")
 	columnName := p.parseIdent()
+	var extraKeyColumns []*ast.Ident
+	if p.Token.Kind == "," {
+		p.nextToken()
+		extraKeyColumns = parseCommaSeparatedList(p, p.parseIdent)
+	}
 	p.expect(")")
 
 	storing := p.tryParseStoring()
@@ -4203,14 +4208,15 @@ func (p *Parser) parseCreateVectorIndex(pos token.Pos) *ast.CreateVectorIndex {
 	options := p.parseOptions()
 
 	return &ast.CreateVectorIndex{
-		Create:      pos,
-		IfNotExists: ifNotExists,
-		Name:        name,
-		TableName:   tableName,
-		ColumnName:  columnName,
-		Storing:     storing,
-		Where:       where,
-		Options:     options,
+		Create:          pos,
+		IfNotExists:     ifNotExists,
+		Name:            name,
+		TableName:       tableName,
+		ColumnName:      columnName,
+		ExtraKeyColumns: extraKeyColumns,
+		Storing:         storing,
+		Where:           where,
+		Options:         options,
 	}
 }
 
