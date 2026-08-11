@@ -2053,6 +2053,7 @@ func (p *Parser) parseLit() ast.Expr {
 		case id.IsKeywordLike("REPLACE_FIELDS"):
 			return p.parseReplaceFieldsExpr()
 		case id.IsKeywordLike("VALUE"):
+			// VALUE is non-reserved, so look ahead for the `VALUE hint? {` form before choosing the GQL subquery parser.
 			if p.lookaheadValueGQLSubQuery() {
 				return p.parseValueGQLSubQuery()
 			}
@@ -2545,13 +2546,17 @@ func (p *Parser) lookaheadGQLPathVariable() bool {
 	}
 
 	lexer := p.cloneLexer()
-	lexer.nextToken(true)
+	lexer.nextToken(false)
 	return lexer.Token.Kind == "="
 }
 
 func (p *Parser) lookaheadValueGQLSubQuery() bool {
 	lexer := p.cloneLexer()
-	defer func() { p.Lexer = lexer }()
+	errorCount := len(p.errors)
+	defer func() {
+		p.Lexer = lexer
+		p.errors = p.errors[:errorCount]
+	}()
 	if !p.Token.IsKeywordLike("VALUE") {
 		return false
 	}

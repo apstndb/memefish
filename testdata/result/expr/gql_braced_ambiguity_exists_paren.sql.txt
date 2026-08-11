@@ -1,17 +1,40 @@
 --- gql_braced_ambiguity_exists_paren.sql
 -- Regression: EXISTS(...) SQL subquery must still parse after EXISTS { gql } support.
-EXISTS(SELECT 1)
+EXISTS @{JOIN_METHOD=HASH_JOIN} (SELECT 1)
+
 --- AST
 &ast.ExistsSubQuery{
   Exists: 87,
-  Rparen: 102,
-  Query:  &ast.Select{
-    Select:  94,
+  Rparen: 128,
+  Hint:   &ast.Hint{
+    Atmark:  94,
+    Rbrace:  117,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 96,
+              NameEnd: 107,
+              Name:    "JOIN_METHOD",
+            },
+          },
+        },
+        Value: &ast.Ident{
+          NamePos: 108,
+          NameEnd: 117,
+          Name:    "HASH_JOIN",
+        },
+      },
+    },
+  },
+  Query: &ast.Select{
+    Select:  120,
     Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.IntLiteral{
-          ValuePos: 101,
-          ValueEnd: 102,
+          ValuePos: 127,
+          ValueEnd: 128,
           Base:     10,
           Value:    "1",
         },
@@ -21,4 +44,4 @@ EXISTS(SELECT 1)
 }
 
 --- SQL
-EXISTS(SELECT 1)
+EXISTS @{JOIN_METHOD=HASH_JOIN} (SELECT 1)

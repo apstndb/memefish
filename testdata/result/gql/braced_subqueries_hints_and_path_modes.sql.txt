@@ -1,7 +1,7 @@
 --- braced_subqueries_hints_and_path_modes.sql
 GRAPH FinGraph
 RETURN
-  EXISTS @{a=1} { ANY SHORTEST (a)-[]->(b) } AS any_shortest,
+  EXISTS @{JOIN_METHOD=HASH_JOIN} { ANY SHORTEST (a)-[]->(b) } AS any_shortest,
   EXISTS { TRAIL PATH (a)-[]->(b) } AS trail_path,
   VALUE @{a=1} { RETURN 1 AS value } AS hinted_value
 
@@ -29,26 +29,25 @@ RETURN
                 Star: -1,
                 Expr: &ast.ExistsGQLSubQuery{
                   Exists: 24,
-                  Rbrace: 65,
+                  Rbrace: 83,
                   Hint:   &ast.Hint{
                     Atmark:  31,
-                    Rbrace:  36,
+                    Rbrace:  54,
                     Records: []*ast.HintRecord{
                       &ast.HintRecord{
                         Key: &ast.Path{
                           Idents: []*ast.Ident{
                             &ast.Ident{
                               NamePos: 33,
-                              NameEnd: 34,
-                              Name:    "a",
+                              NameEnd: 44,
+                              Name:    "JOIN_METHOD",
                             },
                           },
                         },
-                        Value: &ast.IntLiteral{
-                          ValuePos: 35,
-                          ValueEnd: 36,
-                          Base:     10,
-                          Value:    "1",
+                        Value: &ast.Ident{
+                          NamePos: 45,
+                          NameEnd: 54,
+                          Name:    "HASH_JOIN",
                         },
                       },
                     },
@@ -57,21 +56,21 @@ RETURN
                     Paths: []*ast.GQLTopLevelPathPattern{
                       &ast.GQLTopLevelPathPattern{
                         SearchPrefix: &ast.GQLPathSearchPrefix{
-                          StartPos: 40,
-                          EndPos:   52,
+                          StartPos: 58,
+                          EndPos:   70,
                           Prefix:   "ANY SHORTEST",
                         },
                         Path: &ast.GQLPathPattern{
                           Terms: []*ast.GQLPathTerm{
                             &ast.GQLPathTerm{
                               Primary: &ast.GQLNodePattern{
-                                Lparen:  53,
-                                Rparen:  55,
+                                Lparen:  71,
+                                Rparen:  73,
                                 Pattern: &ast.GQLElementPatternFiller{
                                   EmptyPos: -1,
                                   Variable: &ast.Ident{
-                                    NamePos: 54,
-                                    NameEnd: 55,
+                                    NamePos: 72,
+                                    NameEnd: 73,
                                     Name:    "a",
                                   },
                                 },
@@ -79,23 +78,23 @@ RETURN
                             },
                             &ast.GQLPathTerm{
                               Primary: &ast.GQLEdgePattern{
-                                StartPos:  56,
-                                EndPos:    61,
+                                StartPos:  74,
+                                EndPos:    79,
                                 Direction: "RIGHT",
                                 Filler:    &ast.GQLElementPatternFiller{
-                                  EmptyPos: 58,
+                                  EmptyPos: 76,
                                 },
                               },
                             },
                             &ast.GQLPathTerm{
                               Primary: &ast.GQLNodePattern{
-                                Lparen:  61,
-                                Rparen:  63,
+                                Lparen:  79,
+                                Rparen:  81,
                                 Pattern: &ast.GQLElementPatternFiller{
                                   EmptyPos: -1,
                                   Variable: &ast.Ident{
-                                    NamePos: 62,
-                                    NameEnd: 63,
+                                    NamePos: 80,
+                                    NameEnd: 81,
                                     Name:    "b",
                                   },
                                 },
@@ -108,10 +107,10 @@ RETURN
                   },
                 },
                 Alias: &ast.AsAlias{
-                  As:    67,
+                  As:    85,
                   Alias: &ast.Ident{
-                    NamePos: 70,
-                    NameEnd: 82,
+                    NamePos: 88,
+                    NameEnd: 100,
                     Name:    "any_shortest",
                   },
                 },
@@ -119,14 +118,14 @@ RETURN
               &ast.GQLReturnItem{
                 Star: -1,
                 Expr: &ast.ExistsGQLSubQuery{
-                  Exists: 86,
-                  Rbrace: 118,
+                  Exists: 104,
+                  Rbrace: 136,
                   Query:  &ast.GQLGraphPattern{
                     Paths: []*ast.GQLTopLevelPathPattern{
                       &ast.GQLTopLevelPathPattern{
                         Mode: &ast.GQLPathModeClause{
-                          StartPos: 95,
-                          EndPos:   105,
+                          StartPos: 113,
+                          EndPos:   123,
                           Mode:     "TRAIL",
                           Suffix:   "PATH",
                         },
@@ -134,13 +133,13 @@ RETURN
                           Terms: []*ast.GQLPathTerm{
                             &ast.GQLPathTerm{
                               Primary: &ast.GQLNodePattern{
-                                Lparen:  106,
-                                Rparen:  108,
+                                Lparen:  124,
+                                Rparen:  126,
                                 Pattern: &ast.GQLElementPatternFiller{
                                   EmptyPos: -1,
                                   Variable: &ast.Ident{
-                                    NamePos: 107,
-                                    NameEnd: 108,
+                                    NamePos: 125,
+                                    NameEnd: 126,
                                     Name:    "a",
                                   },
                                 },
@@ -148,23 +147,23 @@ RETURN
                             },
                             &ast.GQLPathTerm{
                               Primary: &ast.GQLEdgePattern{
-                                StartPos:  109,
-                                EndPos:    114,
+                                StartPos:  127,
+                                EndPos:    132,
                                 Direction: "RIGHT",
                                 Filler:    &ast.GQLElementPatternFiller{
-                                  EmptyPos: 111,
+                                  EmptyPos: 129,
                                 },
                               },
                             },
                             &ast.GQLPathTerm{
                               Primary: &ast.GQLNodePattern{
-                                Lparen:  114,
-                                Rparen:  116,
+                                Lparen:  132,
+                                Rparen:  134,
                                 Pattern: &ast.GQLElementPatternFiller{
                                   EmptyPos: -1,
                                   Variable: &ast.Ident{
-                                    NamePos: 115,
-                                    NameEnd: 116,
+                                    NamePos: 133,
+                                    NameEnd: 134,
                                     Name:    "b",
                                   },
                                 },
@@ -177,10 +176,10 @@ RETURN
                   },
                 },
                 Alias: &ast.AsAlias{
-                  As:    120,
+                  As:    138,
                   Alias: &ast.Ident{
-                    NamePos: 123,
-                    NameEnd: 133,
+                    NamePos: 141,
+                    NameEnd: 151,
                     Name:    "trail_path",
                   },
                 },
@@ -188,25 +187,25 @@ RETURN
               &ast.GQLReturnItem{
                 Star: -1,
                 Expr: &ast.ValueGQLSubQuery{
-                  Value:  137,
-                  Rbrace: 170,
+                  Value:  155,
+                  Rbrace: 188,
                   Hint:   &ast.Hint{
-                    Atmark:  143,
-                    Rbrace:  148,
+                    Atmark:  161,
+                    Rbrace:  166,
                     Records: []*ast.HintRecord{
                       &ast.HintRecord{
                         Key: &ast.Path{
                           Idents: []*ast.Ident{
                             &ast.Ident{
-                              NamePos: 145,
-                              NameEnd: 146,
+                              NamePos: 163,
+                              NameEnd: 164,
                               Name:    "a",
                             },
                           },
                         },
                         Value: &ast.IntLiteral{
-                          ValuePos: 147,
-                          ValueEnd: 148,
+                          ValuePos: 165,
+                          ValueEnd: 166,
                           Base:     10,
                           Value:    "1",
                         },
@@ -218,21 +217,21 @@ RETURN
                       &ast.GQLSimpleLinearQueryStatement{
                         Statements: []ast.GQLPrimitiveQueryStatement{
                           &ast.GQLReturn{
-                            Return: 152,
+                            Return: 170,
                             Items:  []*ast.GQLReturnItem{
                               &ast.GQLReturnItem{
                                 Star: -1,
                                 Expr: &ast.IntLiteral{
-                                  ValuePos: 159,
-                                  ValueEnd: 160,
+                                  ValuePos: 177,
+                                  ValueEnd: 178,
                                   Base:     10,
                                   Value:    "1",
                                 },
                                 Alias: &ast.AsAlias{
-                                  As:    161,
+                                  As:    179,
                                   Alias: &ast.Ident{
-                                    NamePos: 164,
-                                    NameEnd: 169,
+                                    NamePos: 182,
+                                    NameEnd: 187,
                                     Name:    "value",
                                   },
                                 },
@@ -245,10 +244,10 @@ RETURN
                   },
                 },
                 Alias: &ast.AsAlias{
-                  As:    172,
+                  As:    190,
                   Alias: &ast.Ident{
-                    NamePos: 175,
-                    NameEnd: 187,
+                    NamePos: 193,
+                    NameEnd: 205,
                     Name:    "hinted_value",
                   },
                 },
@@ -262,4 +261,4 @@ RETURN
 }
 
 --- SQL
-GRAPH FinGraph RETURN EXISTS @{a=1} { ANY SHORTEST (a)-[]->(b) } AS any_shortest, EXISTS { TRAIL PATH (a)-[]->(b) } AS trail_path, VALUE @{a=1} { RETURN 1 AS value } AS hinted_value
+GRAPH FinGraph RETURN EXISTS @{JOIN_METHOD=HASH_JOIN} { ANY SHORTEST (a)-[]->(b) } AS any_shortest, EXISTS { TRAIL PATH (a)-[]->(b) } AS trail_path, VALUE @{a=1} { RETURN 1 AS value } AS hinted_value
