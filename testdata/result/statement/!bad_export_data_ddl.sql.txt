@@ -1,0 +1,215 @@
+--- !bad_export_data_ddl.sql
+EXPORT DATA OPTIONS (uri = "gs://bucket/output.csv", format = "csv") AS
+CREATE TABLE T (Id INT64 NOT NULL) PRIMARY KEY (Id)
+
+--- Error
+syntax error: testdata/input/statement/!bad_export_data_ddl.sql:2:1: expected query after EXPORT DATA AS, but: CREATE
+  2|  CREATE TABLE T (Id INT64 NOT NULL) PRIMARY KEY (Id)
+   |  ^~~~~~
+
+
+--- AST
+&ast.BadStatement{
+  BadNode: &ast.BadNode{
+    NodeEnd: 123,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "EXPORT",
+        AsString: "EXPORT",
+        End:      6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "DATA",
+        AsString: "DATA",
+        Pos:      7,
+        End:      11,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "OPTIONS",
+        AsString: "OPTIONS",
+        Pos:      12,
+        End:      19,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   20,
+        End:   21,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "uri",
+        AsString: "uri",
+        Pos:      21,
+        End:      24,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   25,
+        End:   26,
+      },
+      &token.Token{
+        Kind:     "<string>",
+        Space:    " ",
+        Raw:      "\"gs://bucket/output.csv\"",
+        AsString: "gs://bucket/output.csv",
+        Pos:      27,
+        End:      51,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  51,
+        End:  52,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "format",
+        AsString: "format",
+        Pos:      53,
+        End:      59,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   60,
+        End:   61,
+      },
+      &token.Token{
+        Kind:     "<string>",
+        Space:    " ",
+        Raw:      "\"csv\"",
+        AsString: "csv",
+        Pos:      62,
+        End:      67,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  67,
+        End:  68,
+      },
+      &token.Token{
+        Kind:  "AS",
+        Space: " ",
+        Raw:   "AS",
+        Pos:   69,
+        End:   71,
+      },
+      &token.Token{
+        Kind:  "CREATE",
+        Space: "\n",
+        Raw:   "CREATE",
+        Pos:   72,
+        End:   78,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TABLE",
+        AsString: "TABLE",
+        Pos:      79,
+        End:      84,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "T",
+        AsString: "T",
+        Pos:      85,
+        End:      86,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   87,
+        End:   88,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "Id",
+        AsString: "Id",
+        Pos:      88,
+        End:      90,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INT64",
+        AsString: "INT64",
+        Pos:      91,
+        End:      96,
+      },
+      &token.Token{
+        Kind:  "NOT",
+        Space: " ",
+        Raw:   "NOT",
+        Pos:   97,
+        End:   100,
+      },
+      &token.Token{
+        Kind:  "NULL",
+        Space: " ",
+        Raw:   "NULL",
+        Pos:   101,
+        End:   105,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  105,
+        End:  106,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "PRIMARY",
+        AsString: "PRIMARY",
+        Pos:      107,
+        End:      114,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "KEY",
+        AsString: "KEY",
+        Pos:      115,
+        End:      118,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   119,
+        End:   120,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "Id",
+        AsString: "Id",
+        Pos:      120,
+        End:      122,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  122,
+        End:  123,
+      },
+    },
+  },
+}
+
+--- SQL
+EXPORT DATA OPTIONS (uri = "gs://bucket/output.csv", format = "csv") AS CREATE TABLE T (Id INT64 NOT NULL) PRIMARY KEY (Id)

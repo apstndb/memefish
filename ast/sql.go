@@ -800,6 +800,10 @@ func (g *OptionsDef) SQL() string {
 	return g.Name.SQL() + " = " + valueSql
 }
 
+func (e *ExportData) SQL() string {
+	return "EXPORT DATA " + e.Options.SQL() + " AS " + e.Query.SQL()
+}
+
 func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()
 }

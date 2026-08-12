@@ -489,6 +489,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
+	case *ExportData:
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+
 	case *CreateSchema:
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 

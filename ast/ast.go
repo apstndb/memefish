@@ -71,6 +71,16 @@ type Statement interface {
 	isStatement()
 }
 
+// QueryStatementNode represents a query statement that can be wrapped by
+// statements such as EXPORT DATA.
+type QueryStatementNode interface {
+	Node
+	isQueryStatementNode()
+}
+
+func (QueryStatement) isQueryStatementNode() {}
+func (GQLGraphQuery) isQueryStatementNode()  {}
+
 // The order of this list follows the official documentation:
 //
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
@@ -81,6 +91,7 @@ func (BadDDL) isStatement()              {}
 func (BadDML) isStatement()              {}
 func (QueryStatement) isStatement()      {}
 func (GQLGraphQuery) isStatement()       {}
+func (ExportData) isStatement()          {}
 func (CreateSchema) isStatement()        {}
 func (DropSchema) isStatement()          {}
 func (CreateDatabase) isStatement()      {}
@@ -2451,6 +2462,19 @@ type OptionsDef struct {
 
 	Name  *Ident
 	Value Expr
+}
+
+// ExportData is EXPORT DATA statement node.
+//
+//	EXPORT DATA {{.Options | sql}} AS {{.Query | sql}}
+type ExportData struct {
+	// pos = Export
+	// end = Query.end
+
+	Export token.Pos // position of "EXPORT" keyword
+
+	Options *Options
+	Query   QueryStatementNode
 }
 
 // CreateSchema is CREATE SCHEMA statement node.
