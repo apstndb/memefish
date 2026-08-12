@@ -1,10 +1,10 @@
---- set_operators.sql
+--- set_operator_left_outer_intersect_distinct.sql
 GRAPH FinGraph
-RETURN 1 AS x
-UNION ALL
-RETURN 2 AS x
-UNION ALL
-RETURN 3 AS x
+RETURN 1 AS id
+LEFT OUTER INTERSECT DISTINCT
+RETURN 2 AS id
+LEFT OUTER INTERSECT DISTINCT
+RETURN 3 AS id
 
 --- AST
 &ast.GQLGraphQuery{
@@ -39,8 +39,8 @@ RETURN 3 AS x
                     As:    24,
                     Alias: &ast.Ident{
                       NamePos: 27,
-                      NameEnd: 28,
-                      Name:    "x",
+                      NameEnd: 29,
+                      Name:    "id",
                     },
                   },
                 },
@@ -50,29 +50,30 @@ RETURN 3 AS x
         },
         Operations: []*ast.GQLSetOperation{
           &ast.GQLSetOperation{
-            ColumnPropagationModePos: -1,
-            OpPos:                    29,
-            Op:                       "UNION",
-            AllOrDistinct:            "ALL",
+            ColumnPropagationModePos: 30,
+            ColumnPropagationMode:    "LEFT",
+            OpPos:                    41,
+            Op:                       "INTERSECT",
+            AllOrDistinct:            "DISTINCT",
             Right:                    &ast.GQLSimpleLinearQueryStatement{
               Statements: []ast.GQLPrimitiveQueryStatement{
                 &ast.GQLReturn{
-                  Return: 39,
+                  Return: 60,
                   Items:  []*ast.GQLReturnItem{
                     &ast.GQLReturnItem{
                       Star: -1,
                       Expr: &ast.IntLiteral{
-                        ValuePos: 46,
-                        ValueEnd: 47,
+                        ValuePos: 67,
+                        ValueEnd: 68,
                         Base:     10,
                         Value:    "2",
                       },
                       Alias: &ast.AsAlias{
-                        As:    48,
+                        As:    69,
                         Alias: &ast.Ident{
-                          NamePos: 51,
-                          NameEnd: 52,
-                          Name:    "x",
+                          NamePos: 72,
+                          NameEnd: 74,
+                          Name:    "id",
                         },
                       },
                     },
@@ -82,29 +83,30 @@ RETURN 3 AS x
             },
           },
           &ast.GQLSetOperation{
-            ColumnPropagationModePos: -1,
-            OpPos:                    53,
-            Op:                       "UNION",
-            AllOrDistinct:            "ALL",
+            ColumnPropagationModePos: 75,
+            ColumnPropagationMode:    "LEFT",
+            OpPos:                    86,
+            Op:                       "INTERSECT",
+            AllOrDistinct:            "DISTINCT",
             Right:                    &ast.GQLSimpleLinearQueryStatement{
               Statements: []ast.GQLPrimitiveQueryStatement{
                 &ast.GQLReturn{
-                  Return: 63,
+                  Return: 105,
                   Items:  []*ast.GQLReturnItem{
                     &ast.GQLReturnItem{
                       Star: -1,
                       Expr: &ast.IntLiteral{
-                        ValuePos: 70,
-                        ValueEnd: 71,
+                        ValuePos: 112,
+                        ValueEnd: 113,
                         Base:     10,
                         Value:    "3",
                       },
                       Alias: &ast.AsAlias{
-                        As:    72,
+                        As:    114,
                         Alias: &ast.Ident{
-                          NamePos: 75,
-                          NameEnd: 76,
-                          Name:    "x",
+                          NamePos: 117,
+                          NameEnd: 119,
+                          Name:    "id",
                         },
                       },
                     },
@@ -120,4 +122,4 @@ RETURN 3 AS x
 }
 
 --- SQL
-GRAPH FinGraph RETURN 1 AS x UNION ALL RETURN 2 AS x UNION ALL RETURN 3 AS x
+GRAPH FinGraph RETURN 1 AS id LEFT INTERSECT DISTINCT RETURN 2 AS id LEFT INTERSECT DISTINCT RETURN 3 AS id

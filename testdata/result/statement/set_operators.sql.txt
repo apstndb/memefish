@@ -22,28 +22,58 @@ RETURN 3 AS x
   Query: &ast.GQLMultiLinearQueryStatement{
     Statements: []ast.GQLLinearQueryStatement{
       &ast.GQLCompoundLinearQueryStatement{
-        Op:            "UNION",
-        AllOrDistinct: "ALL",
-        Statements:    []ast.GQLLinearQueryStatement{
-          &ast.GQLSimpleLinearQueryStatement{
-            Statements: []ast.GQLPrimitiveQueryStatement{
-              &ast.GQLReturn{
-                Return: 15,
-                Items:  []*ast.GQLReturnItem{
-                  &ast.GQLReturnItem{
-                    Star: -1,
-                    Expr: &ast.IntLiteral{
-                      ValuePos: 22,
-                      ValueEnd: 23,
-                      Base:     10,
-                      Value:    "1",
+        Left: &ast.GQLSimpleLinearQueryStatement{
+          Statements: []ast.GQLPrimitiveQueryStatement{
+            &ast.GQLReturn{
+              Return: 15,
+              Items:  []*ast.GQLReturnItem{
+                &ast.GQLReturnItem{
+                  Star: -1,
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 22,
+                    ValueEnd: 23,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                  Alias: &ast.AsAlias{
+                    As:    24,
+                    Alias: &ast.Ident{
+                      NamePos: 27,
+                      NameEnd: 28,
+                      Name:    "x",
                     },
-                    Alias: &ast.AsAlias{
-                      As:    24,
-                      Alias: &ast.Ident{
-                        NamePos: 27,
-                        NameEnd: 28,
-                        Name:    "x",
+                  },
+                },
+              },
+            },
+          },
+        },
+        Operations: []*ast.GQLSetOperation{
+          &ast.GQLSetOperation{
+            ColumnPropagationModePos: -1,
+            OpPos:                    29,
+            Op:                       "UNION",
+            AllOrDistinct:            "ALL",
+            Right:                    &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLReturn{
+                  Return: 39,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 46,
+                        ValueEnd: 47,
+                        Base:     10,
+                        Value:    "2",
+                      },
+                      Alias: &ast.AsAlias{
+                        As:    48,
+                        Alias: &ast.Ident{
+                          NamePos: 51,
+                          NameEnd: 52,
+                          Name:    "x",
+                        },
                       },
                     },
                   },
@@ -51,51 +81,31 @@ RETURN 3 AS x
               },
             },
           },
-          &ast.GQLSimpleLinearQueryStatement{
-            Statements: []ast.GQLPrimitiveQueryStatement{
-              &ast.GQLReturn{
-                Return: 39,
-                Items:  []*ast.GQLReturnItem{
-                  &ast.GQLReturnItem{
-                    Star: -1,
-                    Expr: &ast.IntLiteral{
-                      ValuePos: 46,
-                      ValueEnd: 47,
-                      Base:     10,
-                      Value:    "2",
-                    },
-                    Alias: &ast.AsAlias{
-                      As:    48,
-                      Alias: &ast.Ident{
-                        NamePos: 51,
-                        NameEnd: 52,
-                        Name:    "x",
+          &ast.GQLSetOperation{
+            ColumnPropagationModePos: -1,
+            OpPos:                    53,
+            Op:                       "UNION",
+            AllOrDistinct:            "ALL",
+            Right:                    &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLReturn{
+                  Return: 63,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 70,
+                        ValueEnd: 71,
+                        Base:     10,
+                        Value:    "3",
                       },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          &ast.GQLSimpleLinearQueryStatement{
-            Statements: []ast.GQLPrimitiveQueryStatement{
-              &ast.GQLReturn{
-                Return: 63,
-                Items:  []*ast.GQLReturnItem{
-                  &ast.GQLReturnItem{
-                    Star: -1,
-                    Expr: &ast.IntLiteral{
-                      ValuePos: 70,
-                      ValueEnd: 71,
-                      Base:     10,
-                      Value:    "3",
-                    },
-                    Alias: &ast.AsAlias{
-                      As:    72,
-                      Alias: &ast.Ident{
-                        NamePos: 75,
-                        NameEnd: 76,
-                        Name:    "x",
+                      Alias: &ast.AsAlias{
+                        As:    72,
+                        Alias: &ast.Ident{
+                          NamePos: 75,
+                          NameEnd: 76,
+                          Name:    "x",
+                        },
                       },
                     },
                   },

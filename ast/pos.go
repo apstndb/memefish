@@ -2463,11 +2463,19 @@ func (g *GQLSimpleLinearQueryStatement) End() token.Pos {
 }
 
 func (g *GQLCompoundLinearQueryStatement) Pos() token.Pos {
-	return nodePos(nodeSliceIndex(g.Statements, 0))
+	return nodePos(wrapNode(g.Left))
 }
 
 func (g *GQLCompoundLinearQueryStatement) End() token.Pos {
-	return nodeEnd(nodeSliceLast(g.Statements))
+	return nodeEnd(nodeSliceLast(g.Operations))
+}
+
+func (g *GQLSetOperation) Pos() token.Pos {
+	return posChoice(g.ColumnPropagationModePos, g.OpPos)
+}
+
+func (g *GQLSetOperation) End() token.Pos {
+	return nodeEnd(wrapNode(g.Right))
 }
 
 func (b *BadGQLPrimitiveQueryStatement) Pos() token.Pos {

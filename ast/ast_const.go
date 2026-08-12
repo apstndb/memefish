@@ -41,6 +41,15 @@ const (
 	SetOpExcept    SetOp = "EXCEPT"
 )
 
+// SetOperationColumnPropagationMode controls which columns a set operation propagates.
+type SetOperationColumnPropagationMode string
+
+const (
+	SetOperationColumnPropagationInner SetOperationColumnPropagationMode = "INNER"
+	SetOperationColumnPropagationLeft  SetOperationColumnPropagationMode = "LEFT"
+	SetOperationColumnPropagationFull  SetOperationColumnPropagationMode = "FULL"
+)
+
 type Direction string
 
 const (

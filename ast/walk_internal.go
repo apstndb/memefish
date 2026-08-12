@@ -1143,7 +1143,11 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Statements), visitor: v.Field("Statements")})
 
 	case *GQLCompoundLinearQueryStatement:
-		stack = append(stack, &stackItem{nodes: wrapNodes(n.Statements), visitor: v.Field("Statements")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Operations), visitor: v.Field("Operations")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
+
+	case *GQLSetOperation:
+		stack = append(stack, &stackItem{node: wrapNode(n.Right), visitor: v.Field("Right")})
 
 	case *BadGQLPrimitiveQueryStatement:
 		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})

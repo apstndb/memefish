@@ -4896,16 +4896,30 @@ type GQLSimpleLinearQueryStatement struct {
 	Statements []GQLPrimitiveQueryStatement // len(Statements) > 0
 }
 
-// GQLCompoundLinearQueryStatement represents a list of linear query statements composited with the set operators.
+// GQLCompoundLinearQueryStatement represents a compound linear query.
 //
-//	{{.Statements | sqlJoin (printf " %s %s " .Op .AllOrDistinct)}}
+//	{{.Left | sql}} {{.Operations | sqlJoin " "}}
 type GQLCompoundLinearQueryStatement struct {
-	// pos = Statements[0].pos
-	// end = Statements[$].end
+	// pos = Left.pos
+	// end = Operations[$].end
 
-	Op            SetOp
-	AllOrDistinct AllOrDistinct
-	Statements    []GQLLinearQueryStatement // len(Statements) >= 2
+	Left       GQLLinearQueryStatement
+	Operations []*GQLSetOperation // len(Operations) > 0
+}
+
+// GQLSetOperation represents a set-operation separator and its right operand.
+//
+//	{{if .ColumnPropagationMode}}{{.ColumnPropagationMode}} {{end}}{{.Op}}{{if .AllOrDistinct}} {{.AllOrDistinct}}{{end}} {{.Right | sql}}
+type GQLSetOperation struct {
+	// pos = ColumnPropagationModePos || OpPos
+	// end = Right.end
+
+	ColumnPropagationModePos token.Pos
+	ColumnPropagationMode    SetOperationColumnPropagationMode // optional
+	OpPos                    token.Pos
+	Op                       SetOp
+	AllOrDistinct            AllOrDistinct
+	Right                    GQLLinearQueryStatement
 }
 
 // BadGQLPrimitiveQueryStatement is a bad GQLPrimitiveQueryStatement node.

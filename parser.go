@@ -7129,25 +7129,82 @@ func (p *Parser) parseGQLLinearQueryStatement() (stmt ast.GQLLinearQueryStatemen
 	}()
 
 	stmt = p.parseGQLSimpleLinearQueryStatement()
-	for p.lookaheadSetOp() {
+	for p.lookaheadGQLSetOp() {
+		columnPropagationMode, columnPropagationModePos := p.tryParseGQLSetOperationColumnPropagationMode()
 		op, opTok := p.parseSetOp()
 		allOrDistinct := p.tryParseAllOrDistinct()
 		right := p.parseGQLSimpleLinearQueryStatement()
+		operation := &ast.GQLSetOperation{
+			ColumnPropagationModePos: columnPropagationModePos,
+			ColumnPropagationMode:    columnPropagationMode,
+			OpPos:                    opTok.Pos,
+			Op:                       op,
+			AllOrDistinct:            allOrDistinct,
+			Right:                    right,
+		}
 
 		if c, ok := stmt.(*ast.GQLCompoundLinearQueryStatement); ok {
-			if c.Op != op || c.AllOrDistinct != allOrDistinct {
+			first := c.Operations[0]
+			if first.Op != op || first.AllOrDistinct != allOrDistinct {
 				p.panicfAtToken(&opTok, "all set operator at the same level must be the same")
 			}
-			c.Statements = append(c.Statements, right)
+			c.Operations = append(c.Operations, operation)
 		} else {
 			stmt = &ast.GQLCompoundLinearQueryStatement{
-				Op:            op,
-				AllOrDistinct: allOrDistinct,
-				Statements:    []ast.GQLLinearQueryStatement{stmt, right},
+				Left:       stmt,
+				Operations: []*ast.GQLSetOperation{operation},
 			}
 		}
 	}
 	return stmt
+}
+
+func (p *Parser) lookaheadGQLSetOp() bool {
+	if p.lookaheadSetOp() {
+		return true
+	}
+
+	lexer := p.cloneLexer()
+	defer func() { p.Lexer = lexer }()
+
+	switch p.Token.Kind {
+	case "FULL", "LEFT":
+		p.nextToken()
+		if p.Token.Kind == "OUTER" {
+			p.nextToken()
+		}
+	case "INNER", "OUTER":
+		p.nextToken()
+	default:
+		return false
+	}
+	return p.lookaheadSetOp()
+}
+
+func (p *Parser) tryParseGQLSetOperationColumnPropagationMode() (ast.SetOperationColumnPropagationMode, token.Pos) {
+	pos := p.Token.Pos
+	switch p.Token.Kind {
+	case "FULL":
+		p.nextToken()
+		if p.Token.Kind == "OUTER" {
+			p.nextToken()
+		}
+		return ast.SetOperationColumnPropagationFull, pos
+	case "OUTER":
+		p.nextToken()
+		return ast.SetOperationColumnPropagationFull, pos
+	case "INNER":
+		p.nextToken()
+		return ast.SetOperationColumnPropagationInner, pos
+	case "LEFT":
+		p.nextToken()
+		if p.Token.Kind == "OUTER" {
+			p.nextToken()
+		}
+		return ast.SetOperationColumnPropagationLeft, pos
+	default:
+		return "", token.InvalidPos
+	}
 }
 
 func (p *Parser) parseGQLSimpleLinearQueryStatement() *ast.GQLSimpleLinearQueryStatement {

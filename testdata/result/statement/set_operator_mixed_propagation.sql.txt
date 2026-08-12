@@ -1,8 +1,10 @@
---- except.sql
+--- set_operator_mixed_propagation.sql
 GRAPH FinGraph
-RETURN 1 AS x
-EXCEPT ALL
-RETURN 2 AS x
+RETURN 1 AS id
+FULL UNION ALL
+RETURN 2 AS id
+UNION ALL
+RETURN 3 AS id
 
 --- AST
 &ast.GQLGraphQuery{
@@ -37,8 +39,8 @@ RETURN 2 AS x
                     As:    24,
                     Alias: &ast.Ident{
                       NamePos: 27,
-                      NameEnd: 28,
-                      Name:    "x",
+                      NameEnd: 29,
+                      Name:    "id",
                     },
                   },
                 },
@@ -48,29 +50,62 @@ RETURN 2 AS x
         },
         Operations: []*ast.GQLSetOperation{
           &ast.GQLSetOperation{
-            ColumnPropagationModePos: -1,
-            OpPos:                    29,
-            Op:                       "EXCEPT",
+            ColumnPropagationModePos: 30,
+            ColumnPropagationMode:    "FULL",
+            OpPos:                    35,
+            Op:                       "UNION",
             AllOrDistinct:            "ALL",
             Right:                    &ast.GQLSimpleLinearQueryStatement{
               Statements: []ast.GQLPrimitiveQueryStatement{
                 &ast.GQLReturn{
-                  Return: 40,
+                  Return: 45,
                   Items:  []*ast.GQLReturnItem{
                     &ast.GQLReturnItem{
                       Star: -1,
                       Expr: &ast.IntLiteral{
-                        ValuePos: 47,
-                        ValueEnd: 48,
+                        ValuePos: 52,
+                        ValueEnd: 53,
                         Base:     10,
                         Value:    "2",
                       },
                       Alias: &ast.AsAlias{
-                        As:    49,
+                        As:    54,
                         Alias: &ast.Ident{
-                          NamePos: 52,
-                          NameEnd: 53,
-                          Name:    "x",
+                          NamePos: 57,
+                          NameEnd: 59,
+                          Name:    "id",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLSetOperation{
+            ColumnPropagationModePos: -1,
+            OpPos:                    60,
+            Op:                       "UNION",
+            AllOrDistinct:            "ALL",
+            Right:                    &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLReturn{
+                  Return: 70,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 77,
+                        ValueEnd: 78,
+                        Base:     10,
+                        Value:    "3",
+                      },
+                      Alias: &ast.AsAlias{
+                        As:    79,
+                        Alias: &ast.Ident{
+                          NamePos: 82,
+                          NameEnd: 84,
+                          Name:    "id",
                         },
                       },
                     },
@@ -86,4 +121,4 @@ RETURN 2 AS x
 }
 
 --- SQL
-GRAPH FinGraph RETURN 1 AS x EXCEPT ALL RETURN 2 AS x
+GRAPH FinGraph RETURN 1 AS id FULL UNION ALL RETURN 2 AS id UNION ALL RETURN 3 AS id

@@ -1607,8 +1607,12 @@ func (s *GQLSimpleLinearQueryStatement) SQL() string {
 }
 
 func (s *GQLCompoundLinearQueryStatement) SQL() string {
-	sep := " " + string(s.Op) + strOpt(s.AllOrDistinct != "", " "+string(s.AllOrDistinct)) + " "
-	return sqlJoin(s.Statements, sep)
+	return s.Left.SQL() + strOpt(len(s.Operations) > 0, " "+sqlJoin(s.Operations, " "))
+}
+
+func (o *GQLSetOperation) SQL() string {
+	return strOpt(o.ColumnPropagationMode != "", string(o.ColumnPropagationMode)+" ") +
+		string(o.Op) + strOpt(o.AllOrDistinct != "", " "+string(o.AllOrDistinct)) + " " + o.Right.SQL()
 }
 
 func (n *GQLMatch) SQL() string {
