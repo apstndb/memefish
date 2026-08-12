@@ -942,6 +942,10 @@ func (c *ColumnDefaultExpr) SQL() string {
 	return "DEFAULT (" + c.Expr.SQL() + ")" + sqlOpt(" ", c.OnUpdate, "")
 }
 
+func (c *ColumnOnUpdateDefaultExpr) SQL() string {
+	return c.OnUpdate.SQL() + " " + c.DefaultExpr.SQL()
+}
+
 func (o *OnUpdate) SQL() string {
 	return "ON UPDATE (" + o.Expr.SQL() + ")"
 }
@@ -1032,6 +1036,7 @@ func (a *AlterColumnType) SQL() string {
 	return a.Type.SQL() +
 		strOpt(a.NotNull, " NOT NULL") +
 		sqlOpt(" ", a.DefaultExpr, "") +
+		sqlOpt(" ", a.OnUpdateDefaultExpr, "") +
 		sqlOpt(" ", a.GeneratedExpr, "")
 }
 

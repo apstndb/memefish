@@ -473,10 +473,11 @@ type ColumnDefaultSemantics interface {
 	isColumnDefaultSemantics()
 }
 
-func (ColumnDefaultExpr) isColumnDefaultSemantics()   {}
-func (GeneratedColumnExpr) isColumnDefaultSemantics() {}
-func (IdentityColumn) isColumnDefaultSemantics()      {}
-func (AutoIncrement) isColumnDefaultSemantics()       {}
+func (ColumnDefaultExpr) isColumnDefaultSemantics()         {}
+func (ColumnOnUpdateDefaultExpr) isColumnDefaultSemantics() {}
+func (GeneratedColumnExpr) isColumnDefaultSemantics()       {}
+func (IdentityColumn) isColumnDefaultSemantics()            {}
+func (AutoIncrement) isColumnDefaultSemantics()             {}
 
 type SequenceParam interface {
 	Node
@@ -2809,6 +2810,17 @@ type ColumnDefaultExpr struct {
 	OnUpdate *OnUpdate // optional
 }
 
+// ColumnOnUpdateDefaultExpr is ON UPDATE followed by DEFAULT for a column.
+//
+//	{{.OnUpdate | sql}} {{.DefaultExpr | sql}}
+type ColumnOnUpdateDefaultExpr struct {
+	// pos = OnUpdate.pos
+	// end = DefaultExpr.end
+
+	OnUpdate    *OnUpdate
+	DefaultExpr *ColumnDefaultExpr
+}
+
 // OnUpdate is ON UPDATE clause for a column.
 //
 //	ON UPDATE ({{.Expr | sql}})
@@ -3242,16 +3254,17 @@ type AlterColumn struct {
 
 // AlterColumnType is action to change the data type of the column in ALTER COLUMN.
 //
-//	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}} {{.GeneratedExpr | sqlOpt}}
+//	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}} {{.OnUpdateDefaultExpr | sqlOpt}} {{.GeneratedExpr | sqlOpt}}
 type AlterColumnType struct {
 	// pos = Type.pos
-	// end = GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
+	// end = GeneratedExpr.end || OnUpdateDefaultExpr.end || DefaultExpr.end || Null + 4 || Type.end
 
-	Type          SchemaType
-	Null          token.Pos // position of "NULL" keyword, optional
-	NotNull       bool
-	DefaultExpr   *ColumnDefaultExpr   // optional, mutually exclusive with GeneratedExpr
-	GeneratedExpr *GeneratedColumnExpr // optional, mutually exclusive with DefaultExpr
+	Type                SchemaType
+	Null                token.Pos // position of "NULL" keyword, optional
+	NotNull             bool
+	DefaultExpr         *ColumnDefaultExpr         // optional, mutually exclusive with OnUpdateDefaultExpr and GeneratedExpr
+	OnUpdateDefaultExpr *ColumnOnUpdateDefaultExpr // optional, mutually exclusive with DefaultExpr and GeneratedExpr
+	GeneratedExpr       *GeneratedColumnExpr       // optional, mutually exclusive with DefaultExpr and OnUpdateDefaultExpr
 }
 
 // AlterColumnSetOptions is SET OPTIONS node in ALTER COLUMN.

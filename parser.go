@@ -3816,6 +3816,13 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	switch {
 	case p.Token.Kind == "DEFAULT":
 		defaultSemantics = p.parseColumnDefaultExpr()
+	case p.Token.Kind == "ON":
+		onUpdate := p.parseOnUpdate()
+		defaultExpr := p.parseColumnDefaultExpr()
+		defaultSemantics = &ast.ColumnOnUpdateDefaultExpr{
+			OnUpdate:    onUpdate,
+			DefaultExpr: defaultExpr,
+		}
 	case p.Token.Kind == "AS":
 		defaultSemantics = p.parseGeneratedColumnExpr()
 	case p.Token.IsKeywordLike("GENERATED"):
@@ -4900,19 +4907,28 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 		t, notNull, null := p.parseTypeNotNull()
 
 		var defaultExpr *ast.ColumnDefaultExpr
+		var onUpdateDefaultExpr *ast.ColumnOnUpdateDefaultExpr
 		var generatedExpr *ast.GeneratedColumnExpr
 		switch p.Token.Kind {
 		case "DEFAULT":
 			defaultExpr = p.parseColumnDefaultExpr()
+		case "ON":
+			onUpdate := p.parseOnUpdate()
+			reverseDefaultExpr := p.parseColumnDefaultExpr()
+			onUpdateDefaultExpr = &ast.ColumnOnUpdateDefaultExpr{
+				OnUpdate:    onUpdate,
+				DefaultExpr: reverseDefaultExpr,
+			}
 		case "AS":
 			generatedExpr = p.parseGeneratedColumnExpr()
 		}
 		return &ast.AlterColumnType{
-			Type:          t,
-			Null:          null,
-			NotNull:       notNull,
-			DefaultExpr:   defaultExpr,
-			GeneratedExpr: generatedExpr,
+			Type:                t,
+			Null:                null,
+			NotNull:             notNull,
+			DefaultExpr:         defaultExpr,
+			OnUpdateDefaultExpr: onUpdateDefaultExpr,
+			GeneratedExpr:       generatedExpr,
 		}
 	}
 }

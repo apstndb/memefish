@@ -585,6 +585,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.OnUpdate), visitor: v.Field("OnUpdate")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
+	case *ColumnOnUpdateDefaultExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.DefaultExpr), visitor: v.Field("DefaultExpr")})
+		stack = append(stack, &stackItem{node: wrapNode(n.OnUpdate), visitor: v.Field("OnUpdate")})
+
 	case *OnUpdate:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
@@ -698,6 +702,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *AlterColumnType:
 		stack = append(stack, &stackItem{node: wrapNode(n.GeneratedExpr), visitor: v.Field("GeneratedExpr")})
+		stack = append(stack, &stackItem{node: wrapNode(n.OnUpdateDefaultExpr), visitor: v.Field("OnUpdateDefaultExpr")})
 		stack = append(stack, &stackItem{node: wrapNode(n.DefaultExpr), visitor: v.Field("DefaultExpr")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
 
