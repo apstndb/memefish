@@ -1,0 +1,136 @@
+--- !bad_pipe_except_missing_modifier.sql
+FROM UNNEST([1, 2]) AS number
+|> EXCEPT (SELECT 1)
+
+--- Error
+syntax error: testdata/input/query/!bad_pipe_except_missing_modifier.sql:2:11: expected token: ALL, DISTINCT, but: (
+  2|  |> EXCEPT (SELECT 1)
+   |            ^
+
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.BadQueryExpr{
+    BadNode: &ast.BadNode{
+      NodeEnd: 50,
+      Tokens:  []*token.Token{
+        &token.Token{
+          Kind: "FROM",
+          Raw:  "FROM",
+          End:  4,
+        },
+        &token.Token{
+          Kind:  "UNNEST",
+          Space: " ",
+          Raw:   "UNNEST",
+          Pos:   5,
+          End:   11,
+        },
+        &token.Token{
+          Kind: "(",
+          Raw:  "(",
+          Pos:  11,
+          End:  12,
+        },
+        &token.Token{
+          Kind: "[",
+          Raw:  "[",
+          Pos:  12,
+          End:  13,
+        },
+        &token.Token{
+          Kind: "<int>",
+          Raw:  "1",
+          Base: 10,
+          Pos:  13,
+          End:  14,
+        },
+        &token.Token{
+          Kind: ",",
+          Raw:  ",",
+          Pos:  14,
+          End:  15,
+        },
+        &token.Token{
+          Kind:  "<int>",
+          Space: " ",
+          Raw:   "2",
+          Base:  10,
+          Pos:   16,
+          End:   17,
+        },
+        &token.Token{
+          Kind: "]",
+          Raw:  "]",
+          Pos:  17,
+          End:  18,
+        },
+        &token.Token{
+          Kind: ")",
+          Raw:  ")",
+          Pos:  18,
+          End:  19,
+        },
+        &token.Token{
+          Kind:  "AS",
+          Space: " ",
+          Raw:   "AS",
+          Pos:   20,
+          End:   22,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Space:    " ",
+          Raw:      "number",
+          AsString: "number",
+          Pos:      23,
+          End:      29,
+        },
+        &token.Token{
+          Kind:  "|>",
+          Space: "\n",
+          Raw:   "|>",
+          Pos:   30,
+          End:   32,
+        },
+        &token.Token{
+          Kind:  "EXCEPT",
+          Space: " ",
+          Raw:   "EXCEPT",
+          Pos:   33,
+          End:   39,
+        },
+        &token.Token{
+          Kind:  "(",
+          Space: " ",
+          Raw:   "(",
+          Pos:   40,
+          End:   41,
+        },
+        &token.Token{
+          Kind: "SELECT",
+          Raw:  "SELECT",
+          Pos:  41,
+          End:  47,
+        },
+        &token.Token{
+          Kind:  "<int>",
+          Space: " ",
+          Raw:   "1",
+          Base:  10,
+          Pos:   48,
+          End:   49,
+        },
+        &token.Token{
+          Kind: ")",
+          Raw:  ")",
+          Pos:  49,
+          End:  50,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM UNNEST([1, 2]) AS number |> EXCEPT (SELECT 1)

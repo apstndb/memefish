@@ -431,8 +431,45 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	case "AS":
 		p.nextToken()
 		return &ast.PipeAs{Pipe: pos, Alias: p.parseIdent()}
+	case "UNION":
+		return p.parsePipeSetOperation(pos, ast.SetOpUnion)
+	case "INTERSECT":
+		return p.parsePipeSetOperation(pos, ast.SetOpIntersect)
+	case "EXCEPT":
+		return p.parsePipeSetOperation(pos, ast.SetOpExcept)
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
+	}
+}
+
+func (p *Parser) parsePipeSetOperation(pos token.Pos, op ast.SetOp) *ast.PipeSetOperation {
+	p.nextToken()
+	allOrDistinct := p.parseAllOrDistinct()
+	queries := []*ast.SubQuery{p.parsePipeSetOperationQuery()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		// Pipe set operations permit a trailing comma after the final RHS.
+		if p.Token.Kind != "(" {
+			break
+		}
+		queries = append(queries, p.parsePipeSetOperationQuery())
+	}
+	return &ast.PipeSetOperation{
+		Pipe:          pos,
+		Op:            op,
+		AllOrDistinct: allOrDistinct,
+		Queries:       queries,
+	}
+}
+
+func (p *Parser) parsePipeSetOperationQuery() *ast.SubQuery {
+	lparen := p.expect("(").Pos
+	query := p.parseQueryExpr()
+	rparen := p.expect(")").Pos
+	return &ast.SubQuery{
+		Lparen: lparen,
+		Rparen: rparen,
+		Query:  query,
 	}
 }
 

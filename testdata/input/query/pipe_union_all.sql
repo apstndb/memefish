@@ -1,0 +1,2 @@
+FROM UNNEST([1, 2]) AS number
+|> UNION ALL (SELECT 3),

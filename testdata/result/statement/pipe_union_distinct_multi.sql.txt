@@ -1,0 +1,101 @@
+--- pipe_union_distinct_multi.sql
+FROM UNNEST([1, 2]) AS number
+|> UNION DISTINCT (SELECT 2), (SELECT 3 |> WHERE TRUE)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.Unnest{
+          Unnest: 5,
+          Rparen: 18,
+          Expr:   &ast.ArrayLiteral{
+            Array:  -1,
+            Lbrack: 12,
+            Rbrack: 17,
+            Values: []ast.Expr{
+              &ast.IntLiteral{
+                ValuePos: 13,
+                ValueEnd: 14,
+                Base:     10,
+                Value:    "1",
+              },
+              &ast.IntLiteral{
+                ValuePos: 16,
+                ValueEnd: 17,
+                Base:     10,
+                Value:    "2",
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    20,
+            Alias: &ast.Ident{
+              NamePos: 23,
+              NameEnd: 29,
+              Name:    "number",
+            },
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeSetOperation{
+        Pipe:          30,
+        Op:            "UNION",
+        AllOrDistinct: "DISTINCT",
+        Queries:       []*ast.SubQuery{
+          &ast.SubQuery{
+            Lparen: 48,
+            Rparen: 57,
+            Query:  &ast.Select{
+              Select:  49,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 56,
+                    ValueEnd: 57,
+                    Base:     10,
+                    Value:    "2",
+                  },
+                },
+              },
+            },
+          },
+          &ast.SubQuery{
+            Lparen: 60,
+            Rparen: 83,
+            Query:  &ast.Query{
+              Query: &ast.Select{
+                Select:  61,
+                Results: []ast.SelectItem{
+                  &ast.ExprSelectItem{
+                    Expr: &ast.IntLiteral{
+                      ValuePos: 68,
+                      ValueEnd: 69,
+                      Base:     10,
+                      Value:    "3",
+                    },
+                  },
+                },
+              },
+              PipeOperators: []ast.PipeOperator{
+                &ast.PipeWhere{
+                  Pipe: 70,
+                  Expr: &ast.BoolLiteral{
+                    ValuePos: 79,
+                    Value:    true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM UNNEST([1, 2]) AS number |> UNION DISTINCT (SELECT 2), (SELECT 3 |> WHERE TRUE)

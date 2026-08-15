@@ -152,9 +152,10 @@ type PipeOperator interface {
 	isPipeOperator()
 }
 
-func (PipeSelect) isPipeOperator() {}
-func (PipeWhere) isPipeOperator()  {}
-func (PipeAs) isPipeOperator()     {}
+func (PipeSelect) isPipeOperator()       {}
+func (PipeWhere) isPipeOperator()        {}
+func (PipeAs) isPipeOperator()           {}
+func (PipeSetOperation) isPipeOperator() {}
 
 // SelectItem represents expression in SELECT clause result columns list.
 type SelectItem interface {
@@ -1178,6 +1179,20 @@ type PipeAs struct {
 
 	Pipe  token.Pos // position of "|>"
 	Alias *Ident
+}
+
+// PipeSetOperation is UNION, INTERSECT, or EXCEPT pipe operator node.
+//
+//	|> {{.Op}} {{.AllOrDistinct}} {{.Queries | sqlJoin ", "}}
+type PipeSetOperation struct {
+	// pos = Pipe
+	// end = Queries[$].end
+
+	Pipe token.Pos // position of "|>"
+
+	Op            SetOp
+	AllOrDistinct AllOrDistinct
+	Queries       []*SubQuery // len(Queries) > 0
 }
 
 // ================================================================================

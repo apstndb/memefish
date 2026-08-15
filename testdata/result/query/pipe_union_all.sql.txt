@@ -1,0 +1,73 @@
+--- pipe_union_all.sql
+FROM UNNEST([1, 2]) AS number
+|> UNION ALL (SELECT 3),
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.Unnest{
+          Unnest: 5,
+          Rparen: 18,
+          Expr:   &ast.ArrayLiteral{
+            Array:  -1,
+            Lbrack: 12,
+            Rbrack: 17,
+            Values: []ast.Expr{
+              &ast.IntLiteral{
+                ValuePos: 13,
+                ValueEnd: 14,
+                Base:     10,
+                Value:    "1",
+              },
+              &ast.IntLiteral{
+                ValuePos: 16,
+                ValueEnd: 17,
+                Base:     10,
+                Value:    "2",
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    20,
+            Alias: &ast.Ident{
+              NamePos: 23,
+              NameEnd: 29,
+              Name:    "number",
+            },
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeSetOperation{
+        Pipe:          30,
+        Op:            "UNION",
+        AllOrDistinct: "ALL",
+        Queries:       []*ast.SubQuery{
+          &ast.SubQuery{
+            Lparen: 43,
+            Rparen: 52,
+            Query:  &ast.Select{
+              Select:  44,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 51,
+                    ValueEnd: 52,
+                    Base:     10,
+                    Value:    "3",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM UNNEST([1, 2]) AS number |> UNION ALL (SELECT 3)
