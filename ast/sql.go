@@ -330,6 +330,8 @@ func (p *PipeWhere) SQL() string {
 	return "|> WHERE " + p.Expr.SQL()
 }
 
+func (p *PipeAs) SQL() string { return "|> AS " + p.Alias.SQL() }
+
 // ================================================================================
 //
 // JOIN
