@@ -1,0 +1,36 @@
+--- pipe_join_conditionless.sql
+FROM LeftTable
+|> JOIN RightTable
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 14,
+            Name:    "LeftTable",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeJoin{
+        Pipe:  15,
+        Op:    "INNER JOIN",
+        Right: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 23,
+            NameEnd: 33,
+            Name:    "RightTable",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM LeftTable |> INNER JOIN RightTable

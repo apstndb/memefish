@@ -431,8 +431,65 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	case "AS":
 		p.nextToken()
 		return &ast.PipeAs{Pipe: pos, Alias: p.parseIdent()}
+	case "JOIN", "INNER", "CROSS", "FULL", "LEFT", "RIGHT", "HASH", "LOOKUP":
+		return p.parsePipeJoin(pos)
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
+	}
+}
+
+func (p *Parser) parsePipeJoin(pipe token.Pos) *ast.PipeJoin {
+	op := ast.InnerJoin
+	switch p.Token.Kind {
+	case "INNER":
+		p.nextToken()
+	case "CROSS":
+		p.nextToken()
+		op = ast.CrossJoin
+	case "FULL":
+		p.nextToken()
+		if p.Token.Kind == "OUTER" {
+			p.nextToken()
+		}
+		op = ast.FullOuterJoin
+	case "LEFT":
+		p.nextToken()
+		if p.Token.Kind == "OUTER" {
+			p.nextToken()
+		}
+		op = ast.LeftOuterJoin
+	case "RIGHT":
+		p.nextToken()
+		if p.Token.Kind == "OUTER" {
+			p.nextToken()
+		}
+		op = ast.RightOuterJoin
+	}
+
+	var method ast.JoinMethod
+	switch p.Token.Kind {
+	case "HASH":
+		p.nextToken()
+		method = ast.HashJoinMethod
+	case "LOOKUP":
+		p.nextToken()
+		method = ast.LookupJoinMethod
+	}
+	p.expect("JOIN")
+
+	hint := p.tryParseHint()
+	right := p.parseSimpleTableExpr()
+	var cond ast.JoinCondition
+	if op != ast.CrossJoin {
+		cond = p.tryParseJoinCondition()
+	}
+	return &ast.PipeJoin{
+		Pipe:   pipe,
+		Op:     op,
+		Method: method,
+		Hint:   hint,
+		Right:  right,
+		Cond:   cond,
 	}
 }
 

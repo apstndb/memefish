@@ -1,0 +1,47 @@
+--- pipe_join_using.sql
+FROM LeftTable
+|> JOIN RightTable USING(id)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 14,
+            Name:    "LeftTable",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeJoin{
+        Pipe:  15,
+        Op:    "INNER JOIN",
+        Right: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 23,
+            NameEnd: 33,
+            Name:    "RightTable",
+          },
+        },
+        Cond: &ast.Using{
+          Using:  34,
+          Rparen: 42,
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 40,
+              NameEnd: 42,
+              Name:    "id",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM LeftTable |> INNER JOIN RightTable USING (id)

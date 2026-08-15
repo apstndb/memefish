@@ -1,0 +1,104 @@
+--- pipe_join_subquery.sql
+FROM LeftTable AS l
+|> JOIN (SELECT 1 AS id) AS r ON l.id = r.id
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 14,
+            Name:    "LeftTable",
+          },
+          As: &ast.AsAlias{
+            As:    15,
+            Alias: &ast.Ident{
+              NamePos: 18,
+              NameEnd: 19,
+              Name:    "l",
+            },
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeJoin{
+        Pipe:  20,
+        Op:    "INNER JOIN",
+        Right: &ast.SubQueryTableExpr{
+          Lparen: 28,
+          Rparen: 43,
+          Query:  &ast.Select{
+            Select:  29,
+            Results: []ast.SelectItem{
+              &ast.Alias{
+                Expr: &ast.IntLiteral{
+                  ValuePos: 36,
+                  ValueEnd: 37,
+                  Base:     10,
+                  Value:    "1",
+                },
+                As: &ast.AsAlias{
+                  As:    38,
+                  Alias: &ast.Ident{
+                    NamePos: 41,
+                    NameEnd: 43,
+                    Name:    "id",
+                  },
+                },
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    45,
+            Alias: &ast.Ident{
+              NamePos: 48,
+              NameEnd: 49,
+              Name:    "r",
+            },
+          },
+        },
+        Cond: &ast.On{
+          On:   50,
+          Expr: &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 53,
+                  NameEnd: 54,
+                  Name:    "l",
+                },
+                &ast.Ident{
+                  NamePos: 55,
+                  NameEnd: 57,
+                  Name:    "id",
+                },
+              },
+            },
+            Right: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 60,
+                  NameEnd: 61,
+                  Name:    "r",
+                },
+                &ast.Ident{
+                  NamePos: 62,
+                  NameEnd: 64,
+                  Name:    "id",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM LeftTable AS l |> INNER JOIN (SELECT 1 AS id) AS r ON l.id = r.id

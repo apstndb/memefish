@@ -1,0 +1,2 @@
+FROM LeftTable
+|> JOIN RightTable

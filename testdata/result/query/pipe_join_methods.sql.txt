@@ -1,0 +1,119 @@
+--- pipe_join_methods.sql
+FROM LeftTable AS l
+|> HASH JOIN RightTable AS r ON l.id = r.id
+|> LOOKUP JOIN ThirdTable AS t USING(id)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 14,
+            Name:    "LeftTable",
+          },
+          As: &ast.AsAlias{
+            As:    15,
+            Alias: &ast.Ident{
+              NamePos: 18,
+              NameEnd: 19,
+              Name:    "l",
+            },
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeJoin{
+        Pipe:   20,
+        Op:     "INNER JOIN",
+        Method: "HASH",
+        Right:  &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 33,
+            NameEnd: 43,
+            Name:    "RightTable",
+          },
+          As: &ast.AsAlias{
+            As:    44,
+            Alias: &ast.Ident{
+              NamePos: 47,
+              NameEnd: 48,
+              Name:    "r",
+            },
+          },
+        },
+        Cond: &ast.On{
+          On:   49,
+          Expr: &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 52,
+                  NameEnd: 53,
+                  Name:    "l",
+                },
+                &ast.Ident{
+                  NamePos: 54,
+                  NameEnd: 56,
+                  Name:    "id",
+                },
+              },
+            },
+            Right: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 59,
+                  NameEnd: 60,
+                  Name:    "r",
+                },
+                &ast.Ident{
+                  NamePos: 61,
+                  NameEnd: 63,
+                  Name:    "id",
+                },
+              },
+            },
+          },
+        },
+      },
+      &ast.PipeJoin{
+        Pipe:   64,
+        Op:     "INNER JOIN",
+        Method: "LOOKUP",
+        Right:  &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 79,
+            NameEnd: 89,
+            Name:    "ThirdTable",
+          },
+          As: &ast.AsAlias{
+            As:    90,
+            Alias: &ast.Ident{
+              NamePos: 93,
+              NameEnd: 94,
+              Name:    "t",
+            },
+          },
+        },
+        Cond: &ast.Using{
+          Using:  95,
+          Rparen: 103,
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 101,
+              NameEnd: 103,
+              Name:    "id",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM LeftTable AS l |> INNER HASH JOIN RightTable AS r ON l.id = r.id |> INNER LOOKUP JOIN ThirdTable AS t USING (id)

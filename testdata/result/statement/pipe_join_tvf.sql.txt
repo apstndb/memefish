@@ -1,0 +1,62 @@
+--- pipe_join_tvf.sql
+FROM LeftTable
+|> JOIN ReadRightTable(1) USING(id)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 14,
+            Name:    "LeftTable",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeJoin{
+        Pipe:  15,
+        Op:    "INNER JOIN",
+        Right: &ast.TVFCallExpr{
+          Rparen: 39,
+          Name:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 23,
+                NameEnd: 37,
+                Name:    "ReadRightTable",
+              },
+            },
+          },
+          Args: []ast.TVFArg{
+            &ast.ExprArg{
+              Expr: &ast.IntLiteral{
+                ValuePos: 38,
+                ValueEnd: 39,
+                Base:     10,
+                Value:    "1",
+              },
+            },
+          },
+        },
+        Cond: &ast.Using{
+          Using:  41,
+          Rparen: 49,
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 47,
+              NameEnd: 49,
+              Name:    "id",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM LeftTable |> INNER JOIN ReadRightTable(1) USING (id)

@@ -11,6 +11,7 @@
 //   - sql node: Returns the SQL representation of node.
 //   - sqlOpt node: Like sql node, but returns the empty string if node is nil.
 //   - sqlJoin sep nodes: Concatenates the SQL representations of nodes with sep.
+//   - sqlJoinOp op method: Returns the canonical JOIN type and method spelling.
 //   - sqlIdentQuote x: Quotes the given identifier string if needed.
 //   - sqlStringQuote s: Returns the SQL quoted string of s.
 //   - sqlBytesQuote bs: Returns the SQL quotes bytes of bs.
@@ -155,6 +156,7 @@ type PipeOperator interface {
 func (PipeSelect) isPipeOperator() {}
 func (PipeWhere) isPipeOperator()  {}
 func (PipeAs) isPipeOperator()     {}
+func (PipeJoin) isPipeOperator()   {}
 
 // SelectItem represents expression in SELECT clause result columns list.
 type SelectItem interface {
@@ -1178,6 +1180,22 @@ type PipeAs struct {
 
 	Pipe  token.Pos // position of "|>"
 	Alias *Ident
+}
+
+// PipeJoin is JOIN pipe operator node. The left input is the preceding query result.
+//
+//	|> {{sqlJoinOp .Op .Method}} {{.Hint | sqlOpt}} {{.Right | sql}} {{.Cond | sqlOpt}}
+type PipeJoin struct {
+	// pos = Pipe
+	// end = (Cond ?? Right).end
+
+	Pipe token.Pos // position of "|>"
+
+	Op     JoinOp
+	Method JoinMethod // optional
+	Hint   *Hint      // optional
+	Right  TableExpr
+	Cond   JoinCondition // optional for non-CROSS joins
 }
 
 // ================================================================================

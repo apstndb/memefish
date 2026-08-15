@@ -1,0 +1,86 @@
+--- pipe_join_left_on.sql
+FROM LeftTable AS l
+|> LEFT JOIN RightTable AS r ON l.id = r.id
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 14,
+            Name:    "LeftTable",
+          },
+          As: &ast.AsAlias{
+            As:    15,
+            Alias: &ast.Ident{
+              NamePos: 18,
+              NameEnd: 19,
+              Name:    "l",
+            },
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeJoin{
+        Pipe:  20,
+        Op:    "LEFT OUTER JOIN",
+        Right: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 33,
+            NameEnd: 43,
+            Name:    "RightTable",
+          },
+          As: &ast.AsAlias{
+            As:    44,
+            Alias: &ast.Ident{
+              NamePos: 47,
+              NameEnd: 48,
+              Name:    "r",
+            },
+          },
+        },
+        Cond: &ast.On{
+          On:   49,
+          Expr: &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 52,
+                  NameEnd: 53,
+                  Name:    "l",
+                },
+                &ast.Ident{
+                  NamePos: 54,
+                  NameEnd: 56,
+                  Name:    "id",
+                },
+              },
+            },
+            Right: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 59,
+                  NameEnd: 60,
+                  Name:    "r",
+                },
+                &ast.Ident{
+                  NamePos: 61,
+                  NameEnd: 63,
+                  Name:    "id",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM LeftTable AS l |> LEFT OUTER JOIN RightTable AS r ON l.id = r.id

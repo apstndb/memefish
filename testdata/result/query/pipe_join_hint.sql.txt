@@ -1,0 +1,69 @@
+--- pipe_join_hint.sql
+FROM LeftTable
+|> JOIN@{JOIN_TYPE=HASH_JOIN} RightTable USING(id)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 14,
+            Name:    "LeftTable",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeJoin{
+        Pipe: 15,
+        Op:   "INNER JOIN",
+        Hint: &ast.Hint{
+          Atmark:  22,
+          Rbrace:  43,
+          Records: []*ast.HintRecord{
+            &ast.HintRecord{
+              Key: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 24,
+                    NameEnd: 33,
+                    Name:    "JOIN_TYPE",
+                  },
+                },
+              },
+              Value: &ast.Ident{
+                NamePos: 34,
+                NameEnd: 43,
+                Name:    "HASH_JOIN",
+              },
+            },
+          },
+        },
+        Right: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 45,
+            NameEnd: 55,
+            Name:    "RightTable",
+          },
+        },
+        Cond: &ast.Using{
+          Using:  56,
+          Rparen: 64,
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 62,
+              NameEnd: 64,
+              Name:    "id",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM LeftTable |> INNER JOIN @{JOIN_TYPE=HASH_JOIN} RightTable USING (id)

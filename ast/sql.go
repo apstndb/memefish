@@ -80,6 +80,13 @@ func sqlJoin[T Node](elems []T, sep string) string {
 	return b.String()
 }
 
+func sqlJoinOp(op JoinOp, method JoinMethod) string {
+	if method == "" {
+		return string(op)
+	}
+	return strings.TrimSuffix(string(op), "JOIN") + string(method) + " JOIN"
+}
+
 // formatBoolUpper formats bool value as uppercase.
 func formatBoolUpper(b bool) string {
 	return strings.ToUpper(strconv.FormatBool(b))
@@ -331,6 +338,13 @@ func (p *PipeWhere) SQL() string {
 }
 
 func (p *PipeAs) SQL() string { return "|> AS " + p.Alias.SQL() }
+
+func (p *PipeJoin) SQL() string {
+	return "|> " + sqlJoinOp(p.Op, p.Method) + " " +
+		sqlOpt("", p.Hint, " ") +
+		p.Right.SQL() +
+		sqlOpt(" ", p.Cond, "")
+}
 
 // ================================================================================
 //
