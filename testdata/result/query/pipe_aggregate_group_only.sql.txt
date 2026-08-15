@@ -1,0 +1,64 @@
+--- pipe_aggregate_group_only.sql
+FROM Sales
+|> AGGREGATE GROUP BY category AS kind ASC, region DESC
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 10,
+            Name:    "Sales",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeAggregate{
+        Pipe:    11,
+        GroupBy: &ast.PipeAggregateGroupBy{
+          Group:  24,
+          And:    -1,
+          Order:  -1,
+          By:     30,
+          Lparen: -1,
+          Rparen: -1,
+          Items:  []*ast.PipeAggregateGroupByItem{
+            &ast.PipeAggregateGroupByItem{
+              DirPos: 50,
+              Expr:   &ast.Ident{
+                NamePos: 33,
+                NameEnd: 41,
+                Name:    "category",
+              },
+              As: &ast.AsAlias{
+                As:    42,
+                Alias: &ast.Ident{
+                  NamePos: 45,
+                  NameEnd: 49,
+                  Name:    "kind",
+                },
+              },
+              Dir: "ASC",
+            },
+            &ast.PipeAggregateGroupByItem{
+              DirPos: 62,
+              Expr:   &ast.Ident{
+                NamePos: 55,
+                NameEnd: 61,
+                Name:    "region",
+              },
+              Dir: "DESC",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM Sales |> AGGREGATE GROUP BY category AS kind ASC, region DESC

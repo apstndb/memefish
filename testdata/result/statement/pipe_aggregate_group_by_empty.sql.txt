@@ -1,0 +1,70 @@
+--- pipe_aggregate_group_by_empty.sql
+FROM Sales
+|> AGGREGATE SUM(amount) AS total GROUP BY()
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 10,
+            Name:    "Sales",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeAggregate{
+        Pipe:  11,
+        Items: []*ast.PipeAggregateItem{
+          &ast.PipeAggregateItem{
+            DirPos: -1,
+            Expr:   &ast.CallExpr{
+              Rparen: 34,
+              Func:   &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 24,
+                    NameEnd: 27,
+                    Name:    "SUM",
+                  },
+                },
+              },
+              Args: []ast.Arg{
+                &ast.ExprArg{
+                  Expr: &ast.Ident{
+                    NamePos: 28,
+                    NameEnd: 34,
+                    Name:    "amount",
+                  },
+                },
+              },
+            },
+            As: &ast.AsAlias{
+              As:    36,
+              Alias: &ast.Ident{
+                NamePos: 39,
+                NameEnd: 44,
+                Name:    "total",
+              },
+            },
+          },
+        },
+        GroupBy: &ast.PipeAggregateGroupBy{
+          Group:  45,
+          And:    -1,
+          Order:  -1,
+          By:     51,
+          Lparen: 53,
+          Rparen: 54,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM Sales |> AGGREGATE SUM(amount) AS total GROUP BY()

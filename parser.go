@@ -407,6 +407,10 @@ func (p *Parser) parseQueryStatementInternal(hint *ast.Hint) (stmt *ast.QuerySta
 
 func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	pos := p.expect("|>").Pos
+	if p.Token.IsKeywordLike("AGGREGATE") {
+		return p.parsePipeAggregate(pos)
+	}
+
 	switch p.Token.Kind {
 	case "SELECT":
 		p.nextToken()
@@ -434,6 +438,119 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
 	}
+}
+
+func (p *Parser) parsePipeAggregate(pipe token.Pos) *ast.PipeAggregate {
+	p.expectKeywordLike("AGGREGATE")
+
+	var items []*ast.PipeAggregateItem
+	if p.Token.Kind != "GROUP" {
+		items = p.parsePipeAggregateItems()
+	}
+	groupBy := p.tryParsePipeAggregateGroupBy()
+
+	return &ast.PipeAggregate{
+		Pipe:    pipe,
+		Items:   items,
+		GroupBy: groupBy,
+	}
+}
+
+func (p *Parser) parsePipeAggregateItems() []*ast.PipeAggregateItem {
+	items := []*ast.PipeAggregateItem{p.parsePipeAggregateItem()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		switch p.Token.Kind {
+		case token.TokenEOF, ")", "|>", ";", "GROUP":
+			return items
+		}
+		items = append(items, p.parsePipeAggregateItem())
+	}
+	return items
+}
+
+func (p *Parser) parsePipeAggregateItem() *ast.PipeAggregateItem {
+	expr := p.parseExpr()
+	as := p.tryParseAsAlias(withOptionalAs)
+	dir, dirPos := p.tryParseDirection()
+	return &ast.PipeAggregateItem{
+		DirPos: dirPos,
+		Expr:   expr,
+		As:     as,
+		Dir:    dir,
+	}
+}
+
+func (p *Parser) tryParsePipeAggregateGroupBy() *ast.PipeAggregateGroupBy {
+	if p.Token.Kind != "GROUP" {
+		return nil
+	}
+
+	group := p.expect("GROUP").Pos
+	and := token.InvalidPos
+	order := token.InvalidPos
+	if p.Token.Kind == "AND" {
+		and = p.expect("AND").Pos
+		order = p.expect("ORDER").Pos
+	}
+	by := p.expect("BY").Pos
+
+	lparen := token.InvalidPos
+	rparen := token.InvalidPos
+	var items []*ast.PipeAggregateGroupByItem
+	if and.Invalid() && p.lookaheadEmptyParens() {
+		lparen = p.expect("(").Pos
+		rparen = p.expect(")").Pos
+	} else {
+		items = p.parsePipeAggregateGroupByItems()
+	}
+
+	return &ast.PipeAggregateGroupBy{
+		Group:  group,
+		And:    and,
+		Order:  order,
+		By:     by,
+		Lparen: lparen,
+		Rparen: rparen,
+		Items:  items,
+	}
+}
+
+func (p *Parser) parsePipeAggregateGroupByItems() []*ast.PipeAggregateGroupByItem {
+	items := []*ast.PipeAggregateGroupByItem{p.parsePipeAggregateGroupByItem()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		switch p.Token.Kind {
+		case token.TokenEOF, ")", "|>", ";":
+			return items
+		}
+		items = append(items, p.parsePipeAggregateGroupByItem())
+	}
+	return items
+}
+
+func (p *Parser) parsePipeAggregateGroupByItem() *ast.PipeAggregateGroupByItem {
+	expr := p.parseExpr()
+	as := p.tryParseAsAlias(withOptionalAs)
+	dir, dirPos := p.tryParseDirection()
+	return &ast.PipeAggregateGroupByItem{
+		DirPos: dirPos,
+		Expr:   expr,
+		As:     as,
+		Dir:    dir,
+	}
+}
+
+func (p *Parser) lookaheadEmptyParens() bool {
+	if p.Token.Kind != "(" {
+		return false
+	}
+
+	lexer := p.cloneLexer()
+	if err := lexer.NextToken(); err != nil {
+		return false
+	}
+	return lexer.Token.Kind == ")"
 }
 
 // parsePipeOperators parses pipe operators, which can be empty.

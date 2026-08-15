@@ -152,6 +152,21 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *PipeAs:
 		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
 
+	case *PipeAggregate:
+		stack = append(stack, &stackItem{node: wrapNode(n.GroupBy), visitor: v.Field("GroupBy")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
+
+	case *PipeAggregateItem:
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *PipeAggregateGroupBy:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
+
+	case *PipeAggregateGroupByItem:
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
 	case *Unnest:
 		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})
 		stack = append(stack, &stackItem{node: wrapNode(n.WithOffset), visitor: v.Field("WithOffset")})

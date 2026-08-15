@@ -334,6 +334,38 @@ func (p *PipeAs) End() token.Pos {
 	return nodeEnd(wrapNode(p.Alias))
 }
 
+func (p *PipeAggregate) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeAggregate) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(p.GroupBy), nodeSliceLast(p.Items)))
+}
+
+func (p *PipeAggregateItem) Pos() token.Pos {
+	return nodePos(wrapNode(p.Expr))
+}
+
+func (p *PipeAggregateItem) End() token.Pos {
+	return posChoice(posAdd(p.DirPos, len(p.Dir)), nodeEnd(nodeChoice(wrapNode(p.As), wrapNode(p.Expr))))
+}
+
+func (p *PipeAggregateGroupBy) Pos() token.Pos {
+	return p.Group
+}
+
+func (p *PipeAggregateGroupBy) End() token.Pos {
+	return posChoice(posAdd(p.Rparen, 1), nodeEnd(nodeSliceLast(p.Items)))
+}
+
+func (p *PipeAggregateGroupByItem) Pos() token.Pos {
+	return nodePos(wrapNode(p.Expr))
+}
+
+func (p *PipeAggregateGroupByItem) End() token.Pos {
+	return posChoice(posAdd(p.DirPos, len(p.Dir)), nodeEnd(nodeChoice(wrapNode(p.As), wrapNode(p.Expr))))
+}
+
 func (u *Unnest) Pos() token.Pos {
 	return u.Unnest
 }

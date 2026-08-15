@@ -332,6 +332,31 @@ func (p *PipeWhere) SQL() string {
 
 func (p *PipeAs) SQL() string { return "|> AS " + p.Alias.SQL() }
 
+func (p *PipeAggregate) SQL() string {
+	return "|> AGGREGATE" +
+		strOpt(len(p.Items) > 0, " "+sqlJoin(p.Items, ", ")) +
+		sqlOpt(" ", p.GroupBy, "")
+}
+
+func (p *PipeAggregateItem) SQL() string {
+	return p.Expr.SQL() +
+		sqlOpt(" ", p.As, "") +
+		strOpt(p.Dir != "", " "+string(p.Dir))
+}
+
+func (p *PipeAggregateGroupBy) SQL() string {
+	return "GROUP " +
+		strOpt(!p.And.Invalid(), "AND ORDER ") +
+		"BY" +
+		strIfElse(!p.Lparen.Invalid(), "()", " "+sqlJoin(p.Items, ", "))
+}
+
+func (p *PipeAggregateGroupByItem) SQL() string {
+	return p.Expr.SQL() +
+		sqlOpt(" ", p.As, "") +
+		strOpt(p.Dir != "", " "+string(p.Dir))
+}
+
 // ================================================================================
 //
 // JOIN
