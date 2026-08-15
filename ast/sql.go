@@ -300,8 +300,11 @@ func (o *OrderBy) SQL() string {
 func (o *OrderByItem) SQL() string {
 	return o.Expr.SQL() +
 		sqlOpt(" ", o.Collate, "") +
-		strOpt(o.Dir != "", " "+string(o.Dir))
+		strOpt(o.Dir != "", " "+string(o.Dir)) +
+		sqlOpt(" ", o.NullOrder, "")
 }
+
+func (n *NullOrder) SQL() string { return "NULLS " + string(n.Mode) }
 
 func (c *Collate) SQL() string {
 	return "COLLATE " + c.Value.SQL()
@@ -331,6 +334,10 @@ func (p *PipeWhere) SQL() string {
 }
 
 func (p *PipeAs) SQL() string { return "|> AS " + p.Alias.SQL() }
+
+func (p *PipeOrderBy) SQL() string {
+	return "|> ORDER BY " + sqlJoin(p.Items, ", ")
+}
 
 // ================================================================================
 //

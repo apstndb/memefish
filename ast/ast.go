@@ -152,9 +152,10 @@ type PipeOperator interface {
 	isPipeOperator()
 }
 
-func (PipeSelect) isPipeOperator() {}
-func (PipeWhere) isPipeOperator()  {}
-func (PipeAs) isPipeOperator()     {}
+func (PipeSelect) isPipeOperator()  {}
+func (PipeWhere) isPipeOperator()   {}
+func (PipeAs) isPipeOperator()      {}
+func (PipeOrderBy) isPipeOperator() {}
 
 // SelectItem represents expression in SELECT clause result columns list.
 type SelectItem interface {
@@ -1084,16 +1085,29 @@ type OrderBy struct {
 
 // OrderByItem is expression node in ORDER BY clause list.
 //
-//	{{.Expr | sql}} {{.Collate | sqlOpt}} {{.Direction}}
+//	{{.Expr | sql}} {{.Collate | sqlOpt}} {{.Dir}} {{.NullOrder | sqlOpt}}
 type OrderByItem struct {
 	// pos = Expr.pos
-	// end = DirPos + len(Dir) || (Collate ?? Expr).end
+	// end = NullOrder.end || DirPos + len(Dir) || (Collate ?? Expr).end
 
 	DirPos token.Pos // position of Dir
 
-	Expr    Expr
-	Collate *Collate  // optional
-	Dir     Direction // optional
+	Expr      Expr
+	Collate   *Collate   // optional
+	Dir       Direction  // optional
+	NullOrder *NullOrder // optional
+}
+
+// NullOrder is NULLS FIRST or NULLS LAST in an ORDER BY item.
+//
+//	NULLS {{.Mode}}
+type NullOrder struct {
+	// pos = Nulls
+	// end = ModePos + len(Mode)
+
+	Nulls   token.Pos // position of "NULLS"
+	ModePos token.Pos // position of Mode
+	Mode    NullOrderMode
 }
 
 // Collate is COLLATE clause node in ORDER BY item.
@@ -1178,6 +1192,18 @@ type PipeAs struct {
 
 	Pipe  token.Pos // position of "|>"
 	Alias *Ident
+}
+
+// PipeOrderBy is ORDER BY pipe operator node.
+//
+//	|> ORDER BY {{.Items | sqlJoin ", "}}
+type PipeOrderBy struct {
+	// pos = Pipe
+	// end = Items[$].end
+
+	Pipe token.Pos // position of "|>"
+
+	Items []*OrderByItem // len(Items) > 0
 }
 
 // ================================================================================

@@ -129,8 +129,12 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
 
 	case *OrderByItem:
+		stack = append(stack, &stackItem{node: wrapNode(n.NullOrder), visitor: v.Field("NullOrder")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Collate), visitor: v.Field("Collate")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *NullOrder:
+		// nothing to do
 
 	case *Collate:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
@@ -151,6 +155,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *PipeAs:
 		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
+
+	case *PipeOrderBy:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
 
 	case *Unnest:
 		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})

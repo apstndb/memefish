@@ -283,7 +283,15 @@ func (o *OrderByItem) Pos() token.Pos {
 }
 
 func (o *OrderByItem) End() token.Pos {
-	return posChoice(posAdd(o.DirPos, len(o.Dir)), nodeEnd(nodeChoice(wrapNode(o.Collate), wrapNode(o.Expr))))
+	return posChoice(nodeEnd(wrapNode(o.NullOrder)), posAdd(o.DirPos, len(o.Dir)), nodeEnd(nodeChoice(wrapNode(o.Collate), wrapNode(o.Expr))))
+}
+
+func (n *NullOrder) Pos() token.Pos {
+	return n.Nulls
+}
+
+func (n *NullOrder) End() token.Pos {
+	return posAdd(n.ModePos, len(n.Mode))
 }
 
 func (c *Collate) Pos() token.Pos {
@@ -332,6 +340,14 @@ func (p *PipeAs) Pos() token.Pos {
 
 func (p *PipeAs) End() token.Pos {
 	return nodeEnd(wrapNode(p.Alias))
+}
+
+func (p *PipeOrderBy) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeOrderBy) End() token.Pos {
+	return nodeEnd(nodeSliceLast(p.Items))
 }
 
 func (u *Unnest) Pos() token.Pos {

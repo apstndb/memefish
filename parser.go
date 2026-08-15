@@ -431,9 +431,28 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	case "AS":
 		p.nextToken()
 		return &ast.PipeAs{Pipe: pos, Alias: p.parseIdent()}
+	case "ORDER":
+		p.nextToken()
+		p.expect("BY")
+		return &ast.PipeOrderBy{
+			Pipe:  pos,
+			Items: p.parsePipeOrderByItems(),
+		}
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
 	}
+}
+
+func (p *Parser) parsePipeOrderByItems() []*ast.OrderByItem {
+	items := []*ast.OrderByItem{p.parseOrderByItem()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		if p.Token.Kind == token.TokenEOF || p.Token.Kind == ")" || p.Token.Kind == "|>" || p.Token.Kind == ";" {
+			break
+		}
+		items = append(items, p.parseOrderByItem())
+	}
+	return items
 }
 
 // parsePipeOperators parses pipe operators, which can be empty.
@@ -1011,13 +1030,35 @@ func (p *Parser) parseOrderByItem() *ast.OrderByItem {
 	expr := p.parseExpr()
 	collate := p.tryParseCollate()
 	dir, dirPos := p.tryParseDirection()
+	nullOrder := p.tryParseNullOrder()
 
 	return &ast.OrderByItem{
-		DirPos:  dirPos,
-		Expr:    expr,
-		Collate: collate,
-		Dir:     dir,
+		DirPos:    dirPos,
+		Expr:      expr,
+		Collate:   collate,
+		Dir:       dir,
+		NullOrder: nullOrder,
 	}
+}
+
+func (p *Parser) tryParseNullOrder() *ast.NullOrder {
+	if p.Token.Kind != "NULLS" {
+		return nil
+	}
+
+	nulls := p.expect("NULLS").Pos
+	var mode ast.NullOrderMode
+	switch {
+	case p.Token.IsKeywordLike("FIRST"):
+		mode = ast.NullOrderFirst
+	case p.Token.IsKeywordLike("LAST"):
+		mode = ast.NullOrderLast
+	default:
+		panic(p.errorfAtToken(&p.Token, "expected identifier: FIRST, LAST, but: %s", p.Token.Raw))
+	}
+	modePos := p.Token.Pos
+	p.nextToken()
+	return &ast.NullOrder{Nulls: nulls, ModePos: modePos, Mode: mode}
 }
 
 func (p *Parser) tryParseCollate() *ast.Collate {
