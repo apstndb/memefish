@@ -155,6 +155,7 @@ type PipeOperator interface {
 func (PipeSelect) isPipeOperator() {}
 func (PipeWhere) isPipeOperator()  {}
 func (PipeAs) isPipeOperator()     {}
+func (PipeDrop) isPipeOperator()   {}
 
 // SelectItem represents expression in SELECT clause result columns list.
 type SelectItem interface {
@@ -1178,6 +1179,18 @@ type PipeAs struct {
 
 	Pipe  token.Pos // position of "|>"
 	Alias *Ident
+}
+
+// PipeDrop is DROP pipe operator node.
+//
+//	|> DROP {{.Columns | sqlJoin ", "}}
+type PipeDrop struct {
+	// pos = Pipe
+	// end = Columns[$].end
+
+	Pipe token.Pos // position of "|>"
+
+	Columns []*Ident // len(Columns) > 0
 }
 
 // ================================================================================

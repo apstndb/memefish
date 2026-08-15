@@ -407,8 +407,8 @@ func (p *Parser) parseQueryStatementInternal(hint *ast.Hint) (stmt *ast.QuerySta
 
 func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	pos := p.expect("|>").Pos
-	switch p.Token.Kind {
-	case "SELECT":
+	switch {
+	case p.Token.Kind == "SELECT":
 		p.nextToken()
 
 		allOrDistinct := p.tryParseAllOrDistinct()
@@ -421,16 +421,31 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 			As:            as,
 			Results:       results,
 		}
-	case "WHERE":
+	case p.Token.Kind == "WHERE":
 		p.nextToken()
 		expr := p.parseExpr()
 		return &ast.PipeWhere{
 			Pipe: pos,
 			Expr: expr,
 		}
-	case "AS":
+	case p.Token.Kind == "AS":
 		p.nextToken()
 		return &ast.PipeAs{Pipe: pos, Alias: p.parseIdent()}
+	case p.Token.IsKeywordLike("DROP"):
+		p.nextToken()
+		columns := []*ast.Ident{p.parseIdent()}
+		for p.Token.Kind == "," {
+			p.nextToken()
+			// Pipe operators permit a trailing comma before a closing parenthesis, next pipe, statement separator, or EOF.
+			if p.Token.Kind == ")" || p.Token.Kind == "|>" || p.Token.Kind == ";" || p.Token.Kind == token.TokenEOF {
+				break
+			}
+			columns = append(columns, p.parseIdent())
+		}
+		return &ast.PipeDrop{
+			Pipe:    pos,
+			Columns: columns,
+		}
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
 	}
