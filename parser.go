@@ -407,8 +407,8 @@ func (p *Parser) parseQueryStatementInternal(hint *ast.Hint) (stmt *ast.QuerySta
 
 func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	pos := p.expect("|>").Pos
-	switch p.Token.Kind {
-	case "SELECT":
+	switch {
+	case p.Token.Kind == "SELECT":
 		p.nextToken()
 
 		allOrDistinct := p.tryParseAllOrDistinct()
@@ -421,19 +421,44 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 			As:            as,
 			Results:       results,
 		}
-	case "WHERE":
+	case p.Token.Kind == "WHERE":
 		p.nextToken()
 		expr := p.parseExpr()
 		return &ast.PipeWhere{
 			Pipe: pos,
 			Expr: expr,
 		}
-	case "AS":
+	case p.Token.Kind == "AS":
 		p.nextToken()
 		return &ast.PipeAs{Pipe: pos, Alias: p.parseIdent()}
+	case p.Token.IsKeywordLike("RENAME"):
+		p.nextToken()
+		items := []*ast.PipeRenameItem{p.parsePipeRenameItem()}
+		for p.Token.Kind == "," {
+			p.nextToken()
+			// Pipe operators permit a trailing comma before a closing parenthesis, next pipe, statement separator, or EOF.
+			if p.Token.Kind == ")" || p.Token.Kind == "|>" || p.Token.Kind == ";" || p.Token.Kind == token.TokenEOF {
+				break
+			}
+			items = append(items, p.parsePipeRenameItem())
+		}
+		return &ast.PipeRename{
+			Pipe:  pos,
+			Items: items,
+		}
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
 	}
+}
+
+func (p *Parser) parsePipeRenameItem() *ast.PipeRenameItem {
+	old := p.parseIdent()
+	as := token.InvalidPos
+	if p.Token.Kind == "AS" {
+		as = p.expect("AS").Pos
+	}
+	new := p.parseIdent()
+	return &ast.PipeRenameItem{Old: old, As: as, New: new}
 }
 
 // parsePipeOperators parses pipe operators, which can be empty.

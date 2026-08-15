@@ -152,6 +152,13 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *PipeAs:
 		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
 
+	case *PipeRename:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
+
+	case *PipeRenameItem:
+		stack = append(stack, &stackItem{node: wrapNode(n.New), visitor: v.Field("New")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Old), visitor: v.Field("Old")})
+
 	case *Unnest:
 		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})
 		stack = append(stack, &stackItem{node: wrapNode(n.WithOffset), visitor: v.Field("WithOffset")})

@@ -332,6 +332,12 @@ func (p *PipeWhere) SQL() string {
 
 func (p *PipeAs) SQL() string { return "|> AS " + p.Alias.SQL() }
 
+func (p *PipeRename) SQL() string { return "|> RENAME " + sqlJoin(p.Items, ", ") }
+
+func (p *PipeRenameItem) SQL() string {
+	return p.Old.SQL() + " " + strOpt(!p.As.Invalid(), "AS ") + p.New.SQL()
+}
+
 // ================================================================================
 //
 // JOIN
