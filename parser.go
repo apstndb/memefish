@@ -431,9 +431,31 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	case "AS":
 		p.nextToken()
 		return &ast.PipeAs{Pipe: pos, Alias: p.parseIdent()}
+	case "SET":
+		p.nextToken()
+		items := []*ast.PipeSetItem{p.parsePipeSetItem()}
+		for p.Token.Kind == "," {
+			p.nextToken()
+			// Pipe operators permit a trailing comma before a closing parenthesis, next pipe, statement separator, or EOF.
+			if p.Token.Kind == ")" || p.Token.Kind == "|>" || p.Token.Kind == ";" || p.Token.Kind == token.TokenEOF {
+				break
+			}
+			items = append(items, p.parsePipeSetItem())
+		}
+		return &ast.PipeSet{
+			Pipe:  pos,
+			Items: items,
+		}
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
 	}
+}
+
+func (p *Parser) parsePipeSetItem() *ast.PipeSetItem {
+	column := p.parseIdent()
+	equal := p.expect("=").Pos
+	expr := p.parseExpr()
+	return &ast.PipeSetItem{Column: column, Equal: equal, Expr: expr}
 }
 
 // parsePipeOperators parses pipe operators, which can be empty.

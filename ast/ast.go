@@ -155,6 +155,7 @@ type PipeOperator interface {
 func (PipeSelect) isPipeOperator() {}
 func (PipeWhere) isPipeOperator()  {}
 func (PipeAs) isPipeOperator()     {}
+func (PipeSet) isPipeOperator()    {}
 
 // SelectItem represents expression in SELECT clause result columns list.
 type SelectItem interface {
@@ -1178,6 +1179,30 @@ type PipeAs struct {
 
 	Pipe  token.Pos // position of "|>"
 	Alias *Ident
+}
+
+// PipeSet is SET pipe operator node.
+//
+//	|> SET {{.Items | sqlJoin ", "}}
+type PipeSet struct {
+	// pos = Pipe
+	// end = Items[$].end
+
+	Pipe token.Pos // position of "|>"
+
+	Items []*PipeSetItem // len(Items) > 0
+}
+
+// PipeSetItem is a single assignment in PipeSet.
+//
+//	{{.Column | sql}} = {{.Expr | sql}}
+type PipeSetItem struct {
+	// pos = Column.pos
+	// end = Expr.end
+
+	Column *Ident
+	Equal  token.Pos // position of "="
+	Expr   Expr
 }
 
 // ================================================================================
