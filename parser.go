@@ -431,6 +431,11 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	case "AS":
 		p.nextToken()
 		return &ast.PipeAs{Pipe: pos, Alias: p.parseIdent()}
+	case "TABLESAMPLE":
+		return &ast.PipeTableSample{
+			Pipe:   pos,
+			Sample: p.tryParseTableSample(),
+		}
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
 	}

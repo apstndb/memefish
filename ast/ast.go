@@ -152,9 +152,10 @@ type PipeOperator interface {
 	isPipeOperator()
 }
 
-func (PipeSelect) isPipeOperator() {}
-func (PipeWhere) isPipeOperator()  {}
-func (PipeAs) isPipeOperator()     {}
+func (PipeSelect) isPipeOperator()      {}
+func (PipeWhere) isPipeOperator()       {}
+func (PipeAs) isPipeOperator()          {}
+func (PipeTableSample) isPipeOperator() {}
 
 // SelectItem represents expression in SELECT clause result columns list.
 type SelectItem interface {
@@ -1178,6 +1179,18 @@ type PipeAs struct {
 
 	Pipe  token.Pos // position of "|>"
 	Alias *Ident
+}
+
+// PipeTableSample is TABLESAMPLE pipe operator node.
+//
+//	|> {{.Sample | sql}}
+type PipeTableSample struct {
+	// pos = Pipe
+	// end = Sample.end
+
+	Pipe token.Pos // position of "|>"
+
+	Sample *TableSample
 }
 
 // ================================================================================
