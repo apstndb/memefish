@@ -334,6 +334,14 @@ func (p *PipeAs) End() token.Pos {
 	return nodeEnd(wrapNode(p.Alias))
 }
 
+func (p *PipeExtend) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeExtend) End() token.Pos {
+	return nodeEnd(nodeSliceLast(p.Results))
+}
+
 func (u *Unnest) Pos() token.Pos {
 	return u.Unnest
 }

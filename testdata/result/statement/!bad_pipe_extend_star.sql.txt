@@ -1,0 +1,58 @@
+--- !bad_pipe_extend_star.sql
+FROM Singers
+|> EXTEND *
+
+--- Error
+syntax error: testdata/input/query/!bad_pipe_extend_star.sql:2:11: star expansion is not allowed in EXTEND
+  2|  |> EXTEND *
+   |            ^
+
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.BadQueryExpr{
+    BadNode: &ast.BadNode{
+      NodeEnd: 24,
+      Tokens:  []*token.Token{
+        &token.Token{
+          Kind: "FROM",
+          Raw:  "FROM",
+          End:  4,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Space:    " ",
+          Raw:      "Singers",
+          AsString: "Singers",
+          Pos:      5,
+          End:      12,
+        },
+        &token.Token{
+          Kind:  "|>",
+          Space: "\n",
+          Raw:   "|>",
+          Pos:   13,
+          End:   15,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Space:    " ",
+          Raw:      "EXTEND",
+          AsString: "EXTEND",
+          Pos:      16,
+          End:      22,
+        },
+        &token.Token{
+          Kind:  "*",
+          Space: " ",
+          Raw:   "*",
+          Pos:   23,
+          End:   24,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM Singers |> EXTEND *
