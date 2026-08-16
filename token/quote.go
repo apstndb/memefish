@@ -112,7 +112,7 @@ func quoteSingleEscape(r, quote rune, isString bool) string {
 }
 
 func needQuoteSQLIdent(s string) bool {
-	// An empty identifier cannot be written without backquotes.
+	// QuoteSQLIdent formats identifiers without validating them.
 	if s == "" {
 		return true
 	}
