@@ -1287,11 +1287,11 @@ func (c *Check) End() token.Pos {
 }
 
 func (i *IndexKey) Pos() token.Pos {
-	return nodePos(wrapNode(i.Name))
+	return posChoice(nodePos(wrapNode(i.Name)), i.Lparen)
 }
 
 func (i *IndexKey) End() token.Pos {
-	return posChoice(posAdd(i.DirPos, len(i.Dir)), nodeEnd(wrapNode(i.Name)))
+	return posChoice(posAdd(i.DirPos, len(i.Dir)), nodeEnd(wrapNode(i.Name)), posAdd(i.Rparen, 1))
 }
 
 func (c *Cluster) Pos() token.Pos {

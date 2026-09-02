@@ -32,6 +32,8 @@ options (locality_group = 'spill_to_hdd')
   Keys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
       Name:   &ast.Ident{
         NamePos: 32,
         NameEnd: 35,
@@ -40,6 +42,8 @@ options (locality_group = 'spill_to_hdd')
     },
     &ast.IndexKey{
       DirPos: 43,
+      Lparen: -1,
+      Rparen: -1,
       Name:   &ast.Ident{
         NamePos: 39,
         NameEnd: 42,

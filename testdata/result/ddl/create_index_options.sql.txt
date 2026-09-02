@@ -25,6 +25,8 @@ CREATE INDEX SingersByFirstLastName ON Singers(FirstName, LastName)
   Keys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
       Name:   &ast.Ident{
         NamePos: 47,
         NameEnd: 56,
@@ -33,6 +35,8 @@ CREATE INDEX SingersByFirstLastName ON Singers(FirstName, LastName)
     },
     &ast.IndexKey{
       DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
       Name:   &ast.Ident{
         NamePos: 58,
         NameEnd: 66,

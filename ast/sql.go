@@ -941,7 +941,7 @@ func (a *AutoIncrement) SQL() string {
 }
 
 func (i *IndexKey) SQL() string {
-	return i.Name.SQL() + strOpt(i.Dir != "", " "+string(i.Dir))
+	return sqlOpt("", i.Name, "") + sqlOpt("(", i.Expr, ")") + strOpt(i.Dir != "", " "+string(i.Dir))
 }
 
 func (c *Cluster) SQL() string {

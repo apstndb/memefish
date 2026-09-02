@@ -26,6 +26,8 @@ create index if not exists foo_bar on foo (bar)
   Keys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
       Name:   &ast.Ident{
         NamePos: 43,
         NameEnd: 46,

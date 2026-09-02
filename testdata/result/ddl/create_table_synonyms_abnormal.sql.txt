@@ -61,6 +61,8 @@ CREATE TABLE Singers (
   PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
       Name:   &ast.Ident{
         NamePos: 186,
         NameEnd: 194,

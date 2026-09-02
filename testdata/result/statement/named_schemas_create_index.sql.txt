@@ -34,6 +34,8 @@ CREATE INDEX sch1.indexOnSingers ON sch1.Singers(FirstName)
   Keys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
       Name:   &ast.Ident{
         NamePos: 49,
         NameEnd: 58,

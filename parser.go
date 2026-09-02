@@ -3902,7 +3902,28 @@ func (p *Parser) parseIndexKey() *ast.IndexKey {
 
 	return &ast.IndexKey{
 		DirPos: dirPos,
+		Lparen: token.InvalidPos,
+		Rparen: token.InvalidPos,
 		Name:   name,
+		Dir:    dir,
+	}
+}
+
+func (p *Parser) parseCreateIndexKey() *ast.IndexKey {
+	if p.Token.Kind != "(" {
+		return p.parseIndexKey()
+	}
+
+	lparen := p.expect("(").Pos
+	expr := p.parseExpr()
+	rparen := p.expect(")").Pos
+	dir, dirPos := p.tryParseDirection()
+
+	return &ast.IndexKey{
+		DirPos: dirPos,
+		Lparen: lparen,
+		Rparen: rparen,
+		Expr:   expr,
 		Dir:    dir,
 	}
 }
@@ -4185,7 +4206,7 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 		if p.Token.Kind == ")" {
 			break
 		}
-		keys = append(keys, p.parseIndexKey())
+		keys = append(keys, p.parseCreateIndexKey())
 		if p.Token.Kind != "," {
 			break
 		}

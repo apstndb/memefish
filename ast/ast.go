@@ -2838,15 +2838,19 @@ type Check struct {
 }
 
 // IndexKey is index key specifier in CREATE TABLE and CREATE INDEX.
+// Note: Expr is only valid in CREATE INDEX.
 //
-//	{{.Name | sql}} {{.Dir}}
+//	{{if .Name}}{{.Name | sql}}{{else}}({{.Expr | sql}}){{end}} {{.Dir}}
 type IndexKey struct {
-	// pos = Name.pos
-	// end = DirPos + len(Dir) || Name.end
+	// pos = Name.pos || Lparen
+	// end = DirPos + len(Dir) || Name.end || Rparen + 1
 
-	DirPos token.Pos // position of Dir
+	DirPos         token.Pos // position of Dir
+	Lparen, Rparen token.Pos // position of "(" and ")" around Expr, optional
 
-	Name *Ident
+	// Name and Expr are mutually exclusive, but one must be set.
+	Name *Ident    // optional
+	Expr Expr      // optional
 	Dir  Direction // optional
 }
 
