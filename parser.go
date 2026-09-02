@@ -428,6 +428,9 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 			Pipe: pos,
 			Expr: expr,
 		}
+	case "AS":
+		p.nextToken()
+		return &ast.PipeAs{Pipe: pos, Alias: p.parseIdent()}
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
 	}
