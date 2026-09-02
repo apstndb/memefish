@@ -1,0 +1,194 @@
+--- exists_braced_path_variable.sql
+GRAPH FinGraph
+RETURN
+  EXISTS { p = (a)-[e]->(b) } AS local_graph,
+  EXISTS { GRAPH FinGraph p = (a)-[e]->(b) } AS explicit_graph
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturn{
+            Return: 15,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.ExistsGQLSubQuery{
+                  Exists: 24,
+                  Rbrace: 50,
+                  Query:  &ast.GQLGraphPattern{
+                    Paths: []*ast.GQLTopLevelPathPattern{
+                      &ast.GQLTopLevelPathPattern{
+                        Variable: &ast.Ident{
+                          NamePos: 33,
+                          NameEnd: 34,
+                          Name:    "p",
+                        },
+                        Path: &ast.GQLPathPattern{
+                          Terms: []*ast.GQLPathTerm{
+                            &ast.GQLPathTerm{
+                              Primary: &ast.GQLNodePattern{
+                                Lparen:  37,
+                                Rparen:  39,
+                                Pattern: &ast.GQLElementPatternFiller{
+                                  EmptyPos: -1,
+                                  Variable: &ast.Ident{
+                                    NamePos: 38,
+                                    NameEnd: 39,
+                                    Name:    "a",
+                                  },
+                                },
+                              },
+                            },
+                            &ast.GQLPathTerm{
+                              Primary: &ast.GQLEdgePattern{
+                                StartPos:  40,
+                                EndPos:    46,
+                                Direction: "RIGHT",
+                                Filler:    &ast.GQLElementPatternFiller{
+                                  EmptyPos: -1,
+                                  Variable: &ast.Ident{
+                                    NamePos: 42,
+                                    NameEnd: 43,
+                                    Name:    "e",
+                                  },
+                                },
+                              },
+                            },
+                            &ast.GQLPathTerm{
+                              Primary: &ast.GQLNodePattern{
+                                Lparen:  46,
+                                Rparen:  48,
+                                Pattern: &ast.GQLElementPatternFiller{
+                                  EmptyPos: -1,
+                                  Variable: &ast.Ident{
+                                    NamePos: 47,
+                                    NameEnd: 48,
+                                    Name:    "b",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                Alias: &ast.AsAlias{
+                  As:    52,
+                  Alias: &ast.Ident{
+                    NamePos: 55,
+                    NameEnd: 66,
+                    Name:    "local_graph",
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.ExistsGQLSubQuery{
+                  Exists:      70,
+                  Rbrace:      111,
+                  GraphClause: &ast.GQLGraphClause{
+                    Graph:             79,
+                    PropertyGraphName: &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 85,
+                          NameEnd: 93,
+                          Name:    "FinGraph",
+                        },
+                      },
+                    },
+                  },
+                  Query: &ast.GQLGraphPattern{
+                    Paths: []*ast.GQLTopLevelPathPattern{
+                      &ast.GQLTopLevelPathPattern{
+                        Variable: &ast.Ident{
+                          NamePos: 94,
+                          NameEnd: 95,
+                          Name:    "p",
+                        },
+                        Path: &ast.GQLPathPattern{
+                          Terms: []*ast.GQLPathTerm{
+                            &ast.GQLPathTerm{
+                              Primary: &ast.GQLNodePattern{
+                                Lparen:  98,
+                                Rparen:  100,
+                                Pattern: &ast.GQLElementPatternFiller{
+                                  EmptyPos: -1,
+                                  Variable: &ast.Ident{
+                                    NamePos: 99,
+                                    NameEnd: 100,
+                                    Name:    "a",
+                                  },
+                                },
+                              },
+                            },
+                            &ast.GQLPathTerm{
+                              Primary: &ast.GQLEdgePattern{
+                                StartPos:  101,
+                                EndPos:    107,
+                                Direction: "RIGHT",
+                                Filler:    &ast.GQLElementPatternFiller{
+                                  EmptyPos: -1,
+                                  Variable: &ast.Ident{
+                                    NamePos: 103,
+                                    NameEnd: 104,
+                                    Name:    "e",
+                                  },
+                                },
+                              },
+                            },
+                            &ast.GQLPathTerm{
+                              Primary: &ast.GQLNodePattern{
+                                Lparen:  107,
+                                Rparen:  109,
+                                Pattern: &ast.GQLElementPatternFiller{
+                                  EmptyPos: -1,
+                                  Variable: &ast.Ident{
+                                    NamePos: 108,
+                                    NameEnd: 109,
+                                    Name:    "b",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                Alias: &ast.AsAlias{
+                  As:    113,
+                  Alias: &ast.Ident{
+                    NamePos: 116,
+                    NameEnd: 130,
+                    Name:    "explicit_graph",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph RETURN EXISTS { p = (a)-[e]->(b) } AS local_graph, EXISTS { GRAPH FinGraph p = (a)-[e]->(b) } AS explicit_graph

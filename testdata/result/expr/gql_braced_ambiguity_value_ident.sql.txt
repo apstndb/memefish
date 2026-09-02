@@ -1,0 +1,32 @@
+--- gql_braced_ambiguity_value_ident.sql
+-- Regression: VALUE used as an identifier must not be hijacked by VALUE { gql } lookahead.
+value IN (1, 2)
+--- AST
+&ast.InExpr{
+  Left: &ast.Ident{
+    NamePos: 92,
+    NameEnd: 97,
+    Name:    "value",
+  },
+  Right: &ast.ValuesInCondition{
+    Lparen: 101,
+    Rparen: 106,
+    Exprs:  []ast.Expr{
+      &ast.IntLiteral{
+        ValuePos: 102,
+        ValueEnd: 103,
+        Base:     10,
+        Value:    "1",
+      },
+      &ast.IntLiteral{
+        ValuePos: 105,
+        ValueEnd: 106,
+        Base:     10,
+        Value:    "2",
+      },
+    },
+  },
+}
+
+--- SQL
+value IN (1, 2)

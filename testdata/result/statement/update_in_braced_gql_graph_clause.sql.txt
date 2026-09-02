@@ -1,0 +1,126 @@
+--- update_in_braced_gql_graph_clause.sql
+UPDATE Account
+SET is_active = TRUE
+WHERE id IN {
+  GRAPH FinGraph
+  MATCH (a)
+  RETURN a.id
+}
+
+--- AST
+&ast.Update{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 14,
+        Name:    "Account",
+      },
+    },
+  },
+  Updates: []ast.UpdateItem{
+    &ast.UpdateItemSetValue{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 19,
+          NameEnd: 28,
+          Name:    "is_active",
+        },
+      },
+      DefaultExpr: &ast.DefaultExpr{
+        DefaultPos: -1,
+        Expr:       &ast.BoolLiteral{
+          ValuePos: 31,
+          Value:    true,
+        },
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 36,
+    Expr:  &ast.InExpr{
+      Left: &ast.Ident{
+        NamePos: 42,
+        NameEnd: 44,
+        Name:    "id",
+      },
+      Right: &ast.GQLSubQueryInCondition{
+        Lbrace:      48,
+        Rbrace:      93,
+        GraphClause: &ast.GQLGraphClause{
+          Graph:             52,
+          PropertyGraphName: &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 58,
+                NameEnd: 66,
+                Name:    "FinGraph",
+              },
+            },
+          },
+        },
+        Query: &ast.GQLMultiLinearQueryStatement{
+          Statements: []ast.GQLLinearQueryStatement{
+            &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLMatch{
+                  Optional: -1,
+                  Match:    69,
+                  Pattern:  &ast.GQLGraphPattern{
+                    Paths: []*ast.GQLTopLevelPathPattern{
+                      &ast.GQLTopLevelPathPattern{
+                        Path: &ast.GQLPathPattern{
+                          Terms: []*ast.GQLPathTerm{
+                            &ast.GQLPathTerm{
+                              Primary: &ast.GQLNodePattern{
+                                Lparen:  75,
+                                Rparen:  77,
+                                Pattern: &ast.GQLElementPatternFiller{
+                                  EmptyPos: -1,
+                                  Variable: &ast.Ident{
+                                    NamePos: 76,
+                                    NameEnd: 77,
+                                    Name:    "a",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                &ast.GQLReturn{
+                  Return: 81,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.Path{
+                        Idents: []*ast.Ident{
+                          &ast.Ident{
+                            NamePos: 88,
+                            NameEnd: 89,
+                            Name:    "a",
+                          },
+                          &ast.Ident{
+                            NamePos: 90,
+                            NameEnd: 92,
+                            Name:    "id",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+UPDATE Account SET is_active = TRUE WHERE id IN { GRAPH FinGraph MATCH (a) RETURN a.id }

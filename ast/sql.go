@@ -106,7 +106,7 @@ const (
 func exprPrec(e Expr) prec {
 	switch e := e.(type) {
 	case *BadExpr, *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *ReplaceFieldsExpr, *CaseExpr, *IfExpr, *ParenExpr, *ScalarSubQuery,
-		*ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral,
+		*ArraySubQuery, *ExistsSubQuery, *ExistsGQLSubQuery, *ArrayGQLSubQuery, *ValueGQLSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral,
 		*TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral,
 		*DateLiteral, *TimestampLiteral, *NumericLiteral, *JSONLiteral, *IntervalLiteralSingle, *IntervalLiteralRange,
 		*NewConstructor, *BracedNewConstructor, *BracedConstructor, *WithExpr:
@@ -613,6 +613,22 @@ func (e *ExistsSubQuery) SQL() string {
 	return "EXISTS" +
 		sqlOpt(" ", e.Hint, " ") +
 		"(" + e.Query.SQL() + ")"
+}
+
+func (e *ExistsGQLSubQuery) SQL() string {
+	return "EXISTS" + sqlOpt(" ", e.Hint, "") + " { " + sqlOpt("", e.GraphClause, " ") + e.Query.SQL() + " }"
+}
+
+func (a *ArrayGQLSubQuery) SQL() string {
+	return "ARRAY { " + sqlOpt("", a.GraphClause, " ") + a.Query.SQL() + " }"
+}
+
+func (v *ValueGQLSubQuery) SQL() string {
+	return "VALUE" + sqlOpt(" ", v.Hint, "") + " { " + sqlOpt("", v.GraphClause, " ") + v.Query.SQL() + " }"
+}
+
+func (g *GQLSubQueryInCondition) SQL() string {
+	return "{ " + sqlOpt("", g.GraphClause, " ") + g.Query.SQL() + " }"
 }
 
 func (p *Param) SQL() string {
