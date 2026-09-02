@@ -112,6 +112,11 @@ func quoteSingleEscape(r, quote rune, isString bool) string {
 }
 
 func needQuoteSQLIdent(s string) bool {
+	// QuoteSQLIdent formats identifiers without validating them.
+	if s == "" {
+		return true
+	}
+
 	// When s is keyword, it should be quoted.
 	if IsKeyword(s) {
 		return true
