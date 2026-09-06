@@ -185,6 +185,8 @@ CREATE TABLE Albums (
   PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
       Name:   &ast.Ident{
         NamePos: 568,
         NameEnd: 575,

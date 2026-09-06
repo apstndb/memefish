@@ -149,6 +149,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *PipeWhere:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
+	case *PipeAs:
+		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
+
 	case *Unnest:
 		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})
 		stack = append(stack, &stackItem{node: wrapNode(n.WithOffset), visitor: v.Field("WithOffset")})
@@ -223,6 +226,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
 
 	case *IsBoolExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
+
+	case *IsUnknownExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
 
 	case *IsSourceExpr:
@@ -358,6 +364,24 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *ExistsSubQuery:
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *ExistsGQLSubQuery:
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphClause), visitor: v.Field("GraphClause")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *ArrayGQLSubQuery:
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphClause), visitor: v.Field("GraphClause")})
+
+	case *ValueGQLSubQuery:
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphClause), visitor: v.Field("GraphClause")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *GQLSubQueryInCondition:
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphClause), visitor: v.Field("GraphClause")})
 
 	case *Param:
 		// nothing to do
@@ -589,6 +613,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *IndexKey:
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *Cluster:

@@ -1,0 +1,165 @@
+--- exists_braced_match.sql
+GRAPH FinGraph
+MATCH (p:Person)
+RETURN EXISTS {
+  MATCH (p)-[:Owns]->(a:Account)
+} AS has_account
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  21,
+                          Rparen:  30,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "p",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 23,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 32,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.ExistsGQLSubQuery{
+                  Exists: 39,
+                  Rbrace: 81,
+                  Query:  &ast.GQLMatch{
+                    Optional: -1,
+                    Match:    50,
+                    Pattern:  &ast.GQLGraphPattern{
+                      Paths: []*ast.GQLTopLevelPathPattern{
+                        &ast.GQLTopLevelPathPattern{
+                          Path: &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  56,
+                                  Rparen:  58,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 57,
+                                      NameEnd: 58,
+                                      Name:    "p",
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLEdgePattern{
+                                  StartPos:  59,
+                                  EndPos:    69,
+                                  Direction: "RIGHT",
+                                  Filler:    &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Label:    &ast.GQLLabelFilter{
+                                      Is:    -1,
+                                      Colon: 61,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 62,
+                                          NameEnd: 66,
+                                          Name:    "Owns",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  69,
+                                  Rparen:  79,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 70,
+                                      NameEnd: 71,
+                                      Name:    "a",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      Is:    -1,
+                                      Colon: 71,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 72,
+                                          NameEnd: 79,
+                                          Name:    "Account",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                Alias: &ast.AsAlias{
+                  As:    83,
+                  Alias: &ast.Ident{
+                    NamePos: 86,
+                    NameEnd: 97,
+                    Name:    "has_account",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (p:Person) RETURN EXISTS { MATCH (p)-[:Owns]->(a:Account) } AS has_account

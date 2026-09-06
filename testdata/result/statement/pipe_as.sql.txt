@@ -1,0 +1,59 @@
+--- pipe_as.sql
+FROM Singers
+|> AS s
+|> WHERE s.FirstName = "John"
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 12,
+            Name:    "Singers",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeAs{
+        Pipe:  13,
+        Alias: &ast.Ident{
+          NamePos: 19,
+          NameEnd: 20,
+          Name:    "s",
+        },
+      },
+      &ast.PipeWhere{
+        Pipe: 21,
+        Expr: &ast.BinaryExpr{
+          Op:   "=",
+          Left: &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 30,
+                NameEnd: 31,
+                Name:    "s",
+              },
+              &ast.Ident{
+                NamePos: 32,
+                NameEnd: 41,
+                Name:    "FirstName",
+              },
+            },
+          },
+          Right: &ast.StringLiteral{
+            ValuePos: 44,
+            ValueEnd: 50,
+            Value:    "John",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM Singers |> AS s |> WHERE s.FirstName = "John"

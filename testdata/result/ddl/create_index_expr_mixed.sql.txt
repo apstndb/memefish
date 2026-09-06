@@ -1,0 +1,105 @@
+--- create_index_expr_mixed.sql
+create index VenuesByCityAndName on Venues (
+  (json_value(VenueData.address.city)) asc,
+  VenueName desc,
+  (Rating * 2)
+)
+
+--- AST
+&ast.CreateIndex{
+  Rparen: 122,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 32,
+        Name:    "VenuesByCityAndName",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 36,
+        NameEnd: 42,
+        Name:    "Venues",
+      },
+    },
+  },
+  Keys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: 84,
+      Lparen: 47,
+      Rparen: 82,
+      Expr:   &ast.CallExpr{
+        Rparen: 81,
+        Func:   &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 48,
+              NameEnd: 58,
+              Name:    "json_value",
+            },
+          },
+        },
+        Args: []ast.Arg{
+          &ast.ExprArg{
+            Expr: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 59,
+                  NameEnd: 68,
+                  Name:    "VenueData",
+                },
+                &ast.Ident{
+                  NamePos: 69,
+                  NameEnd: 76,
+                  Name:    "address",
+                },
+                &ast.Ident{
+                  NamePos: 77,
+                  NameEnd: 81,
+                  Name:    "city",
+                },
+              },
+            },
+          },
+        },
+      },
+      Dir: "ASC",
+    },
+    &ast.IndexKey{
+      DirPos: 101,
+      Lparen: -1,
+      Rparen: -1,
+      Name:   &ast.Ident{
+        NamePos: 91,
+        NameEnd: 100,
+        Name:    "VenueName",
+      },
+      Dir: "DESC",
+    },
+    &ast.IndexKey{
+      DirPos: -1,
+      Lparen: 109,
+      Rparen: 120,
+      Expr:   &ast.BinaryExpr{
+        Op:   "*",
+        Left: &ast.Ident{
+          NamePos: 110,
+          NameEnd: 116,
+          Name:    "Rating",
+        },
+        Right: &ast.IntLiteral{
+          ValuePos: 119,
+          ValueEnd: 120,
+          Base:     10,
+          Value:    "2",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE INDEX VenuesByCityAndName ON Venues((json_value(VenueData.address.city)) ASC, VenueName DESC, (Rating * 2))

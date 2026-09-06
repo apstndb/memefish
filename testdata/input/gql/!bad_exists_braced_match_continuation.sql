@@ -1,0 +1,5 @@
+GRAPH FinGraph
+RETURN EXISTS {
+  MATCH (a)
+  FILTER
+}

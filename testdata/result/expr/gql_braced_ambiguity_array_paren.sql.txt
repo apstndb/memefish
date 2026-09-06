@@ -1,0 +1,24 @@
+--- gql_braced_ambiguity_array_paren.sql
+-- Regression: ARRAY(...) SQL subquery must still parse after ARRAY { gql } support.
+ARRAY(SELECT 1)
+--- AST
+&ast.ArraySubQuery{
+  Array:  85,
+  Rparen: 99,
+  Query:  &ast.Select{
+    Select:  91,
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.IntLiteral{
+          ValuePos: 98,
+          ValueEnd: 99,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ARRAY(SELECT 1)
