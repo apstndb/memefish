@@ -1,0 +1,71 @@
+--- !bad_alter_table_alter_column_on_update_default_on_update.sql
+ALTER TABLE Foo ALTER COLUMN UpdatedAt TIMESTAMP ON UPDATE (PENDING_COMMIT_TIMESTAMP()) DEFAULT (PENDING_COMMIT_TIMESTAMP()) ON UPDATE (PENDING_COMMIT_TIMESTAMP())
+
+--- Error
+syntax error: testdata/input/ddl/!bad_alter_table_alter_column_on_update_default_on_update.sql:1:126: expected token: <eof>, but: ON
+  1|  ALTER TABLE Foo ALTER COLUMN UpdatedAt TIMESTAMP ON UPDATE (PENDING_COMMIT_TIMESTAMP()) DEFAULT (PENDING_COMMIT_TIMESTAMP()) ON UPDATE (PENDING_COMMIT_TIMESTAMP())
+   |                                                                                                                               ^~
+
+
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "Foo",
+      },
+    },
+  },
+  TableAlteration: &ast.AlterColumn{
+    Alter: 16,
+    Name:  &ast.Ident{
+      NamePos: 29,
+      NameEnd: 38,
+      Name:    "UpdatedAt",
+    },
+    Alteration: &ast.AlterColumnType{
+      Type: &ast.ScalarSchemaType{
+        NamePos: 39,
+        Name:    "TIMESTAMP",
+      },
+      Null:                -1,
+      OnUpdateDefaultExpr: &ast.ColumnOnUpdateDefaultExpr{
+        OnUpdate: &ast.OnUpdate{
+          On:     49,
+          Rparen: 86,
+          Expr:   &ast.CallExpr{
+            Rparen: 85,
+            Func:   &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 60,
+                  NameEnd: 84,
+                  Name:    "PENDING_COMMIT_TIMESTAMP",
+                },
+              },
+            },
+          },
+        },
+        Default: 88,
+        Rparen:  123,
+        Expr:    &ast.CallExpr{
+          Rparen: 122,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 97,
+                NameEnd: 121,
+                Name:    "PENDING_COMMIT_TIMESTAMP",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE Foo ALTER COLUMN UpdatedAt TIMESTAMP ON UPDATE (PENDING_COMMIT_TIMESTAMP()) DEFAULT (PENDING_COMMIT_TIMESTAMP())

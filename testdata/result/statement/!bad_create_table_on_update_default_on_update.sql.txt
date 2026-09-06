@@ -1,0 +1,241 @@
+--- !bad_create_table_on_update_default_on_update.sql
+CREATE TABLE Foo (
+  UpdatedAt TIMESTAMP ON UPDATE (PENDING_COMMIT_TIMESTAMP()) DEFAULT (PENDING_COMMIT_TIMESTAMP()) ON UPDATE (PENDING_COMMIT_TIMESTAMP()),
+) PRIMARY KEY ()
+
+--- Error
+syntax error: testdata/input/ddl/!bad_create_table_on_update_default_on_update.sql:2:99: expected token: ), but: ON
+  2|    UpdatedAt TIMESTAMP ON UPDATE (PENDING_COMMIT_TIMESTAMP()) DEFAULT (PENDING_COMMIT_TIMESTAMP()) ON UPDATE (PENDING_COMMIT_TIMESTAMP()),
+   |                                                                                                    ^~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 173,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "CREATE",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TABLE",
+        AsString: "TABLE",
+        Pos:      7,
+        End:      12,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "Foo",
+        AsString: "Foo",
+        Pos:      13,
+        End:      16,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   17,
+        End:   18,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n  ",
+        Raw:      "UpdatedAt",
+        AsString: "UpdatedAt",
+        Pos:      21,
+        End:      30,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TIMESTAMP",
+        AsString: "TIMESTAMP",
+        Pos:      31,
+        End:      40,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   41,
+        End:   43,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "UPDATE",
+        AsString: "UPDATE",
+        Pos:      44,
+        End:      50,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   51,
+        End:   52,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "PENDING_COMMIT_TIMESTAMP",
+        AsString: "PENDING_COMMIT_TIMESTAMP",
+        Pos:      52,
+        End:      76,
+      },
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        Pos:  76,
+        End:  77,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  77,
+        End:  78,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  78,
+        End:  79,
+      },
+      &token.Token{
+        Kind:  "DEFAULT",
+        Space: " ",
+        Raw:   "DEFAULT",
+        Pos:   80,
+        End:   87,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   88,
+        End:   89,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "PENDING_COMMIT_TIMESTAMP",
+        AsString: "PENDING_COMMIT_TIMESTAMP",
+        Pos:      89,
+        End:      113,
+      },
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        Pos:  113,
+        End:  114,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  114,
+        End:  115,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  115,
+        End:  116,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   117,
+        End:   119,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "UPDATE",
+        AsString: "UPDATE",
+        Pos:      120,
+        End:      126,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   127,
+        End:   128,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "PENDING_COMMIT_TIMESTAMP",
+        AsString: "PENDING_COMMIT_TIMESTAMP",
+        Pos:      128,
+        End:      152,
+      },
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        Pos:  152,
+        End:  153,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  153,
+        End:  154,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  154,
+        End:  155,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  155,
+        End:  156,
+      },
+      &token.Token{
+        Kind:  ")",
+        Space: "\n",
+        Raw:   ")",
+        Pos:   157,
+        End:   158,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "PRIMARY",
+        AsString: "PRIMARY",
+        Pos:      159,
+        End:      166,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "KEY",
+        AsString: "KEY",
+        Pos:      167,
+        End:      170,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   171,
+        End:   172,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  172,
+        End:  173,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE Foo ( UpdatedAt TIMESTAMP ON UPDATE (PENDING_COMMIT_TIMESTAMP()) DEFAULT (PENDING_COMMIT_TIMESTAMP()) ON UPDATE (PENDING_COMMIT_TIMESTAMP()), ) PRIMARY KEY ()

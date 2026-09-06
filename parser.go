@@ -3818,7 +3818,7 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		defaultSemantics = p.parseColumnDefaultExpr()
 	case p.Token.Kind == "ON":
 		onUpdate := p.parseOnUpdate()
-		defaultExpr := p.parseColumnDefaultExpr()
+		defaultExpr := p.parseRequiredColumnDefaultExpr()
 		defaultSemantics = &ast.ColumnOnUpdateDefaultExpr{
 			OnUpdate: onUpdate,
 			Default:  defaultExpr.Default,
@@ -3983,21 +3983,23 @@ func (p *Parser) parseTypeNotNull() (t ast.SchemaType, notNull bool, null token.
 }
 
 func (p *Parser) parseColumnDefaultExpr() *ast.ColumnDefaultExpr {
+	defaultExpr := p.parseRequiredColumnDefaultExpr()
+	if p.Token.Kind == "ON" {
+		defaultExpr.OnUpdate = p.parseOnUpdate()
+	}
+	return defaultExpr
+}
+
+func (p *Parser) parseRequiredColumnDefaultExpr() *ast.ColumnDefaultExpr {
 	def := p.expect("DEFAULT").Pos
 	p.expect("(")
 	expr := p.parseExpr()
 	rparen := p.expect(")").Pos
 
-	var onUpdate *ast.OnUpdate
-	if p.Token.Kind == "ON" {
-		onUpdate = p.parseOnUpdate()
-	}
-
 	return &ast.ColumnDefaultExpr{
-		Default:  def,
-		Rparen:   rparen,
-		Expr:     expr,
-		OnUpdate: onUpdate,
+		Default: def,
+		Rparen:  rparen,
+		Expr:    expr,
 	}
 }
 
@@ -4916,7 +4918,7 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 			defaultExpr = p.parseColumnDefaultExpr()
 		case "ON":
 			onUpdate := p.parseOnUpdate()
-			reverseDefaultExpr := p.parseColumnDefaultExpr()
+			reverseDefaultExpr := p.parseRequiredColumnDefaultExpr()
 			onUpdateDefaultExpr = &ast.ColumnOnUpdateDefaultExpr{
 				OnUpdate: onUpdate,
 				Default:  reverseDefaultExpr.Default,
