@@ -540,6 +540,8 @@ create table foo (
   PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
       Name:   &ast.Ident{
         NamePos: 863,
         NameEnd: 866,
@@ -548,6 +550,8 @@ create table foo (
     },
     &ast.IndexKey{
       DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
       Name:   &ast.Ident{
         NamePos: 868,
         NameEnd: 871,

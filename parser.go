@@ -428,6 +428,9 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 			Pipe: pos,
 			Expr: expr,
 		}
+	case "AS":
+		p.nextToken()
+		return &ast.PipeAs{Pipe: pos, Alias: p.parseIdent()}
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
 	}
@@ -717,7 +720,7 @@ func (p *Parser) parseSelectResults() []ast.SelectItem {
 			break
 		}
 		p.nextToken()
-		if p.Token.Kind == token.TokenEOF || p.Token.Kind == "FROM" {
+		if p.Token.Kind == token.TokenEOF || p.Token.Kind == "FROM" || p.Token.Kind == ")" || p.Token.Kind == "|>" {
 			break
 		}
 		results = append(results, p.parseSelectItem())
@@ -1679,6 +1682,13 @@ func (p *Parser) parseComparison() ast.Expr {
 			}
 		case token.TokenIdent:
 			switch {
+			case p.Token.IsKeywordLike("UNKNOWN"):
+				p.nextToken()
+				return &ast.IsUnknownExpr{
+					Unknown: pos,
+					Left:    expr,
+					Not:     not,
+				}
 			case p.Token.IsKeywordLike("SOURCE") || p.Token.IsKeywordLike("DESTINATION"):
 				isSource := p.Token.IsKeywordLike("SOURCE")
 				p.nextToken()
@@ -1711,7 +1721,7 @@ func (p *Parser) parseComparison() ast.Expr {
 				}
 			}
 		}
-		p.panicfAtToken(&p.Token, "expected token: NULL, TRUE, FALSE, SOURCE, DESTINATION, LABELED, but: %s", p.Token.Kind)
+		p.panicfAtToken(&p.Token, "expected token: NULL, TRUE, FALSE, UNKNOWN, SOURCE, DESTINATION, LABELED, but: %s", p.Token.Kind)
 	default:
 		return expr
 	}
@@ -1732,6 +1742,19 @@ func (p *Parser) parseInCondition() ast.InCondition {
 			Lparen: lparen,
 			Rparen: rparen,
 			Query:  query,
+		}
+	}
+
+	if p.Token.Kind == "{" {
+		lbrace := p.expect("{").Pos
+		graphClause := p.tryParseGQLGraphClause()
+		query := p.parseGQLMultiLinearQueryStatement()
+		rbrace := p.expect("}").Pos
+		return &ast.GQLSubQueryInCondition{
+			Lbrace:      lbrace,
+			Rbrace:      rbrace,
+			GraphClause: graphClause,
+			Query:       query,
 		}
 	}
 
@@ -2039,6 +2062,11 @@ func (p *Parser) parseLit() ast.Expr {
 			return p.parseCastExpr()
 		case id.IsKeywordLike("REPLACE_FIELDS"):
 			return p.parseReplaceFieldsExpr()
+		case id.IsKeywordLike("VALUE"):
+			// VALUE is non-reserved, so look ahead for the `VALUE hint? {` form before choosing the GQL subquery parser.
+			if p.lookaheadValueGQLSubQuery() {
+				return p.parseValueGQLSubQuery()
+			}
 		}
 
 		if p.lookaheadCallExpr() {
@@ -2456,15 +2484,110 @@ func (p *Parser) parseCastExpr() *ast.CastExpr {
 	}
 }
 
-func (p *Parser) parseExistsSubQuery() *ast.ExistsSubQuery {
+func (p *Parser) parseExistsSubQuery() ast.Expr {
 	exists := p.expect("EXISTS").Pos
+	hint := p.tryParseHint()
+	if p.Token.Kind == "{" {
+		p.nextToken()
+		graphClause := p.tryParseGQLGraphClause()
+		query := p.parseGQLExistsContent()
+		rbrace := p.expect("}").Pos
+		return &ast.ExistsGQLSubQuery{
+			Exists:      exists,
+			Rbrace:      rbrace,
+			Hint:        hint,
+			GraphClause: graphClause,
+			Query:       query,
+		}
+	}
 	p.expect("(")
 	query := p.parseQueryExpr()
 	rparen := p.expect(")").Pos
 	return &ast.ExistsSubQuery{
 		Exists: exists,
 		Rparen: rparen,
+		Hint:   hint,
 		Query:  query,
+	}
+}
+
+func (p *Parser) parseGQLExistsContent() ast.GQLExistsContent {
+	switch {
+	case p.lookaheadGQLPathVariable():
+		return p.parseGQLGraphPattern()
+	case p.Token.IsKeywordLike("MATCH") || p.Token.IsKeywordLike("OPTIONAL"):
+		// OPTIONAL MATCH or MATCH — if followed by more primitive statements / NEXT / RETURN chain,
+		// treat as multi-linear; otherwise single match statement form.
+		return p.parseGQLExistsMatchOrQuery()
+	case p.Token.Kind == "@":
+		// A leading traversal hint is invalid, but routing it through the graph-pattern
+		// parser produces the specific leading-hint diagnostic instead of a generic
+		// missing-query-statement error.
+		return p.parseGQLGraphPattern()
+	case p.Token.Kind == "(" || p.Token.Kind == "-" || p.Token.Kind == "<" || p.Token.Kind == "->",
+		p.Token.Kind == "ALL" || p.Token.Kind == "ANY",
+		p.Token.IsKeywordLike("SHORTEST") || p.Token.IsKeywordLike("CHEAPEST"),
+		p.Token.IsKeywordLike("WALK") || p.Token.IsKeywordLike("TRAIL") ||
+			p.Token.IsKeywordLike("SIMPLE") || p.Token.IsKeywordLike("ACYCLIC"):
+		return p.parseGQLGraphPattern()
+	default:
+		return p.parseGQLMultiLinearQueryStatement()
+	}
+}
+
+func (p *Parser) parseGQLExistsMatchOrQuery() ast.GQLExistsContent {
+	// A MATCH can be either the standalone EXISTS form or the first statement of
+	// a query. Reparse the latter through the normal query path to keep this
+	// ambiguity handling separate from query parsing and recovery.
+	lexer := p.cloneLexer()
+	errorCount := len(p.errors)
+	match := p.parseGQLMatch()
+	if p.Token.Kind == "}" {
+		return match
+	}
+	p.Lexer = lexer
+	p.errors = p.errors[:errorCount]
+	return p.parseGQLMultiLinearQueryStatement()
+}
+
+func (p *Parser) lookaheadGQLPathVariable() bool {
+	if p.Token.Kind != token.TokenIdent {
+		return false
+	}
+
+	lexer := p.cloneLexer()
+	lexer.nextToken(false)
+	return lexer.Token.Kind == "="
+}
+
+func (p *Parser) lookaheadValueGQLSubQuery() bool {
+	lexer := p.cloneLexer()
+	errorCount := len(p.errors)
+	defer func() {
+		p.Lexer = lexer
+		p.errors = p.errors[:errorCount]
+	}()
+	if !p.Token.IsKeywordLike("VALUE") {
+		return false
+	}
+	p.nextToken()
+	p.tryParseHint()
+	return p.Token.Kind == "{"
+}
+
+func (p *Parser) parseValueGQLSubQuery() *ast.ValueGQLSubQuery {
+	value := p.expectKeywordLike("VALUE").Pos
+	hint := p.tryParseHint()
+	p.expect("{")
+	graphClause := p.tryParseGQLGraphClause()
+	query := p.parseGQLMultiLinearQueryStatement()
+	rbrace := p.expect("}").Pos
+	return &ast.ValueGQLSubQuery{
+		Value:       value,
+		Rbrace:      rbrace,
+		Hint:        hint,
+		GraphClause: graphClause,
+		Query:       query,
 	}
 }
 
@@ -2590,6 +2713,19 @@ func (p *Parser) parseParenExpr() ast.Expr {
 
 func (p *Parser) parseArrayLiteralOrSubQuery() ast.Expr {
 	pos := p.expect("ARRAY").Pos
+
+	if p.Token.Kind == "{" {
+		p.nextToken()
+		graphClause := p.tryParseGQLGraphClause()
+		query := p.parseGQLMultiLinearQueryStatement()
+		rbrace := p.expect("}").Pos
+		return &ast.ArrayGQLSubQuery{
+			Array:       pos,
+			Rbrace:      rbrace,
+			GraphClause: graphClause,
+			Query:       query,
+		}
+	}
 
 	if p.Token.Kind == "(" {
 		p.nextToken()
@@ -3895,7 +4031,28 @@ func (p *Parser) parseIndexKey() *ast.IndexKey {
 
 	return &ast.IndexKey{
 		DirPos: dirPos,
+		Lparen: token.InvalidPos,
+		Rparen: token.InvalidPos,
 		Name:   name,
+		Dir:    dir,
+	}
+}
+
+func (p *Parser) parseCreateIndexKey() *ast.IndexKey {
+	if p.Token.Kind != "(" {
+		return p.parseIndexKey()
+	}
+
+	lparen := p.expect("(").Pos
+	expr := p.parseExpr()
+	rparen := p.expect(")").Pos
+	dir, dirPos := p.tryParseDirection()
+
+	return &ast.IndexKey{
+		DirPos: dirPos,
+		Lparen: lparen,
+		Rparen: rparen,
+		Expr:   expr,
 		Dir:    dir,
 	}
 }
@@ -4189,7 +4346,7 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 		if p.Token.Kind == ")" {
 			break
 		}
-		keys = append(keys, p.parseIndexKey())
+		keys = append(keys, p.parseCreateIndexKey())
 		if p.Token.Kind != "," {
 			break
 		}
@@ -6951,6 +7108,13 @@ func (p *Parser) parseGQLGraphClause() *ast.GQLGraphClause {
 		Graph:             graphPos,
 		PropertyGraphName: graphName,
 	}
+}
+
+func (p *Parser) tryParseGQLGraphClause() *ast.GQLGraphClause {
+	if !p.Token.IsKeywordLike("GRAPH") {
+		return nil
+	}
+	return p.parseGQLGraphClause()
 }
 
 func (p *Parser) parseGQLMultiLinearQueryStatement() *ast.GQLMultiLinearQueryStatement {

@@ -28,6 +28,8 @@ create index foo_bar on foo (
   Keys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: 36,
+      Lparen: -1,
+      Rparen: -1,
       Name:   &ast.Ident{
         NamePos: 32,
         NameEnd: 35,

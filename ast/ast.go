@@ -154,6 +154,7 @@ type PipeOperator interface {
 
 func (PipeSelect) isPipeOperator() {}
 func (PipeWhere) isPipeOperator()  {}
+func (PipeAs) isPipeOperator()     {}
 
 // SelectItem represents expression in SELECT clause result columns list.
 type SelectItem interface {
@@ -212,6 +213,7 @@ func (UnaryExpr) isExpr()             {}
 func (InExpr) isExpr()                {}
 func (IsNullExpr) isExpr()            {}
 func (IsBoolExpr) isExpr()            {}
+func (IsUnknownExpr) isExpr()         {}
 func (IsSourceExpr) isExpr()          {}
 func (IsDestinationExpr) isExpr()     {}
 func (IsLabeledExpr) isExpr()         {}
@@ -230,6 +232,9 @@ func (ParenExpr) isExpr()             {}
 func (ScalarSubQuery) isExpr()        {}
 func (ArraySubQuery) isExpr()         {}
 func (ExistsSubQuery) isExpr()        {}
+func (ExistsGQLSubQuery) isExpr()     {}
+func (ArrayGQLSubQuery) isExpr()      {}
+func (ValueGQLSubQuery) isExpr()      {}
 func (Param) isExpr()                 {}
 func (Ident) isExpr()                 {}
 func (Path) isExpr()                  {}
@@ -305,9 +310,10 @@ type InCondition interface {
 	isInCondition()
 }
 
-func (UnnestInCondition) isInCondition()   {}
-func (SubQueryInCondition) isInCondition() {}
-func (ValuesInCondition) isInCondition()   {}
+func (UnnestInCondition) isInCondition()      {}
+func (SubQueryInCondition) isInCondition()    {}
+func (GQLSubQueryInCondition) isInCondition() {}
+func (ValuesInCondition) isInCondition()      {}
 
 // TypelessStructLiteralArg represents an argument of typeless STRUCT literals.
 type TypelessStructLiteralArg interface {
@@ -1164,6 +1170,17 @@ type PipeWhere struct {
 	Expr Expr
 }
 
+// PipeAs is AS pipe operator node.
+//
+//	|> AS {{.Alias | sql}}
+type PipeAs struct {
+	// pos = Pipe
+	// end = Alias.end
+
+	Pipe  token.Pos // position of "|>"
+	Alias *Ident
+}
+
 // ================================================================================
 //
 // JOIN
@@ -1437,6 +1454,19 @@ type IsBoolExpr struct {
 	Not   bool
 	Left  Expr
 	Right bool
+}
+
+// IsUnknownExpr is IS UNKNOWN expression node.
+//
+//	{{.Left | sql}} IS {{if .Not}}NOT{{end}} UNKNOWN
+type IsUnknownExpr struct {
+	// pos = Left.pos
+	// end = Unknown + 7
+
+	Unknown token.Pos // position of "UNKNOWN"
+
+	Not  bool
+	Left Expr
 }
 
 // IsSourceExpr is IS SOURCE [OF] expression node.
@@ -1901,6 +1931,74 @@ type ExistsSubQuery struct {
 
 	Hint  *Hint
 	Query QueryExpr
+}
+
+// GQLExistsContent is the body of EXISTS { ... }.
+type GQLExistsContent interface {
+	Node
+	isGQLExistsContent()
+}
+
+func (GQLMultiLinearQueryStatement) isGQLExistsContent() {}
+func (GQLMatch) isGQLExistsContent()                     {}
+func (GQLGraphPattern) isGQLExistsContent()              {}
+
+// ExistsGQLSubQuery is EXISTS { ... } GQL subquery expression.
+//
+//	EXISTS {{.Hint | sqlOpt}} { {{.GraphClause | sqlOpt}} {{.Query | sql}} }
+type ExistsGQLSubQuery struct {
+	// pos = Exists
+	// end = Rbrace + 1
+
+	Exists token.Pos // position of "EXISTS"
+	Rbrace token.Pos // position of "}"
+
+	Hint        *Hint           // optional
+	GraphClause *GQLGraphClause // optional
+	Query       GQLExistsContent
+}
+
+// ArrayGQLSubQuery is ARRAY { gql_query_expr } expression.
+//
+//	ARRAY { {{.GraphClause | sqlOpt}} {{.Query | sql}} }
+type ArrayGQLSubQuery struct {
+	// pos = Array
+	// end = Rbrace + 1
+
+	Array  token.Pos // position of "ARRAY"
+	Rbrace token.Pos // position of "}"
+
+	GraphClause *GQLGraphClause // optional
+	Query       *GQLMultiLinearQueryStatement
+}
+
+// ValueGQLSubQuery is VALUE { gql_query_expr } expression.
+//
+//	VALUE {{.Hint | sqlOpt}} { {{.GraphClause | sqlOpt}} {{.Query | sql}} }
+type ValueGQLSubQuery struct {
+	// pos = Value
+	// end = Rbrace + 1
+
+	Value  token.Pos // position of "VALUE"
+	Rbrace token.Pos // position of "}"
+
+	Hint        *Hint           // optional
+	GraphClause *GQLGraphClause // optional
+	Query       *GQLMultiLinearQueryStatement
+}
+
+// GQLSubQueryInCondition is IN { gql_query_expr } condition.
+//
+//	{ {{.GraphClause | sqlOpt}} {{.Query | sql}} }
+type GQLSubQueryInCondition struct {
+	// pos = Lbrace
+	// end = Rbrace + 1
+
+	Lbrace token.Pos // position of "{"
+	Rbrace token.Pos // position of "}"
+
+	GraphClause *GQLGraphClause // optional
+	Query       *GQLMultiLinearQueryStatement
 }
 
 // ================================================================================
@@ -2825,15 +2923,19 @@ type Check struct {
 }
 
 // IndexKey is index key specifier in CREATE TABLE and CREATE INDEX.
+// Note: Expr is only valid in CREATE INDEX.
 //
-//	{{.Name | sql}} {{.Dir}}
+//	{{if .Name}}{{.Name | sql}}{{else}}({{.Expr | sql}}){{end}} {{.Dir}}
 type IndexKey struct {
-	// pos = Name.pos
-	// end = DirPos + len(Dir) || Name.end
+	// pos = Name.pos || Lparen
+	// end = DirPos + len(Dir) || Name.end || Rparen + 1
 
-	DirPos token.Pos // position of Dir
+	DirPos         token.Pos // position of Dir
+	Lparen, Rparen token.Pos // position of "(" and ")" around Expr, optional
 
-	Name *Ident
+	// Name and Expr are mutually exclusive, but one must be set.
+	Name *Ident    // optional
+	Expr Expr      // optional
 	Dir  Direction // optional
 }
 
