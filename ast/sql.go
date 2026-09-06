@@ -1234,6 +1234,10 @@ func (e *ExecutePrivilegeOnTableFunction) SQL() string {
 	return "EXECUTE ON TABLE FUNCTION " + sqlJoin(e.Names, ", ")
 }
 
+func (e *ExecutePrivilegeOnModel) SQL() string {
+	return "EXECUTE ON MODEL " + sqlJoin(e.Names, ", ")
+}
+
 func (u *UsagePrivilegeOnSchema) SQL() string {
 	if !u.Default.Invalid() {
 		return "USAGE ON SCHEMA DEFAULT"

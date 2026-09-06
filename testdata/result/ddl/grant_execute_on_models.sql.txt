@@ -1,0 +1,44 @@
+--- grant_execute_on_models.sql
+GRANT EXECUTE ON MODEL MyModel, OtherModel TO ROLE MyRole, OtherRole
+
+--- AST
+&ast.Grant{
+  Privilege: &ast.ExecutePrivilegeOnModel{
+    Execute: 6,
+    Names:   []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 23,
+            NameEnd: 30,
+            Name:    "MyModel",
+          },
+        },
+      },
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 32,
+            NameEnd: 42,
+            Name:    "OtherModel",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 51,
+      NameEnd: 57,
+      Name:    "MyRole",
+    },
+    &ast.Ident{
+      NamePos: 59,
+      NameEnd: 68,
+      Name:    "OtherRole",
+    },
+  },
+}
+
+--- SQL
+GRANT EXECUTE ON MODEL MyModel, OtherModel TO ROLE MyRole, OtherRole

@@ -1,0 +1,72 @@
+--- !bad_revoke_execute_on_model_missing_name.sql
+REVOKE EXECUTE ON MODEL FROM ROLE MyRole
+
+--- Error
+syntax error: testdata/input/ddl/!bad_revoke_execute_on_model_missing_name.sql:1:25: expected token: <ident>, but: FROM
+  1|  REVOKE EXECUTE ON MODEL FROM ROLE MyRole
+   |                          ^~~~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 40,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "REVOKE",
+        AsString: "REVOKE",
+        End:      6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "EXECUTE",
+        AsString: "EXECUTE",
+        Pos:      7,
+        End:      14,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   15,
+        End:   17,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "MODEL",
+        AsString: "MODEL",
+        Pos:      18,
+        End:      23,
+      },
+      &token.Token{
+        Kind:  "FROM",
+        Space: " ",
+        Raw:   "FROM",
+        Pos:   24,
+        End:   28,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "ROLE",
+        AsString: "ROLE",
+        Pos:      29,
+        End:      33,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "MyRole",
+        AsString: "MyRole",
+        Pos:      34,
+        End:      40,
+      },
+    },
+  },
+}
+
+--- SQL
+REVOKE EXECUTE ON MODEL FROM ROLE MyRole
