@@ -1,0 +1,42 @@
+--- create_index_expr_paren_column.sql
+create index foo_bar on foo (
+  (bar)
+)
+
+--- AST
+&ast.CreateIndex{
+  Rparen: 38,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 20,
+        Name:    "foo_bar",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 24,
+        NameEnd: 27,
+        Name:    "foo",
+      },
+    },
+  },
+  Keys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Lparen: 32,
+      Rparen: 36,
+      Expr:   &ast.Ident{
+        NamePos: 33,
+        NameEnd: 36,
+        Name:    "bar",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE INDEX foo_bar ON foo((bar))

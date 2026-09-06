@@ -1,0 +1,39 @@
+--- gql_braced_ambiguity_in_paren.sql
+-- Regression: IN (list) must still parse after IN { gql } support.
+1 IN (1, 2, 3)
+--- AST
+&ast.InExpr{
+  Left: &ast.IntLiteral{
+    ValuePos: 68,
+    ValueEnd: 69,
+    Base:     10,
+    Value:    "1",
+  },
+  Right: &ast.ValuesInCondition{
+    Lparen: 73,
+    Rparen: 81,
+    Exprs:  []ast.Expr{
+      &ast.IntLiteral{
+        ValuePos: 74,
+        ValueEnd: 75,
+        Base:     10,
+        Value:    "1",
+      },
+      &ast.IntLiteral{
+        ValuePos: 77,
+        ValueEnd: 78,
+        Base:     10,
+        Value:    "2",
+      },
+      &ast.IntLiteral{
+        ValuePos: 80,
+        ValueEnd: 81,
+        Base:     10,
+        Value:    "3",
+      },
+    },
+  },
+}
+
+--- SQL
+1 IN (1, 2, 3)

@@ -1,0 +1,34 @@
+--- gql_braced_ambiguity_not_in_paren.sql
+-- Regression: NOT IN (list) must still parse after IN { gql } support.
+1 NOT IN (1, 2)
+--- AST
+&ast.InExpr{
+  Not:  true,
+  Left: &ast.IntLiteral{
+    ValuePos: 72,
+    ValueEnd: 73,
+    Base:     10,
+    Value:    "1",
+  },
+  Right: &ast.ValuesInCondition{
+    Lparen: 81,
+    Rparen: 86,
+    Exprs:  []ast.Expr{
+      &ast.IntLiteral{
+        ValuePos: 82,
+        ValueEnd: 83,
+        Base:     10,
+        Value:    "1",
+      },
+      &ast.IntLiteral{
+        ValuePos: 85,
+        ValueEnd: 86,
+        Base:     10,
+        Value:    "2",
+      },
+    },
+  },
+}
+
+--- SQL
+1 NOT IN (1, 2)

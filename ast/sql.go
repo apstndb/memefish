@@ -106,14 +106,14 @@ const (
 func exprPrec(e Expr) prec {
 	switch e := e.(type) {
 	case *BadExpr, *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *ReplaceFieldsExpr, *CaseExpr, *IfExpr, *ParenExpr, *ScalarSubQuery,
-		*ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral,
+		*ArraySubQuery, *ExistsSubQuery, *ExistsGQLSubQuery, *ArrayGQLSubQuery, *ValueGQLSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral,
 		*TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral,
 		*DateLiteral, *TimestampLiteral, *NumericLiteral, *JSONLiteral, *IntervalLiteralSingle, *IntervalLiteralRange,
 		*NewConstructor, *BracedNewConstructor, *BracedConstructor, *WithExpr:
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
-	case *InExpr, *IsNullExpr, *IsBoolExpr, *IsSourceExpr, *IsDestinationExpr, *IsLabeledExpr, *BetweenExpr:
+	case *InExpr, *IsNullExpr, *IsBoolExpr, *IsUnknownExpr, *IsSourceExpr, *IsDestinationExpr, *IsLabeledExpr, *BetweenExpr:
 		return precComparison
 	case *BinaryExpr:
 		switch e.Op {
@@ -330,6 +330,8 @@ func (p *PipeWhere) SQL() string {
 	return "|> WHERE " + p.Expr.SQL()
 }
 
+func (p *PipeAs) SQL() string { return "|> AS " + p.Alias.SQL() }
+
 // ================================================================================
 //
 // JOIN
@@ -447,6 +449,11 @@ func (i *IsNullExpr) SQL() string {
 func (i *IsBoolExpr) SQL() string {
 	p := exprPrec(i)
 	return paren(p, i.Left) + " IS " + strOpt(i.Not, "NOT ") + formatBoolUpper(i.Right)
+}
+
+func (i *IsUnknownExpr) SQL() string {
+	p := exprPrec(i)
+	return paren(p, i.Left) + " IS " + strOpt(i.Not, "NOT ") + "UNKNOWN"
 }
 
 func (i *IsSourceExpr) SQL() string {
@@ -606,6 +613,22 @@ func (e *ExistsSubQuery) SQL() string {
 	return "EXISTS" +
 		sqlOpt(" ", e.Hint, " ") +
 		"(" + e.Query.SQL() + ")"
+}
+
+func (e *ExistsGQLSubQuery) SQL() string {
+	return "EXISTS" + sqlOpt(" ", e.Hint, "") + " { " + sqlOpt("", e.GraphClause, " ") + e.Query.SQL() + " }"
+}
+
+func (a *ArrayGQLSubQuery) SQL() string {
+	return "ARRAY { " + sqlOpt("", a.GraphClause, " ") + a.Query.SQL() + " }"
+}
+
+func (v *ValueGQLSubQuery) SQL() string {
+	return "VALUE" + sqlOpt(" ", v.Hint, "") + " { " + sqlOpt("", v.GraphClause, " ") + v.Query.SQL() + " }"
+}
+
+func (g *GQLSubQueryInCondition) SQL() string {
+	return "{ " + sqlOpt("", g.GraphClause, " ") + g.Query.SQL() + " }"
 }
 
 func (p *Param) SQL() string {
@@ -936,7 +959,7 @@ func (a *AutoIncrement) SQL() string {
 }
 
 func (i *IndexKey) SQL() string {
-	return i.Name.SQL() + strOpt(i.Dir != "", " "+string(i.Dir))
+	return sqlOpt("", i.Name, "") + sqlOpt("(", i.Expr, ")") + strOpt(i.Dir != "", " "+string(i.Dir))
 }
 
 func (c *Cluster) SQL() string {

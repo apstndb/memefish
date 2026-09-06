@@ -56,6 +56,8 @@ CREATE TABLE PKsTable(
         Columns: []*ast.IndexKey{
           &ast.IndexKey{
             DirPos: -1,
+            Lparen: -1,
+            Rparen: -1,
             Name:   &ast.Ident{
               NamePos: 64,
               NameEnd: 67,
@@ -64,6 +66,8 @@ CREATE TABLE PKsTable(
           },
           &ast.IndexKey{
             DirPos: -1,
+            Lparen: -1,
+            Rparen: -1,
             Name:   &ast.Ident{
               NamePos: 69,
               NameEnd: 72,

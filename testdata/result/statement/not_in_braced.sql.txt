@@ -1,0 +1,178 @@
+--- not_in_braced.sql
+GRAPH FinGraph
+MATCH (p:Person)
+RETURN p.name NOT IN {
+  MATCH (x:Person)
+  RETURN x.name
+} AS flag
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  21,
+                          Rparen:  30,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "p",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 23,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 32,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.InExpr{
+                  Not:  true,
+                  Left: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 39,
+                        NameEnd: 40,
+                        Name:    "p",
+                      },
+                      &ast.Ident{
+                        NamePos: 41,
+                        NameEnd: 45,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                  Right: &ast.GQLSubQueryInCondition{
+                    Lbrace: 53,
+                    Rbrace: 90,
+                    Query:  &ast.GQLMultiLinearQueryStatement{
+                      Statements: []ast.GQLLinearQueryStatement{
+                        &ast.GQLSimpleLinearQueryStatement{
+                          Statements: []ast.GQLPrimitiveQueryStatement{
+                            &ast.GQLMatch{
+                              Optional: -1,
+                              Match:    57,
+                              Pattern:  &ast.GQLGraphPattern{
+                                Paths: []*ast.GQLTopLevelPathPattern{
+                                  &ast.GQLTopLevelPathPattern{
+                                    Path: &ast.GQLPathPattern{
+                                      Terms: []*ast.GQLPathTerm{
+                                        &ast.GQLPathTerm{
+                                          Primary: &ast.GQLNodePattern{
+                                            Lparen:  63,
+                                            Rparen:  72,
+                                            Pattern: &ast.GQLElementPatternFiller{
+                                              EmptyPos: -1,
+                                              Variable: &ast.Ident{
+                                                NamePos: 64,
+                                                NameEnd: 65,
+                                                Name:    "x",
+                                              },
+                                              Label: &ast.GQLLabelFilter{
+                                                Is:    -1,
+                                                Colon: 65,
+                                                Expr:  &ast.GQLNameLabel{
+                                                  Name: &ast.Ident{
+                                                    NamePos: 66,
+                                                    NameEnd: 72,
+                                                    Name:    "Person",
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                            &ast.GQLReturn{
+                              Return: 76,
+                              Items:  []*ast.GQLReturnItem{
+                                &ast.GQLReturnItem{
+                                  Star: -1,
+                                  Expr: &ast.Path{
+                                    Idents: []*ast.Ident{
+                                      &ast.Ident{
+                                        NamePos: 83,
+                                        NameEnd: 84,
+                                        Name:    "x",
+                                      },
+                                      &ast.Ident{
+                                        NamePos: 85,
+                                        NameEnd: 89,
+                                        Name:    "name",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                Alias: &ast.AsAlias{
+                  As:    92,
+                  Alias: &ast.Ident{
+                    NamePos: 95,
+                    NameEnd: 99,
+                    Name:    "flag",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (p:Person) RETURN p.name NOT IN { MATCH (x:Person) RETURN x.name } AS flag

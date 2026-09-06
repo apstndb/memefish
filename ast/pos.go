@@ -326,6 +326,14 @@ func (p *PipeWhere) End() token.Pos {
 	return nodeEnd(wrapNode(p.Expr))
 }
 
+func (p *PipeAs) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeAs) End() token.Pos {
+	return nodeEnd(wrapNode(p.Alias))
+}
+
 func (u *Unnest) Pos() token.Pos {
 	return u.Unnest
 }
@@ -476,6 +484,14 @@ func (i *IsBoolExpr) Pos() token.Pos {
 
 func (i *IsBoolExpr) End() token.Pos {
 	return posAdd(i.RightPos, ifThenElse(i.Right, 4, 5))
+}
+
+func (i *IsUnknownExpr) Pos() token.Pos {
+	return nodePos(wrapNode(i.Left))
+}
+
+func (i *IsUnknownExpr) End() token.Pos {
+	return posAdd(i.Unknown, 7)
 }
 
 func (i *IsSourceExpr) Pos() token.Pos {
@@ -748,6 +764,38 @@ func (e *ExistsSubQuery) Pos() token.Pos {
 
 func (e *ExistsSubQuery) End() token.Pos {
 	return posAdd(e.Rparen, 1)
+}
+
+func (e *ExistsGQLSubQuery) Pos() token.Pos {
+	return e.Exists
+}
+
+func (e *ExistsGQLSubQuery) End() token.Pos {
+	return posAdd(e.Rbrace, 1)
+}
+
+func (a *ArrayGQLSubQuery) Pos() token.Pos {
+	return a.Array
+}
+
+func (a *ArrayGQLSubQuery) End() token.Pos {
+	return posAdd(a.Rbrace, 1)
+}
+
+func (v *ValueGQLSubQuery) Pos() token.Pos {
+	return v.Value
+}
+
+func (v *ValueGQLSubQuery) End() token.Pos {
+	return posAdd(v.Rbrace, 1)
+}
+
+func (g *GQLSubQueryInCondition) Pos() token.Pos {
+	return g.Lbrace
+}
+
+func (g *GQLSubQueryInCondition) End() token.Pos {
+	return posAdd(g.Rbrace, 1)
 }
 
 func (p *Param) Pos() token.Pos {
@@ -1279,11 +1327,11 @@ func (c *Check) End() token.Pos {
 }
 
 func (i *IndexKey) Pos() token.Pos {
-	return nodePos(wrapNode(i.Name))
+	return posChoice(nodePos(wrapNode(i.Name)), i.Lparen)
 }
 
 func (i *IndexKey) End() token.Pos {
-	return posChoice(posAdd(i.DirPos, len(i.Dir)), nodeEnd(wrapNode(i.Name)))
+	return posChoice(posAdd(i.DirPos, len(i.Dir)), nodeEnd(wrapNode(i.Name)), posAdd(i.Rparen, 1))
 }
 
 func (c *Cluster) Pos() token.Pos {

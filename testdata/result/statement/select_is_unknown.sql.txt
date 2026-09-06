@@ -1,0 +1,32 @@
+--- select_is_unknown.sql
+SELECT true IS UNKNOWN, true IS NOT UNKNOWN
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.IsUnknownExpr{
+          Unknown: 15,
+          Left:    &ast.BoolLiteral{
+            ValuePos: 7,
+            Value:    true,
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IsUnknownExpr{
+          Unknown: 36,
+          Not:     true,
+          Left:    &ast.BoolLiteral{
+            ValuePos: 24,
+            Value:    true,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT TRUE IS UNKNOWN, TRUE IS NOT UNKNOWN
