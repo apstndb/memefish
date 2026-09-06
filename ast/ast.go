@@ -466,8 +466,7 @@ func (SetInterleaveIn) isTableAlteration()          {}
 func (AlterColumn) isTableAlteration()              {}
 func (AlterTableSetOptions) isTableAlteration()     {}
 
-// ColumnDefaultSemantics is interface of DefaultExpr, GeneratedColumnExpr, IdentityColumn, AutoIncrement.
-// They are change default value of column and mutually exclusive.
+// ColumnDefaultSemantics represents mutually exclusive column default semantics.
 type ColumnDefaultSemantics interface {
 	Node
 	isColumnDefaultSemantics()
