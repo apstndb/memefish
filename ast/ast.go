@@ -1278,7 +1278,14 @@ type ParenTableExpr struct {
 // Join is JOIN expression.
 //
 //	{{.Left | sql}}
-//	  {{.Op}} {{.Method}} {{.Hint | sqlOpt}}
+//	{{if .Op == ","}},{{else}}
+//	  {{if .Op == "CROSS JOIN"}}CROSS{{end}}
+//	  {{if .Op == "INNER JOIN"}}INNER{{end}}
+//	  {{if .Op == "FULL OUTER JOIN"}}FULL OUTER{{end}}
+//	  {{if .Op == "LEFT OUTER JOIN"}}LEFT OUTER{{end}}
+//	  {{if .Op == "RIGHT OUTER JOIN"}}RIGHT OUTER{{end}}
+//	  {{.Method}} JOIN {{.Hint | sqlOpt}}
+//	{{end}}
 //	  {{.Right | sql}}
 //	{{.Cond | sqlOpt}}
 type Join struct {

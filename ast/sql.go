@@ -377,9 +377,14 @@ func (p *ParenTableExpr) SQL() string {
 }
 
 func (j *Join) SQL() string {
+	op := string(j.Op)
+	if j.Method != "" {
+		// JoinOp includes JOIN; the method belongs immediately before that keyword.
+		op = strings.TrimSuffix(op, "JOIN") + string(j.Method) + " JOIN"
+	}
 	return j.Left.SQL() +
 		strOpt(j.Op != CommaJoin, " ") +
-		string(j.Op) + " " +
+		op + " " +
 		sqlOpt("", j.Hint, " ") +
 		j.Right.SQL() +
 		sqlOpt(" ", j.Cond, "")
