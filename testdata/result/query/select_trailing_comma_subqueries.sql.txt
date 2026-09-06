@@ -1,0 +1,55 @@
+--- select_trailing_comma_subqueries.sql
+(SELECT EXISTS(SELECT 1,), ARRAY(SELECT 2,),)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.SubQuery{
+    Rparen: 44,
+    Query:  &ast.Select{
+      Select:  1,
+      Results: []ast.SelectItem{
+        &ast.ExprSelectItem{
+          Expr: &ast.ExistsSubQuery{
+            Exists: 8,
+            Rparen: 24,
+            Query:  &ast.Select{
+              Select:  15,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 22,
+                    ValueEnd: 23,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                },
+              },
+            },
+          },
+        },
+        &ast.ExprSelectItem{
+          Expr: &ast.ArraySubQuery{
+            Array:  27,
+            Rparen: 42,
+            Query:  &ast.Select{
+              Select:  33,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 40,
+                    ValueEnd: 41,
+                    Base:     10,
+                    Value:    "2",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+(SELECT EXISTS(SELECT 1), ARRAY(SELECT 2))

@@ -94,6 +94,8 @@ CREATE TABLE foo
   PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
       Name:   &ast.Ident{
         NamePos: 141,
         NameEnd: 143,

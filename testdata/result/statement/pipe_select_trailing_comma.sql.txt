@@ -1,0 +1,83 @@
+--- pipe_select_trailing_comma.sql
+(FROM UNNEST([1]) AS x |> SELECT x,)
+|> SELECT x,
+|> WHERE TRUE
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.SubQuery{
+      Rparen: 35,
+      Query:  &ast.Query{
+        Query: &ast.FromQuery{
+          From: &ast.From{
+            From:   1,
+            Source: &ast.Unnest{
+              Unnest: 6,
+              Rparen: 16,
+              Expr:   &ast.ArrayLiteral{
+                Array:  -1,
+                Lbrack: 13,
+                Rbrack: 15,
+                Values: []ast.Expr{
+                  &ast.IntLiteral{
+                    ValuePos: 14,
+                    ValueEnd: 15,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                },
+              },
+              As: &ast.AsAlias{
+                As:    18,
+                Alias: &ast.Ident{
+                  NamePos: 21,
+                  NameEnd: 22,
+                  Name:    "x",
+                },
+              },
+            },
+          },
+        },
+        PipeOperators: []ast.PipeOperator{
+          &ast.PipeSelect{
+            Pipe:    23,
+            Results: []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.Ident{
+                  NamePos: 33,
+                  NameEnd: 34,
+                  Name:    "x",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeSelect{
+        Pipe:    37,
+        Results: []ast.SelectItem{
+          &ast.ExprSelectItem{
+            Expr: &ast.Ident{
+              NamePos: 47,
+              NameEnd: 48,
+              Name:    "x",
+            },
+          },
+        },
+      },
+      &ast.PipeWhere{
+        Pipe: 50,
+        Expr: &ast.BoolLiteral{
+          ValuePos: 59,
+          Value:    true,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+(FROM UNNEST([1]) AS x |> SELECT x) |> SELECT x |> WHERE TRUE

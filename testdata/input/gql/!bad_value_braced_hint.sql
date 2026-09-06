@@ -1,0 +1,2 @@
+GRAPH FinGraph
+RETURN VALUE @{x=} { RETURN 1 }
