@@ -3642,7 +3642,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 			break
 		}
 		switch {
-		case p.Token.IsKeywordLike("CONSTRAINT"):
+		case p.lookaheadNamedConstraint():
 			constraints = append(constraints, p.parseConstraint())
 		case p.Token.IsKeywordLike("FOREIGN"):
 			fk := p.parseForeignKey()
@@ -3857,6 +3857,20 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		PlacementKey:     placementKey,
 		Options:          options,
 	}
+}
+
+// CONSTRAINT is not reserved and can also be a column name.
+func (p *Parser) lookaheadNamedConstraint() bool {
+	if !p.Token.IsKeywordLike("CONSTRAINT") {
+		return false
+	}
+	lexer := p.cloneLexer()
+	lexer.nextToken(false)
+	if lexer.Token.Kind != token.TokenIdent {
+		return false
+	}
+	lexer.nextToken(false)
+	return lexer.Token.IsKeywordLike("FOREIGN") || lexer.Token.IsKeywordLike("CHECK")
 }
 
 func (p *Parser) parseConstraint() *ast.TableConstraint {

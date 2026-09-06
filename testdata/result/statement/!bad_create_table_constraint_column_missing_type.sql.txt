@@ -1,0 +1,90 @@
+--- !bad_create_table_constraint_column_missing_type.sql
+CREATE TABLE Probe (CONSTRAINT) PRIMARY KEY ()
+
+--- Error
+syntax error: testdata/input/ddl/!bad_create_table_constraint_column_missing_type.sql:1:31: expected token: ARRAY, <ident>, but: )
+  1|  CREATE TABLE Probe (CONSTRAINT) PRIMARY KEY ()
+   |                                ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 46,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "CREATE",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TABLE",
+        AsString: "TABLE",
+        Pos:      7,
+        End:      12,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "Probe",
+        AsString: "Probe",
+        Pos:      13,
+        End:      18,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   19,
+        End:   20,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "CONSTRAINT",
+        AsString: "CONSTRAINT",
+        Pos:      20,
+        End:      30,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  30,
+        End:  31,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "PRIMARY",
+        AsString: "PRIMARY",
+        Pos:      32,
+        End:      39,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "KEY",
+        AsString: "KEY",
+        Pos:      40,
+        End:      43,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   44,
+        End:   45,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  45,
+        End:  46,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE Probe (CONSTRAINT) PRIMARY KEY ()

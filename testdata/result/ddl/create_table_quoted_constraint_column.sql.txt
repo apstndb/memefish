@@ -1,0 +1,66 @@
+--- create_table_quoted_constraint_column.sql
+CREATE TABLE Probe (Id INT64 NOT NULL, `CONSTRAINT` BOOL) PRIMARY KEY (Id)
+
+--- AST
+&ast.CreateTable{
+  Rparen:           56,
+  PrimaryKeyRparen: 73,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 18,
+        Name:    "Probe",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 33,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 20,
+        NameEnd: 22,
+        Name:    "Id",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 23,
+        Name:    "INT64",
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 39,
+        NameEnd: 51,
+        Name:    "CONSTRAINT",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 52,
+        Name:    "BOOL",
+      },
+      Hidden: -1,
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
+      Name:   &ast.Ident{
+        NamePos: 71,
+        NameEnd: 73,
+        Name:    "Id",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE Probe (
+  Id INT64 NOT NULL,
+  CONSTRAINT BOOL
+) PRIMARY KEY (Id)

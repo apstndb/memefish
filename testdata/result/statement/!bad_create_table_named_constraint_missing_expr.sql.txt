@@ -1,0 +1,77 @@
+--- !bad_create_table_named_constraint_missing_expr.sql
+CREATE TABLE Probe (Id INT64, CONSTRAINT PositiveId CHECK ()) PRIMARY KEY (Id)
+
+--- Error
+syntax error: testdata/input/ddl/!bad_create_table_named_constraint_missing_expr.sql:1:60: unexpected token: )
+  1|  CREATE TABLE Probe (Id INT64, CONSTRAINT PositiveId CHECK ()) PRIMARY KEY (Id)
+   |                                                             ^
+
+
+--- AST
+&ast.CreateTable{
+  Rparen:           60,
+  PrimaryKeyRparen: 77,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 18,
+        Name:    "Probe",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 20,
+        NameEnd: 22,
+        Name:    "Id",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 23,
+        Name:    "INT64",
+      },
+      Hidden: -1,
+    },
+  },
+  TableConstraints: []*ast.TableConstraint{
+    &ast.TableConstraint{
+      ConstraintPos: 30,
+      Name:          &ast.Ident{
+        NamePos: 41,
+        NameEnd: 51,
+        Name:    "PositiveId",
+      },
+      Constraint: &ast.Check{
+        Check:  52,
+        Rparen: 59,
+        Expr:   &ast.BadExpr{
+          BadNode: &ast.BadNode{
+            NodePos: 59,
+            NodeEnd: 59,
+          },
+        },
+      },
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
+      Name:   &ast.Ident{
+        NamePos: 75,
+        NameEnd: 77,
+        Name:    "Id",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE Probe (
+  Id INT64,
+  CONSTRAINT PositiveId CHECK ()
+) PRIMARY KEY (Id)
