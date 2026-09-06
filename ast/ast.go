@@ -3589,7 +3589,7 @@ type InterleaveIn struct {
 
 	Comma token.Pos // position of ","
 
-	TableName *Ident
+	TableName *Path
 }
 
 // AddStoredColumn is ADD STORED COLUMN clause in ALTER INDEX.

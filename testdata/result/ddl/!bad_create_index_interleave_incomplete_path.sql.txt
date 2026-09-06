@@ -1,0 +1,137 @@
+--- !bad_create_index_interleave_incomplete_path.sql
+CREATE INDEX app.Idx ON app.Child (Id), INTERLEAVE IN app.
+
+--- Error
+syntax error: testdata/input/ddl/!bad_create_index_interleave_incomplete_path.sql:2:1: expected token: <ident>, but: <eof>
+  2|  
+   |  ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 58,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "CREATE",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INDEX",
+        AsString: "INDEX",
+        Pos:      7,
+        End:      12,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "app",
+        AsString: "app",
+        Pos:      13,
+        End:      16,
+      },
+      &token.Token{
+        Kind: ".",
+        Raw:  ".",
+        Pos:  16,
+        End:  17,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "Idx",
+        AsString: "Idx",
+        Pos:      17,
+        End:      20,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   21,
+        End:   23,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "app",
+        AsString: "app",
+        Pos:      24,
+        End:      27,
+      },
+      &token.Token{
+        Kind: ".",
+        Raw:  ".",
+        Pos:  27,
+        End:  28,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "Child",
+        AsString: "Child",
+        Pos:      28,
+        End:      33,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   34,
+        End:   35,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "Id",
+        AsString: "Id",
+        Pos:      35,
+        End:      37,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  37,
+        End:  38,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  38,
+        End:  39,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INTERLEAVE",
+        AsString: "INTERLEAVE",
+        Pos:      40,
+        End:      50,
+      },
+      &token.Token{
+        Kind:  "IN",
+        Space: " ",
+        Raw:   "IN",
+        Pos:   51,
+        End:   53,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "app",
+        AsString: "app",
+        Pos:      54,
+        End:      57,
+      },
+      &token.Token{
+        Kind: ".",
+        Raw:  ".",
+        Pos:  57,
+        End:  58,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE INDEX app.Idx ON app.Child (Id), INTERLEAVE IN app.

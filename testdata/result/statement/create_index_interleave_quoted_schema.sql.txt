@@ -1,0 +1,67 @@
+--- create_index_interleave_quoted_schema.sql
+CREATE INDEX `my-schema`.Idx ON `my-schema`.Child (Id), INTERLEAVE IN `my-schema`.Parent
+
+--- AST
+&ast.CreateIndex{
+  Rparen: 53,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 24,
+        Name:    "my-schema",
+      },
+      &ast.Ident{
+        NamePos: 25,
+        NameEnd: 28,
+        Name:    "Idx",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 32,
+        NameEnd: 43,
+        Name:    "my-schema",
+      },
+      &ast.Ident{
+        NamePos: 44,
+        NameEnd: 49,
+        Name:    "Child",
+      },
+    },
+  },
+  Keys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
+      Name:   &ast.Ident{
+        NamePos: 51,
+        NameEnd: 53,
+        Name:    "Id",
+      },
+    },
+  },
+  InterleaveIn: &ast.InterleaveIn{
+    Comma:     54,
+    TableName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 70,
+          NameEnd: 81,
+          Name:    "my-schema",
+        },
+        &ast.Ident{
+          NamePos: 82,
+          NameEnd: 88,
+          Name:    "Parent",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE INDEX `my-schema`.Idx ON `my-schema`.Child(Id), INTERLEAVE IN `my-schema`.Parent
