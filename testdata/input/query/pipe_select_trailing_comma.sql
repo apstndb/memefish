@@ -1,0 +1,3 @@
+(FROM UNNEST([1]) AS x |> SELECT x,)
+|> SELECT x,
+|> WHERE TRUE
