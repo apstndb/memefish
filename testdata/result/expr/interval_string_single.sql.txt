@@ -1,0 +1,16 @@
+--- interval_string_single.sql
+INTERVAL '1' DAY
+
+--- AST
+&ast.IntervalLiteralSingle{
+  DateTimePartEnd: 16,
+  StringValue:     &ast.StringLiteral{
+    ValuePos: 9,
+    ValueEnd: 12,
+    Value:    "1",
+  },
+  DateTimePart: "DAY",
+}
+
+--- SQL
+INTERVAL "1" DAY

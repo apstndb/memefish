@@ -1,0 +1,33 @@
+--- !bad_interval_string_missing_part.sql
+INTERVAL '1'
+
+--- Error
+syntax error: testdata/input/expr/!bad_interval_string_missing_part.sql:2:1: expected token: <ident>, but: <eof>
+  2|  
+   |  ^
+
+
+--- AST
+&ast.BadExpr{
+  BadNode: &ast.BadNode{
+    NodeEnd: 12,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "INTERVAL",
+        Raw:  "INTERVAL",
+        End:  8,
+      },
+      &token.Token{
+        Kind:     "<string>",
+        Space:    " ",
+        Raw:      "'1'",
+        AsString: "1",
+        Pos:      9,
+        End:      12,
+      },
+    },
+  },
+}
+
+--- SQL
+INTERVAL '1'

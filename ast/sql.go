@@ -702,7 +702,7 @@ func (t *JSONLiteral) SQL() string {
 }
 
 func (n *IntervalLiteralSingle) SQL() string {
-	return "INTERVAL " + n.Value.SQL() + " " + string(n.DateTimePart)
+	return "INTERVAL " + sqlOpt("", n.Value, "") + sqlOpt("", n.StringValue, "") + " " + string(n.DateTimePart)
 }
 
 func (n *IntervalLiteralRange) SQL() string {

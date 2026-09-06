@@ -1,0 +1,41 @@
+--- !bad_interval_string_invalid_part.sql
+INTERVAL '1' INVALID
+
+--- Error
+syntax error: testdata/input/expr/!bad_interval_string_invalid_part.sql:1:14: invalid date time part: INVALID
+  1|  INTERVAL '1' INVALID
+   |               ^~~~~~~
+
+
+--- AST
+&ast.BadExpr{
+  BadNode: &ast.BadNode{
+    NodeEnd: 20,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "INTERVAL",
+        Raw:  "INTERVAL",
+        End:  8,
+      },
+      &token.Token{
+        Kind:     "<string>",
+        Space:    " ",
+        Raw:      "'1'",
+        AsString: "1",
+        Pos:      9,
+        End:      12,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INVALID",
+        AsString: "INVALID",
+        Pos:      13,
+        End:      20,
+      },
+    },
+  },
+}
+
+--- SQL
+INTERVAL '1' INVALID

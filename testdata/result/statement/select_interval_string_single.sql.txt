@@ -1,0 +1,140 @@
+--- select_interval_string_single.sql
+SELECT
+  INTERVAL '1' DAY AS day_value,
+  INTERVAL '-2' MONTH AS month_value,
+  INTERVAL '1.5' SECOND AS second_value,
+  INTERVAL 1 DAY AS integer_value,
+  INTERVAL @days DAY AS parameter_value,
+  INTERVAL '1-2' YEAR TO MONTH AS range_value
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.IntervalLiteralSingle{
+          Interval:        9,
+          DateTimePartEnd: 25,
+          StringValue:     &ast.StringLiteral{
+            ValuePos: 18,
+            ValueEnd: 21,
+            Value:    "1",
+          },
+          DateTimePart: "DAY",
+        },
+        As: &ast.AsAlias{
+          As:    26,
+          Alias: &ast.Ident{
+            NamePos: 29,
+            NameEnd: 38,
+            Name:    "day_value",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.IntervalLiteralSingle{
+          Interval:        42,
+          DateTimePartEnd: 61,
+          StringValue:     &ast.StringLiteral{
+            ValuePos: 51,
+            ValueEnd: 55,
+            Value:    "-2",
+          },
+          DateTimePart: "MONTH",
+        },
+        As: &ast.AsAlias{
+          As:    62,
+          Alias: &ast.Ident{
+            NamePos: 65,
+            NameEnd: 76,
+            Name:    "month_value",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.IntervalLiteralSingle{
+          Interval:        80,
+          DateTimePartEnd: 101,
+          StringValue:     &ast.StringLiteral{
+            ValuePos: 89,
+            ValueEnd: 94,
+            Value:    "1.5",
+          },
+          DateTimePart: "SECOND",
+        },
+        As: &ast.AsAlias{
+          As:    102,
+          Alias: &ast.Ident{
+            NamePos: 105,
+            NameEnd: 117,
+            Name:    "second_value",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.IntervalLiteralSingle{
+          Interval:        121,
+          DateTimePartEnd: 135,
+          Value:           &ast.IntLiteral{
+            ValuePos: 130,
+            ValueEnd: 131,
+            Base:     10,
+            Value:    "1",
+          },
+          DateTimePart: "DAY",
+        },
+        As: &ast.AsAlias{
+          As:    136,
+          Alias: &ast.Ident{
+            NamePos: 139,
+            NameEnd: 152,
+            Name:    "integer_value",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.IntervalLiteralSingle{
+          Interval:        156,
+          DateTimePartEnd: 174,
+          Value:           &ast.Param{
+            Atmark: 165,
+            Name:   "days",
+          },
+          DateTimePart: "DAY",
+        },
+        As: &ast.AsAlias{
+          As:    175,
+          Alias: &ast.Ident{
+            NamePos: 178,
+            NameEnd: 193,
+            Name:    "parameter_value",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.IntervalLiteralRange{
+          Interval:              197,
+          EndingDateTimePartEnd: 225,
+          Value:                 &ast.StringLiteral{
+            ValuePos: 206,
+            ValueEnd: 211,
+            Value:    "1-2",
+          },
+          StartingDateTimePart: "YEAR",
+          EndingDateTimePart:   "MONTH",
+        },
+        As: &ast.AsAlias{
+          As:    226,
+          Alias: &ast.Ident{
+            NamePos: 229,
+            NameEnd: 240,
+            Name:    "range_value",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT INTERVAL "1" DAY AS day_value, INTERVAL "-2" MONTH AS month_value, INTERVAL "1.5" SECOND AS second_value, INTERVAL 1 DAY AS integer_value, INTERVAL @days DAY AS parameter_value, INTERVAL "1-2" YEAR TO MONTH AS range_value

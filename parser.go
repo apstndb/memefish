@@ -2925,7 +2925,15 @@ func (p *Parser) parseIntervalLiteral() ast.Expr {
 			DateTimePartEnd: end,
 		}
 	case *ast.StringLiteral:
-		starting, _, _ := p.parseDateTimePart()
+		starting, _, startingEnd := p.parseDateTimePart()
+		if p.Token.Kind != "TO" {
+			return &ast.IntervalLiteralSingle{
+				Interval:        interval,
+				StringValue:     e,
+				DateTimePart:    starting,
+				DateTimePartEnd: startingEnd,
+			}
+		}
 
 		p.expect("TO")
 		ending, _, endingEnd := p.parseDateTimePart()
