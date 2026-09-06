@@ -1,0 +1,95 @@
+--- create_model_array_of_struct.sql
+CREATE MODEL m
+INPUT (x ARRAY<STRUCT<a INT64>>)
+OUTPUT (y ARRAY<STRUCT<b BOOL, c FLOAT64>>)
+REMOTE
+
+--- AST
+&ast.CreateModel{
+  Remote: 92,
+  Name:   &ast.Ident{
+    NamePos: 13,
+    NameEnd: 14,
+    Name:    "m",
+  },
+  InputOutput: &ast.CreateModelInputOutput{
+    Input:        15,
+    Rparen:       90,
+    InputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 22,
+          NameEnd: 23,
+          Name:    "x",
+        },
+        DataType: &ast.ArraySchemaType{
+          Array:  24,
+          Gt:     45,
+          Rparen: -1,
+          Item:   &ast.StructType{
+            Struct: 30,
+            Gt:     44,
+            Fields: []*ast.StructField{
+              &ast.StructField{
+                Ident: &ast.Ident{
+                  NamePos: 37,
+                  NameEnd: 38,
+                  Name:    "a",
+                },
+                Type: &ast.SimpleType{
+                  NamePos: 39,
+                  Name:    "INT64",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    OutputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 56,
+          NameEnd: 57,
+          Name:    "y",
+        },
+        DataType: &ast.ArraySchemaType{
+          Array:  58,
+          Gt:     89,
+          Rparen: -1,
+          Item:   &ast.StructType{
+            Struct: 64,
+            Gt:     88,
+            Fields: []*ast.StructField{
+              &ast.StructField{
+                Ident: &ast.Ident{
+                  NamePos: 71,
+                  NameEnd: 72,
+                  Name:    "b",
+                },
+                Type: &ast.SimpleType{
+                  NamePos: 73,
+                  Name:    "BOOL",
+                },
+              },
+              &ast.StructField{
+                Ident: &ast.Ident{
+                  NamePos: 79,
+                  NameEnd: 80,
+                  Name:    "c",
+                },
+                Type: &ast.SimpleType{
+                  NamePos: 81,
+                  Name:    "FLOAT64",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE MODEL m INPUT (x ARRAY<STRUCT<a INT64>>) OUTPUT (y ARRAY<STRUCT<b BOOL, c FLOAT64>>) REMOTE

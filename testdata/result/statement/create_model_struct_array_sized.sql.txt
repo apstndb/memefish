@@ -1,0 +1,86 @@
+--- create_model_struct_array_sized.sql
+CREATE MODEL m
+INPUT (x STRUCT<a ARRAY<STRING(MAX)>>)
+OUTPUT (y STRUCT<b ARRAY<BYTES(MAX)>>)
+REMOTE
+
+--- AST
+&ast.CreateModel{
+  Remote: 93,
+  Name:   &ast.Ident{
+    NamePos: 13,
+    NameEnd: 14,
+    Name:    "m",
+  },
+  InputOutput: &ast.CreateModelInputOutput{
+    Input:        15,
+    Rparen:       91,
+    InputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 22,
+          NameEnd: 23,
+          Name:    "x",
+        },
+        DataType: &ast.StructType{
+          Struct: 24,
+          Gt:     51,
+          Fields: []*ast.StructField{
+            &ast.StructField{
+              Ident: &ast.Ident{
+                NamePos: 31,
+                NameEnd: 32,
+                Name:    "a",
+              },
+              Type: &ast.ArrayType{
+                Array: 33,
+                Gt:    50,
+                Item:  &ast.SizedSchemaType{
+                  NamePos: 39,
+                  Rparen:  49,
+                  Name:    "STRING",
+                  Max:     true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    OutputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 62,
+          NameEnd: 63,
+          Name:    "y",
+        },
+        DataType: &ast.StructType{
+          Struct: 64,
+          Gt:     90,
+          Fields: []*ast.StructField{
+            &ast.StructField{
+              Ident: &ast.Ident{
+                NamePos: 71,
+                NameEnd: 72,
+                Name:    "b",
+              },
+              Type: &ast.ArrayType{
+                Array: 73,
+                Gt:    89,
+                Item:  &ast.SizedSchemaType{
+                  NamePos: 79,
+                  Rparen:  88,
+                  Name:    "BYTES",
+                  Max:     true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE MODEL m INPUT (x STRUCT<a ARRAY<STRING(MAX)>>) OUTPUT (y STRUCT<b ARRAY<BYTES(MAX)>>) REMOTE

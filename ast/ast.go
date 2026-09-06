@@ -339,11 +339,12 @@ type Type interface {
 	isType()
 }
 
-func (BadType) isType()    {}
-func (SimpleType) isType() {}
-func (ArrayType) isType()  {}
-func (StructType) isType() {}
-func (NamedType) isType()  {}
+func (BadType) isType()         {}
+func (SimpleType) isType()      {}
+func (ArrayType) isType()       {}
+func (StructType) isType()      {}
+func (NamedType) isType()       {}
+func (SizedSchemaType) isType() {} // schema STRING(n)/BYTES(n) inside STRUCT, e.g. CREATE MODEL
 
 // IntValue represents integer values in SQL.
 type IntValue interface {
@@ -2375,7 +2376,7 @@ type StructField struct {
 	// end = Type.end
 
 	Ident *Ident
-	Type  Type
+	Type  Type // query type, or SizedSchemaType for schema STRING(n)/BYTES(n)
 }
 
 // NamedType is named type node.
@@ -4099,7 +4100,7 @@ type ArraySchemaType struct {
 	Gt     token.Pos // position of ">"
 	Rparen token.Pos // position of ")" when len(NamedArgs) > 0
 
-	Item      SchemaType // ScalarSchemaType or SizedSchemaType or NamedType
+	Item      SchemaType // ScalarSchemaType, SizedSchemaType, NamedType, ArraySchemaType, or StructType
 	NamedArgs []*NamedArg
 }
 

@@ -3066,20 +3066,22 @@ func (p *Parser) parseSimpleType() *ast.SimpleType {
 	panic(p.errorfAtToken(id, "expected identifier: %s, but: %s", strings.Join(simpleTypes, ", "), id.Raw))
 }
 
+func (p *Parser) parseGt() token.Pos {
+	if p.Token.Kind == ">>" {
+		p.Token.Kind = ">"
+		p.Token.Raw = ">"
+		gt := p.Token.Pos
+		p.Token.Pos += 1
+		return gt
+	}
+	return p.expect(">").Pos
+}
+
 func (p *Parser) parseArrayType() *ast.ArrayType {
 	pos := p.expect("ARRAY").Pos
 	p.expect("<")
 	t := p.parseType()
-
-	var gt token.Pos
-	if p.Token.Kind == ">>" {
-		p.Token.Kind = ">"
-		p.Token.Raw = ">"
-		gt = p.Token.Pos
-		p.Token.Pos += 1
-	} else {
-		gt = p.expect(">").Pos
-	}
+	gt := p.parseGt()
 	return &ast.ArrayType{
 		Array: pos,
 		Gt:    gt,
@@ -3101,6 +3103,10 @@ func (p *Parser) parseStructType() *ast.StructType {
 }
 
 func (p *Parser) parseStructTypeFields() ([]*ast.StructField, token.Pos) {
+	return p.parseStructTypeFieldsWith(p.parseFieldType)
+}
+
+func (p *Parser) parseStructTypeFieldsWith(parseField func() *ast.StructField) ([]*ast.StructField, token.Pos) {
 	if p.Token.Kind == "<>" {
 		gt := p.Token.Pos + 1
 		p.nextToken()
@@ -3110,20 +3116,10 @@ func (p *Parser) parseStructTypeFields() ([]*ast.StructField, token.Pos) {
 	var fields []*ast.StructField
 	p.expect("<")
 	if p.Token.Kind != ">" && p.Token.Kind != ">>" {
-		fields = parseCommaSeparatedList(p, p.parseFieldType)
+		fields = parseCommaSeparatedList(p, parseField)
 	}
 
-	var gt token.Pos
-	if p.Token.Kind == ">>" {
-		p.Token.Kind = ">"
-		p.Token.Raw = ">"
-		gt = p.Token.Pos
-		p.Token.Pos += 1
-	} else {
-		gt = p.expect(">").Pos
-	}
-
-	return fields, gt
+	return fields, p.parseGt()
 }
 
 func (p *Parser) parseNewConstructor(newPos token.Pos, namedType *ast.NamedType) *ast.NewConstructor {
@@ -5971,8 +5967,8 @@ func (p *Parser) parseSchemaType() ast.SchemaType {
 	case "ARRAY":
 		pos := p.expect("ARRAY").Pos
 		p.expect("<")
-		t := p.parseScalarSchemaType()
-		end := p.expect(">").Pos
+		t := p.parseSchemaType()
+		end := p.parseGt()
 
 		var namedArgs []*ast.NamedArg
 		rparen := token.InvalidPos
@@ -5990,10 +5986,91 @@ func (p *Parser) parseSchemaType() ast.SchemaType {
 			Rparen:    rparen,
 		}
 	case "STRUCT":
-		return p.parseStructType()
+		return p.parseSchemaStructType()
 	}
 
-	panic(p.errorfAtToken(&p.Token, "expected token: ARRAY, <ident>, but: %s", p.Token.Kind))
+	panic(p.errorfAtToken(&p.Token, "expected token: ARRAY, STRUCT, <ident>, but: %s", p.Token.Kind))
+}
+
+func (p *Parser) parseSchemaStructType() *ast.StructType {
+	pos := p.expect("STRUCT").Pos
+	if p.Token.Kind != "<" && p.Token.Kind != "<>" {
+		p.panicfAtToken(&p.Token, "expected token: <, <>, but: %s", p.Token.Kind)
+	}
+	fields, gt := p.parseStructTypeFieldsWith(p.parseSchemaFieldType)
+	return &ast.StructType{
+		Struct: pos,
+		Gt:     gt,
+		Fields: fields,
+	}
+}
+
+func (p *Parser) parseSchemaFieldType() *ast.StructField {
+	lexer := p.cloneLexer()
+	if p.Token.Kind == token.TokenIdent {
+		ident := p.parseIdent()
+		if p.lookaheadType() {
+			return &ast.StructField{
+				Ident: ident,
+				Type:  p.parseSchemaStructItemType(),
+			}
+		}
+	}
+
+	p.Lexer = lexer
+	return &ast.StructField{
+		Type: p.parseSchemaStructItemType(),
+	}
+}
+
+func (p *Parser) parseSchemaStructItemType() ast.Type {
+	switch p.Token.Kind {
+	case "ARRAY":
+		pos := p.expect("ARRAY").Pos
+		p.expect("<")
+		t := p.parseSchemaStructItemType()
+		return &ast.ArrayType{
+			Array: pos,
+			Gt:    p.parseGt(),
+			Item:  t,
+		}
+	case "STRUCT":
+		return p.parseSchemaStructType()
+	case token.TokenIdent:
+		for _, name := range sizedSchemaTypes {
+			if p.Token.IsIdent(name) {
+				id := p.expect(token.TokenIdent)
+				if p.Token.Kind == "(" {
+					p.nextToken()
+					max := false
+					var size ast.IntValue
+					if p.Token.IsIdent("MAX") {
+						p.nextToken()
+						max = true
+					} else {
+						size = p.parseIntValue()
+					}
+					rparen := p.expect(")").Pos
+					return &ast.SizedSchemaType{
+						NamePos: id.Pos,
+						Rparen:  rparen,
+						Name:    ast.ScalarTypeName(name),
+						Max:     max,
+						Size:    size,
+					}
+				}
+				return &ast.SimpleType{
+					NamePos: id.Pos,
+					Name:    ast.ScalarTypeName(name),
+				}
+			}
+		}
+		return p.parseType()
+	case "INTERVAL":
+		return p.parseType()
+	}
+
+	panic(p.errorfAtToken(&p.Token, "expected token: <ident>, ARRAY, STRUCT, but: %s", p.Token.Kind))
 }
 
 func (p *Parser) parseAlterStatistics(pos token.Pos) *ast.AlterStatistics {

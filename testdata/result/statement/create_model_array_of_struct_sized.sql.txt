@@ -1,0 +1,86 @@
+--- create_model_array_of_struct_sized.sql
+CREATE MODEL m
+INPUT (x ARRAY<STRUCT<a STRING(MAX), b BYTES(10)>>)
+OUTPUT (y INT64)
+REMOTE
+
+--- AST
+&ast.CreateModel{
+  Remote: 84,
+  Name:   &ast.Ident{
+    NamePos: 13,
+    NameEnd: 14,
+    Name:    "m",
+  },
+  InputOutput: &ast.CreateModelInputOutput{
+    Input:        15,
+    Rparen:       82,
+    InputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 22,
+          NameEnd: 23,
+          Name:    "x",
+        },
+        DataType: &ast.ArraySchemaType{
+          Array:  24,
+          Gt:     64,
+          Rparen: -1,
+          Item:   &ast.StructType{
+            Struct: 30,
+            Gt:     63,
+            Fields: []*ast.StructField{
+              &ast.StructField{
+                Ident: &ast.Ident{
+                  NamePos: 37,
+                  NameEnd: 38,
+                  Name:    "a",
+                },
+                Type: &ast.SizedSchemaType{
+                  NamePos: 39,
+                  Rparen:  49,
+                  Name:    "STRING",
+                  Max:     true,
+                },
+              },
+              &ast.StructField{
+                Ident: &ast.Ident{
+                  NamePos: 52,
+                  NameEnd: 53,
+                  Name:    "b",
+                },
+                Type: &ast.SizedSchemaType{
+                  NamePos: 54,
+                  Rparen:  62,
+                  Name:    "BYTES",
+                  Size:    &ast.IntLiteral{
+                    ValuePos: 60,
+                    ValueEnd: 62,
+                    Base:     10,
+                    Value:    "10",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    OutputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 75,
+          NameEnd: 76,
+          Name:    "y",
+        },
+        DataType: &ast.ScalarSchemaType{
+          NamePos: 77,
+          Name:    "INT64",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE MODEL m INPUT (x ARRAY<STRUCT<a STRING(MAX), b BYTES(10)>>) OUTPUT (y INT64) REMOTE

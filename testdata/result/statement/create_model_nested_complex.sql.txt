@@ -1,0 +1,180 @@
+--- create_model_nested_complex.sql
+CREATE MODEL m
+INPUT (
+  feature ARRAY<STRUCT<l2 STRUCT<l3 STRUCT<l4 STRUCT<l5 INT64>>>>>
+)
+OUTPUT (
+  label STRUCT<foo ARRAY<STRUCT<bar STRING(MAX), str STRUCT<field1 ARRAY<FLOAT64>, field2 BOOL>>>>
+)
+REMOTE
+
+--- AST
+&ast.CreateModel{
+  Remote: 202,
+  Name:   &ast.Ident{
+    NamePos: 13,
+    NameEnd: 14,
+    Name:    "m",
+  },
+  InputOutput: &ast.CreateModelInputOutput{
+    Input:        15,
+    Rparen:       200,
+    InputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 25,
+          NameEnd: 32,
+          Name:    "feature",
+        },
+        DataType: &ast.ArraySchemaType{
+          Array:  33,
+          Gt:     88,
+          Rparen: -1,
+          Item:   &ast.StructType{
+            Struct: 39,
+            Gt:     87,
+            Fields: []*ast.StructField{
+              &ast.StructField{
+                Ident: &ast.Ident{
+                  NamePos: 46,
+                  NameEnd: 48,
+                  Name:    "l2",
+                },
+                Type: &ast.StructType{
+                  Struct: 49,
+                  Gt:     86,
+                  Fields: []*ast.StructField{
+                    &ast.StructField{
+                      Ident: &ast.Ident{
+                        NamePos: 56,
+                        NameEnd: 58,
+                        Name:    "l3",
+                      },
+                      Type: &ast.StructType{
+                        Struct: 59,
+                        Gt:     85,
+                        Fields: []*ast.StructField{
+                          &ast.StructField{
+                            Ident: &ast.Ident{
+                              NamePos: 66,
+                              NameEnd: 68,
+                              Name:    "l4",
+                            },
+                            Type: &ast.StructType{
+                              Struct: 69,
+                              Gt:     84,
+                              Fields: []*ast.StructField{
+                                &ast.StructField{
+                                  Ident: &ast.Ident{
+                                    NamePos: 76,
+                                    NameEnd: 78,
+                                    Name:    "l5",
+                                  },
+                                  Type: &ast.SimpleType{
+                                    NamePos: 79,
+                                    Name:    "INT64",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    OutputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 103,
+          NameEnd: 108,
+          Name:    "label",
+        },
+        DataType: &ast.StructType{
+          Struct: 109,
+          Gt:     198,
+          Fields: []*ast.StructField{
+            &ast.StructField{
+              Ident: &ast.Ident{
+                NamePos: 116,
+                NameEnd: 119,
+                Name:    "foo",
+              },
+              Type: &ast.ArrayType{
+                Array: 120,
+                Gt:    197,
+                Item:  &ast.StructType{
+                  Struct: 126,
+                  Gt:     196,
+                  Fields: []*ast.StructField{
+                    &ast.StructField{
+                      Ident: &ast.Ident{
+                        NamePos: 133,
+                        NameEnd: 136,
+                        Name:    "bar",
+                      },
+                      Type: &ast.SizedSchemaType{
+                        NamePos: 137,
+                        Rparen:  147,
+                        Name:    "STRING",
+                        Max:     true,
+                      },
+                    },
+                    &ast.StructField{
+                      Ident: &ast.Ident{
+                        NamePos: 150,
+                        NameEnd: 153,
+                        Name:    "str",
+                      },
+                      Type: &ast.StructType{
+                        Struct: 154,
+                        Gt:     195,
+                        Fields: []*ast.StructField{
+                          &ast.StructField{
+                            Ident: &ast.Ident{
+                              NamePos: 161,
+                              NameEnd: 167,
+                              Name:    "field1",
+                            },
+                            Type: &ast.ArrayType{
+                              Array: 168,
+                              Gt:    181,
+                              Item:  &ast.SimpleType{
+                                NamePos: 174,
+                                Name:    "FLOAT64",
+                              },
+                            },
+                          },
+                          &ast.StructField{
+                            Ident: &ast.Ident{
+                              NamePos: 184,
+                              NameEnd: 190,
+                              Name:    "field2",
+                            },
+                            Type: &ast.SimpleType{
+                              NamePos: 191,
+                              Name:    "BOOL",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE MODEL m INPUT (feature ARRAY<STRUCT<l2 STRUCT<l3 STRUCT<l4 STRUCT<l5 INT64>>>>>) OUTPUT (label STRUCT<foo ARRAY<STRUCT<bar STRING(MAX), str STRUCT<field1 ARRAY<FLOAT64>, field2 BOOL>>>>) REMOTE
