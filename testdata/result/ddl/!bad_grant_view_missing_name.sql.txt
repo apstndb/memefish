@@ -1,0 +1,71 @@
+--- !bad_grant_view_missing_name.sql
+GRANT SELECT ON VIEW TO ROLE r
+
+--- Error
+syntax error: testdata/input/ddl/!bad_grant_view_missing_name.sql:1:22: expected token: <ident>, but: TO
+  1|  GRANT SELECT ON VIEW TO ROLE r
+   |                       ^~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 30,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "GRANT",
+        AsString: "GRANT",
+        End:      5,
+      },
+      &token.Token{
+        Kind:  "SELECT",
+        Space: " ",
+        Raw:   "SELECT",
+        Pos:   6,
+        End:   12,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   13,
+        End:   15,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "VIEW",
+        AsString: "VIEW",
+        Pos:      16,
+        End:      20,
+      },
+      &token.Token{
+        Kind:  "TO",
+        Space: " ",
+        Raw:   "TO",
+        Pos:   21,
+        End:   23,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "ROLE",
+        AsString: "ROLE",
+        Pos:      24,
+        End:      28,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "r",
+        AsString: "r",
+        Pos:      29,
+        End:      30,
+      },
+    },
+  },
+}
+
+--- SQL
+GRANT SELECT ON VIEW TO ROLE r

@@ -2561,18 +2561,14 @@ func (p *Parser) lookaheadGQLPathVariable() bool {
 }
 
 func (p *Parser) lookaheadValueGQLSubQuery() bool {
-	lexer := p.cloneLexer()
-	errorCount := len(p.errors)
-	defer func() {
-		p.Lexer = lexer
-		p.errors = p.errors[:errorCount]
-	}()
-	if !p.Token.IsKeywordLike("VALUE") {
-		return false
-	}
-	p.nextToken()
-	p.tryParseHint()
-	return p.Token.Kind == "{"
+	return p.lookahead(func() bool {
+		if !p.Token.IsKeywordLike("VALUE") {
+			return false
+		}
+		p.nextToken()
+		p.tryParseHint()
+		return p.Token.Kind == "{"
+	})
 }
 
 func (p *Parser) parseValueGQLSubQuery() *ast.ValueGQLSubQuery {
@@ -5293,18 +5289,23 @@ func (p *Parser) tryParseSelectPrivilegeOnView() *ast.SelectPrivilegeOnView {
 	if p.Token.Kind != "SELECT" {
 		return nil
 	}
-	lexer := p.cloneLexer()
-	pos := p.expect("SELECT").Pos
-	if p.Token.Kind != "ON" {
-		p.Lexer = lexer
+	pos := p.Token.Pos
+	if !p.tryParse(func() bool {
+		p.nextToken()
+		if p.Token.Kind != "ON" {
+			return false
+		}
+		p.nextToken()
+		if !p.Token.IsKeywordLike("VIEW") {
+			return false
+		}
+		p.nextToken()
+		return true
+	}) {
 		return nil
 	}
-	p.expect("ON")
-	if !p.Token.IsKeywordLike("VIEW") {
-		p.Lexer = lexer
-		return nil
-	}
-	p.expectKeywordLike("VIEW")
+	// The prefix identifies a view privilege; errors in its names are not
+	// mismatches that should fall back to another privilege.
 	names := parseCommaSeparatedList(p, p.parsePath)
 	return &ast.SelectPrivilegeOnView{
 		Select: pos,
