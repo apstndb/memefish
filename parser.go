@@ -3820,8 +3820,10 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		onUpdate := p.parseOnUpdate()
 		defaultExpr := p.parseColumnDefaultExpr()
 		defaultSemantics = &ast.ColumnOnUpdateDefaultExpr{
-			OnUpdate:    onUpdate,
-			DefaultExpr: defaultExpr,
+			OnUpdate: onUpdate,
+			Default:  defaultExpr.Default,
+			Rparen:   defaultExpr.Rparen,
+			Expr:     defaultExpr.Expr,
 		}
 	case p.Token.Kind == "AS":
 		defaultSemantics = p.parseGeneratedColumnExpr()
@@ -4916,8 +4918,10 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 			onUpdate := p.parseOnUpdate()
 			reverseDefaultExpr := p.parseColumnDefaultExpr()
 			onUpdateDefaultExpr = &ast.ColumnOnUpdateDefaultExpr{
-				OnUpdate:    onUpdate,
-				DefaultExpr: reverseDefaultExpr,
+				OnUpdate: onUpdate,
+				Default:  reverseDefaultExpr.Default,
+				Rparen:   reverseDefaultExpr.Rparen,
+				Expr:     reverseDefaultExpr.Expr,
 			}
 		case "AS":
 			generatedExpr = p.parseGeneratedColumnExpr()

@@ -1267,7 +1267,7 @@ func (c *ColumnOnUpdateDefaultExpr) Pos() token.Pos {
 }
 
 func (c *ColumnOnUpdateDefaultExpr) End() token.Pos {
-	return nodeEnd(wrapNode(c.DefaultExpr))
+	return posAdd(c.Rparen, 1)
 }
 
 func (o *OnUpdate) Pos() token.Pos {

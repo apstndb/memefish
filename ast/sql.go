@@ -943,7 +943,7 @@ func (c *ColumnDefaultExpr) SQL() string {
 }
 
 func (c *ColumnOnUpdateDefaultExpr) SQL() string {
-	return c.OnUpdate.SQL() + " " + c.DefaultExpr.SQL()
+	return c.OnUpdate.SQL() + " DEFAULT (" + c.Expr.SQL() + ")"
 }
 
 func (o *OnUpdate) SQL() string {

@@ -44,18 +44,16 @@ ALTER TABLE foo ADD COLUMN bar TIMESTAMP NOT NULL ON UPDATE (pending_commit_time
             },
           },
         },
-        DefaultExpr: &ast.ColumnDefaultExpr{
-          Default: 89,
-          Rparen:  124,
-          Expr:    &ast.CallExpr{
-            Rparen: 123,
-            Func:   &ast.Path{
-              Idents: []*ast.Ident{
-                &ast.Ident{
-                  NamePos: 98,
-                  NameEnd: 122,
-                  Name:    "pending_commit_timestamp",
-                },
+        Default: 89,
+        Rparen:  124,
+        Expr:    &ast.CallExpr{
+          Rparen: 123,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 98,
+                NameEnd: 122,
+                Name:    "pending_commit_timestamp",
               },
             },
           },

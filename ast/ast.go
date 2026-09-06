@@ -2812,13 +2812,15 @@ type ColumnDefaultExpr struct {
 
 // ColumnOnUpdateDefaultExpr is ON UPDATE followed by DEFAULT for a column.
 //
-//	{{.OnUpdate | sql}} {{.DefaultExpr | sql}}
+//	{{.OnUpdate | sql}} DEFAULT ({{.Expr | sql}})
 type ColumnOnUpdateDefaultExpr struct {
 	// pos = OnUpdate.pos
-	// end = DefaultExpr.end
+	// end = Rparen + 1
 
-	OnUpdate    *OnUpdate
-	DefaultExpr *ColumnDefaultExpr
+	OnUpdate *OnUpdate
+	Default  token.Pos // position of "DEFAULT" keyword
+	Rparen   token.Pos // position of ")" after default expression
+	Expr     Expr
 }
 
 // OnUpdate is ON UPDATE clause for a column.
