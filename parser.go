@@ -5290,7 +5290,7 @@ func (p *Parser) tryParseSelectPrivilegeOnView() *ast.SelectPrivilegeOnView {
 		return nil
 	}
 	pos := p.Token.Pos
-	if !p.tryParse(func() bool {
+	isViewPrivilege := p.tryParse(func() bool {
 		p.nextToken()
 		if p.Token.Kind != "ON" {
 			return false
@@ -5301,7 +5301,8 @@ func (p *Parser) tryParseSelectPrivilegeOnView() *ast.SelectPrivilegeOnView {
 		}
 		p.nextToken()
 		return true
-	}) {
+	})
+	if !isViewPrivilege {
 		return nil
 	}
 	// The prefix identifies a view privilege; errors in its names are not
