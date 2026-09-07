@@ -271,3 +271,38 @@ func TestLexerWrongNoError(t *testing.T) {
 		})
 	}
 }
+
+func TestLexerTripleQuotedNewlines(t *testing.T) {
+	for _, prefix := range []string{"", "r", "b", "rb", "br"} {
+		for _, quote := range []string{"'''", `"""`} {
+			for _, tc := range []struct {
+				content string
+				value   string
+			}{
+				{"x\ry", "x\ny"},
+				{"x\r\ny", "x\ny"},
+				{"x\ny", "x\ny"},
+				{"x\n\ry", "x\n\ny"},
+				{"x\r\ry", "x\n\ny"},
+				{"\r\n", "\n"},
+				{`x\ry`, "x\ry"},
+				{`x\x0Dy`, "x\ry"},
+				{`x\r\ny`, "x\r\ny"},
+				{`x\x0D\x0Ay`, "x\r\ny"},
+			} {
+				source := prefix + quote + tc.content + quote
+				t.Run(fmt.Sprintf("%q", source), func(t *testing.T) {
+					kind := TokenString
+					if strings.Contains(prefix, "b") {
+						kind = TokenBytes
+					}
+					value := tc.value
+					if strings.Contains(prefix, "r") && strings.Contains(tc.content, `\`) {
+						value = tc.content
+					}
+					testLexer(t, source, []*Token{{Kind: kind, Raw: source, AsString: value}})
+				})
+			}
+		}
+	}
+}
