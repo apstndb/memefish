@@ -24,6 +24,48 @@ func assertParserCheckpoint(t *testing.T, p *Parser, lexer *Lexer, errors []*Err
 	}
 }
 
+// Adapt the pointer-result helper to the same outcome matrix as the bool
+// experiment. Dedicated tests below also check its returned value and typed nil.
+func pointerTryParseForTest(p *Parser) func(func() bool) bool {
+	return func(parse func() bool) bool {
+		return tryParse(p, func() *bool {
+			result := parse()
+			if !result {
+				return nil
+			}
+			return &result
+		}) != nil
+	}
+}
+
+func TestTryParsePointerResult(t *testing.T) {
+	for _, accept := range []bool{false, true} {
+		t.Run(boolName(accept), func(t *testing.T) {
+			p := newLookaheadTestParser("name + 1")
+			before := p.cloneLexer()
+			var candidate *ast.Ident
+			result := tryParse(p, func() *ast.Ident {
+				candidate = p.parseIdent()
+				if !accept {
+					var noMatch *ast.Ident
+					return noMatch // A typed nil must roll back.
+				}
+				return candidate
+			})
+			if accept {
+				if result != candidate || result.Name != "name" || p.Token.Kind != "+" {
+					t.Fatal("accepted result or token position was not retained")
+				}
+			} else {
+				if result != nil {
+					t.Fatal("non-match returned a candidate")
+				}
+				assertParserCheckpoint(t, p, before, nil)
+			}
+		})
+	}
+}
+
 func TestParserLookaheadOutcomes(t *testing.T) {
 	for _, method := range []string{"lookahead", "tryParse"} {
 		for _, result := range []bool{false, true} {
@@ -49,7 +91,7 @@ func TestParserLookaheadOutcomes(t *testing.T) {
 						}
 						run := p.lookahead
 						if method == "tryParse" {
-							run = p.tryParse
+							run = pointerTryParseForTest(p)
 						}
 						if got := run(callback); got != result {
 							t.Fatalf("result = %v, want %v", got, result)
@@ -88,7 +130,7 @@ func TestParserLookaheadPanic(t *testing.T) {
 					}()
 					run := p.lookahead
 					if method == "tryParse" {
-						run = p.tryParse
+						run = pointerTryParseForTest(p)
 					}
 					run(func() bool {
 						p.nextToken()
@@ -114,7 +156,7 @@ func TestParserLookaheadNested(t *testing.T) {
 						var parentErrors []*Error
 						runOuter := p.lookahead
 						if outer == "tryParse" {
-							runOuter = p.tryParse
+							runOuter = pointerTryParseForTest(p)
 						}
 						runOuter(func() bool {
 							p.nextToken()
@@ -122,7 +164,7 @@ func TestParserLookaheadNested(t *testing.T) {
 							innerLexer, innerErrors := p.cloneLexer(), p.errors
 							runInner := p.lookahead
 							if inner == "tryParse" {
-								runInner = p.tryParse
+								runInner = pointerTryParseForTest(p)
 							}
 							runInner(func() bool {
 								p.nextToken()
@@ -150,7 +192,7 @@ func TestParserLookaheadNested(t *testing.T) {
 func TestParserLookaheadRecoveredParse(t *testing.T) {
 	p := newLookaheadTestParser("1 + )")
 	before := p.cloneLexer()
-	if p.tryParse(func() bool {
+	if pointerTryParseForTest(p)(func() bool {
 		expr := p.parseExpr()
 		if _, ok := expr.(*ast.BadExpr); !ok || len(p.errors) == 0 {
 			t.Fatalf("expected recovered expression with diagnostics, got %T", expr)
@@ -184,7 +226,7 @@ func TestParserLookaheadNestedLexicalPanic(t *testing.T) {
 				// Inner restoration must run before outer restoration.
 				assertParserCheckpoint(t, p, innerLexer, innerErrors)
 			}()
-			return p.tryParse(func() bool {
+			return pointerTryParseForTest(p)(func() bool {
 				p.errors = append(p.errors, &Error{Message: "inner"})
 				p.nextToken()
 				return true

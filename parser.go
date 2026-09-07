@@ -5289,28 +5289,25 @@ func (p *Parser) tryParseSelectPrivilegeOnView() *ast.SelectPrivilegeOnView {
 	if p.Token.Kind != "SELECT" {
 		return nil
 	}
-	pos := p.Token.Pos
-	if !p.tryParse(func() bool {
+	return tryParse(p, func() *ast.SelectPrivilegeOnView {
+		pos := p.Token.Pos
 		p.nextToken()
 		if p.Token.Kind != "ON" {
-			return false
+			return nil
 		}
 		p.nextToken()
 		if !p.Token.IsKeywordLike("VIEW") {
-			return false
+			return nil
 		}
 		p.nextToken()
-		return true
-	}) {
-		return nil
-	}
-	// The prefix identifies a view privilege; errors in its names are not
-	// mismatches that should fall back to another privilege.
-	names := parseCommaSeparatedList(p, p.parsePath)
-	return &ast.SelectPrivilegeOnView{
-		Select: pos,
-		Names:  names,
-	}
+		// The prefix identifies a view privilege. Errors in its names propagate;
+		// they must not become nil and fall back to another privilege.
+		names := parseCommaSeparatedList(p, p.parsePath)
+		return &ast.SelectPrivilegeOnView{
+			Select: pos,
+			Names:  names,
+		}
+	})
 }
 
 func (p *Parser) tryParseExecutePrivilegeOnTableFunction() *ast.ExecutePrivilegeOnTableFunction {

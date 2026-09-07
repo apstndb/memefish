@@ -29,16 +29,18 @@ func (p *Parser) lookahead(check func() bool) bool {
 	return check()
 }
 
-// tryParse retains lexer state and diagnostics only if parse returns true.
+// tryParse retains lexer state and diagnostics only if parse returns non-nil.
 // Otherwise it restores both, including on panic; panics propagate unchanged.
 // The callback has the same restrictions as lookahead and must explicitly
 // decide whether to accept the interpretation: recovery is not necessarily a
 // match. An outer checkpoint can still undo an inner successful tryParse.
 // This contract does not apply to all optional tryParse* methods.
-func (p *Parser) tryParse(parse func() bool) (ok bool) {
+// The pointer result avoids ambiguous typed-nil interface values. Parsers that
+// return an interface or a value plus a separate match flag need another shape.
+func tryParse[T any](p *Parser, parse func() *T) (result *T) {
 	checkpoint := p.checkpoint()
 	defer func() {
-		if !ok {
+		if result == nil {
 			p.restore(checkpoint)
 		}
 	}()
