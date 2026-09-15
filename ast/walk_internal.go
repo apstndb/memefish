@@ -155,6 +155,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *PipeExtend:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Results), visitor: v.Field("Results")})
 
+	case *PipeLimit:
+		stack = append(stack, &stackItem{node: wrapNode(n.Offset), visitor: v.Field("Offset")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Count), visitor: v.Field("Count")})
+
 	case *Unnest:
 		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})
 		stack = append(stack, &stackItem{node: wrapNode(n.WithOffset), visitor: v.Field("WithOffset")})
