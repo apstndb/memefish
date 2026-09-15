@@ -350,6 +350,14 @@ func (p *PipeRenameItem) End() token.Pos {
 	return nodeEnd(wrapNode(p.New))
 }
 
+func (p *PipeLimit) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeLimit) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(p.Offset), wrapNode(p.Count)))
+}
+
 func (u *Unnest) Pos() token.Pos {
 	return u.Unnest
 }
