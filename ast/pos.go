@@ -366,6 +366,14 @@ func (p *PipeAggregateGroupByItem) End() token.Pos {
 	return posChoice(posAdd(p.DirPos, len(p.Dir)), nodeEnd(nodeChoice(wrapNode(p.As), wrapNode(p.Expr))))
 }
 
+func (p *PipeLimit) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeLimit) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(p.Offset), wrapNode(p.Count)))
+}
+
 func (u *Unnest) Pos() token.Pos {
 	return u.Unnest
 }
