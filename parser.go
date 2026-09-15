@@ -436,6 +436,13 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 			Pipe:   pos,
 			Sample: p.tryParseTableSample(),
 		}
+	case "LIMIT":
+		p.nextToken()
+		return &ast.PipeLimit{
+			Pipe:   pos,
+			Count:  p.parseIntValue(),
+			Offset: p.tryParseOffset(),
+		}
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
 	}
@@ -3684,6 +3691,8 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	var keys []*ast.IndexKey
 	primaryKeyRparen := token.InvalidPos
 	if p.Token.IsKeywordLike("PRIMARY") {
+		// Keep the slice non-nil to distinguish PRIMARY KEY () from an omitted clause.
+		keys = []*ast.IndexKey{}
 		p.nextToken()
 		p.expectKeywordLike("KEY")
 
@@ -3888,7 +3897,10 @@ func (p *Parser) parseTablePrimaryKey() *ast.TablePrimaryKey {
 	p.expectKeywordLike("KEY")
 
 	p.expect("(")
-	keys := parseCommaSeparatedList(p, p.parseIndexKey)
+	var keys []*ast.IndexKey
+	if p.Token.Kind != ")" {
+		keys = parseCommaSeparatedList(p, p.parseIndexKey)
+	}
 	rparen := p.expect(")").Pos
 
 	return &ast.TablePrimaryKey{
@@ -6070,8 +6082,8 @@ func (p *Parser) tryParseCreateModelInputOutput() *ast.CreateModelInputOutput {
 
 func (p *Parser) parseCreateModel(pos token.Pos, orReplace bool) *ast.CreateModel {
 	p.expectKeywordLike("MODEL")
+	ifNotExists := !orReplace && p.parseIfNotExists()
 	name := p.parseIdent()
-	ifNotExists := p.parseIfNotExists()
 	inputOutput := p.tryParseCreateModelInputOutput()
 	remote := p.expectKeywordLike("REMOTE").Pos
 	options := p.tryParseOptions()
