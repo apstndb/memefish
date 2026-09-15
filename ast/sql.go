@@ -262,7 +262,7 @@ func (s *Star) SQL() string {
 }
 
 func (s *DotStar) SQL() string {
-	return s.Expr.SQL() + ".*" + sqlOpt(" ", s.Except, "") + sqlOpt(" ", s.Replace, "")
+	return s.Expr.SQL() + sepBeforeDot(s.Expr) + ".*" + sqlOpt(" ", s.Except, "") + sqlOpt(" ", s.Replace, "")
 }
 
 func (a *Alias) SQL() string {
@@ -337,6 +337,10 @@ func (p *PipeAs) SQL() string { return "|> AS " + p.Alias.SQL() }
 
 func (p *PipeOrderBy) SQL() string {
 	return "|> ORDER BY " + sqlJoin(p.Items, ", ")
+}
+
+func (p *PipeLimit) SQL() string {
+	return "|> LIMIT " + p.Count.SQL() + sqlOpt(" ", p.Offset, "")
 }
 
 // ================================================================================
@@ -485,9 +489,19 @@ func (b *BetweenExpr) SQL() string {
 		" BETWEEN " + paren(p, b.RightStart) + " AND " + paren(p, b.RightEnd)
 }
 
+// sepBeforeDot returns a separator to be inserted between e and a following ".".
+// Without it, a decimal integer literal and the "." would be lexed together as
+// a float literal (e.g. `0 .A` would be printed as `0.A`).
+func sepBeforeDot(e Expr) string {
+	if lit, ok := e.(*IntLiteral); ok && lit.Base == 10 {
+		return " "
+	}
+	return ""
+}
+
 func (s *SelectorExpr) SQL() string {
 	p := exprPrec(s)
-	return paren(p, s.Expr) + "." + s.Ident.SQL()
+	return paren(p, s.Expr) + sepBeforeDot(s.Expr) + "." + s.Ident.SQL()
 }
 
 func (i *IndexExpr) SQL() string {
@@ -868,7 +882,7 @@ func (c *CreateTable) SQL() string {
 		strOpt(len(c.TableConstraints) > 0, indent) + sqlJoin(c.TableConstraints, ",\n"+indent) + strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ",\n") +
 		strOpt(len(c.Synonyms) > 0, indent) + sqlJoin(c.Synonyms, ",\n") +
 		"\n)" +
-		strOpt(len(c.PrimaryKeys) > 0, " PRIMARY KEY ("+sqlJoin(c.PrimaryKeys, ", ")+")") +
+		strOpt(c.PrimaryKeys != nil, " PRIMARY KEY ("+sqlJoin(c.PrimaryKeys, ", ")+")") +
 		sqlOpt("", c.Cluster, "") +
 		sqlOpt("", c.RowDeletionPolicy, "") +
 		sqlOpt(", ", c.Options, "")
@@ -1294,8 +1308,8 @@ func (c *CreateModelInputOutput) SQL() string {
 func (c *CreateModel) SQL() string {
 	return "CREATE " + strOpt(c.OrReplace, "OR REPLACE ") +
 		"MODEL " +
+		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
 		c.Name.SQL() +
-		strOpt(c.IfNotExists, " IF NOT EXISTS") +
 		sqlOpt(" ", c.InputOutput, "") +
 		" REMOTE" +
 		sqlOpt(" ", c.Options, "")

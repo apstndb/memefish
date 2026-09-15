@@ -350,6 +350,14 @@ func (p *PipeOrderBy) End() token.Pos {
 	return nodeEnd(nodeSliceLast(p.Items))
 }
 
+func (p *PipeLimit) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeLimit) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(p.Offset), wrapNode(p.Count)))
+}
+
 func (u *Unnest) Pos() token.Pos {
 	return u.Unnest
 }
