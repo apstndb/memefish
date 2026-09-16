@@ -2075,7 +2075,7 @@ func (c *CreatePropertyGraph) Pos() token.Pos {
 }
 
 func (c *CreatePropertyGraph) End() token.Pos {
-	return nodeEnd(wrapNode(c.Content))
+	return nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.Content)))
 }
 
 func (p *PropertyGraphContent) Pos() token.Pos {

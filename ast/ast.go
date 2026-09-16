@@ -2453,7 +2453,7 @@ type Options struct {
 	Options token.Pos // position of "OPTIONS" keyword
 	Rparen  token.Pos // position of ")"
 
-	Records []*OptionsDef // len(Records) > 0
+	Records []*OptionsDef // may be empty in property graph definitions
 }
 
 // OptionsDef is single option definition for DDL statements.
@@ -4226,15 +4226,17 @@ func (PropertyGraphDerivedPropertyList) isPropertyGraphElementProperties() {}
 //	{{if .IfNotExists}}IF NOT EXISTS{{end}}
 //	{{.Name | sql}}
 //	{{.Content | sql}}
+//	{{.Options | sqlOpt}}
 type CreatePropertyGraph struct {
 	// pos = Create
-	// end = Content.end
+	// end = (Options ?? Content).end
 
 	Create      token.Pos // position of "CREATE" keyword
 	OrReplace   bool
 	IfNotExists bool
 	Name        *Ident
 	Content     *PropertyGraphContent
+	Options     *Options // optional
 }
 
 // PropertyGraphContent represents body of CREATE PROPERTY GRAPH statement.
