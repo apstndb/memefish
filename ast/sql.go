@@ -1554,6 +1554,7 @@ func (d *Delete) SQL() string {
 		sqlOpt("", d.TableHint, "") + " " +
 		sqlOpt("", d.As, " ") +
 		d.Where.SQL() +
+		sqlOpt(" ", d.AssertRowsModified, "") +
 		sqlOpt(" ", d.ThenReturn, "")
 }
 
