@@ -4,10 +4,14 @@ CREATE QUEUE queue (constraint INT64, foreign INT64, synonym INT64, Payload BYTE
 --- AST
 &ast.CreateQueue{
   PrimaryKeyRparen: 138,
-  Name:             &ast.Ident{
-    NamePos: 13,
-    NameEnd: 18,
-    Name:    "queue",
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 18,
+        Name:    "queue",
+      },
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{

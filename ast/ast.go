@@ -2737,7 +2737,7 @@ type CreateQueue struct {
 	Create            token.Pos
 	PrimaryKeyRparen  token.Pos
 	IfNotExists       bool
-	Name              *Ident
+	Name              *Path
 	Columns           []*ColumnDef             // len(Columns) > 0
 	PrimaryKeys       []*IndexKey              // non-nil; empty for PRIMARY KEY ()
 	Cluster           *Cluster                 // optional
@@ -2753,7 +2753,7 @@ type AlterQueue struct {
 	// end = QueueAlteration.end
 
 	Alter           token.Pos
-	Name            *Ident
+	Name            *Path
 	QueueAlteration QueueAlteration
 }
 
@@ -2766,7 +2766,7 @@ type DropQueue struct {
 
 	Drop     token.Pos
 	IfExists bool
-	Name     *Ident
+	Name     *Path
 }
 
 // QueueSetOptions is a SET OPTIONS action in ALTER QUEUE.

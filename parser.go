@@ -3739,7 +3739,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 func (p *Parser) parseCreateQueue(pos token.Pos) *ast.CreateQueue {
 	p.expectKeywordLike("QUEUE")
 	ifNotExists := p.parseIfNotExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	p.expect("(")
 	columns := []*ast.ColumnDef{p.parseColumnDef()}
@@ -3785,7 +3785,7 @@ func (p *Parser) parseCreateQueue(pos token.Pos) *ast.CreateQueue {
 
 func (p *Parser) parseAlterQueue(pos token.Pos) *ast.AlterQueue {
 	p.expectKeywordLike("QUEUE")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	var alteration ast.QueueAlteration
 	switch {
@@ -3866,7 +3866,7 @@ func (p *Parser) parseAlterQueue(pos token.Pos) *ast.AlterQueue {
 func (p *Parser) parseDropQueue(pos token.Pos) *ast.DropQueue {
 	p.expectKeywordLike("QUEUE")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	return &ast.DropQueue{
 		Drop:     pos,

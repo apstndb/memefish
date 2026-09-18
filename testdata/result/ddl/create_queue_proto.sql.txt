@@ -4,10 +4,14 @@ CREATE QUEUE Q (id INT64, Payload examples.Message NOT NULL) PRIMARY KEY (id), O
 --- AST
 &ast.CreateQueue{
   PrimaryKeyRparen: 76,
-  Name:             &ast.Ident{
-    NamePos: 13,
-    NameEnd: 14,
-    Name:    "Q",
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 14,
+        Name:    "Q",
+      },
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{

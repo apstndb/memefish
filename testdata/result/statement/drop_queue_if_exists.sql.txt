@@ -4,10 +4,14 @@ DROP QUEUE IF EXISTS `queue`
 --- AST
 &ast.DropQueue{
   IfExists: true,
-  Name:     &ast.Ident{
-    NamePos: 21,
-    NameEnd: 28,
-    Name:    "queue",
+  Name:     &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 21,
+        NameEnd: 28,
+        Name:    "queue",
+      },
+    },
   },
 }
 

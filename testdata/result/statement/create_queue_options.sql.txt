@@ -12,10 +12,14 @@ OPTIONS (receive_mode = 'PULL', disable_send = false, disable_delivery = false, 
 &ast.CreateQueue{
   PrimaryKeyRparen: 162,
   IfNotExists:      true,
-  Name:             &ast.Ident{
-    NamePos: 27,
-    NameEnd: 36,
-    Name:    "UserTasks",
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 27,
+        NameEnd: 36,
+        Name:    "UserTasks",
+      },
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{

@@ -3,10 +3,14 @@ ALTER QUEUE Q SET ON DELETE CASCADE
 
 --- AST
 &ast.AlterQueue{
-  Name: &ast.Ident{
-    NamePos: 12,
-    NameEnd: 13,
-    Name:    "Q",
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 13,
+        Name:    "Q",
+      },
+    },
   },
   QueueAlteration: &ast.SetOnDelete{
     Set:         14,
