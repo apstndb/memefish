@@ -563,14 +563,13 @@ func (AddStoredColumn) isIndexAlteration()  {}
 func (DropStoredColumn) isIndexAlteration() {}
 
 // VectorIndexAlteration represents ALTER VECTOR INDEX action.
-// Note: Currently, it is same as IndexAlteration,
-// but cloud-spanner-emulator/backend/schema/parser/ddl_parser.jjt implies their difference.
 type VectorIndexAlteration interface {
 	Node
 	isVectorIndexAlteration()
 }
 
 func (VectorIndexSetOptions) isVectorIndexAlteration() {}
+func (VectorIndexRebuild) isVectorIndexAlteration()    {}
 func (AddStoredColumn) isVectorIndexAlteration()       {}
 func (DropStoredColumn) isVectorIndexAlteration()      {}
 
@@ -3494,6 +3493,16 @@ type VectorIndexSetOptions struct {
 	Set token.Pos // position of "SET" keyword
 
 	Options *Options
+}
+
+// VectorIndexRebuild is a REBUILD clause in ALTER VECTOR INDEX.
+//
+//	REBUILD
+type VectorIndexRebuild struct {
+	// pos = Rebuild
+	// end = Rebuild + 7
+
+	Rebuild token.Pos // position of "REBUILD" keyword
 }
 
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
