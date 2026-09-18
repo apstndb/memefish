@@ -3742,7 +3742,14 @@ func (p *Parser) parseCreateQueue(pos token.Pos) *ast.CreateQueue {
 	name := p.parseIdent()
 
 	p.expect("(")
-	columns := parseCommaSeparatedList(p, p.parseColumnDef)
+	columns := []*ast.ColumnDef{p.parseColumnDef()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		if p.Token.Kind == ")" {
+			break // Allow the trailing comma emitted by GetDatabaseDdl.
+		}
+		columns = append(columns, p.parseColumnDef())
+	}
 	p.expect(")")
 
 	p.expectKeywordLike("PRIMARY")
