@@ -1193,6 +1193,10 @@ func (r *Revoke) SQL() string {
 	return "REVOKE " + r.Privilege.SQL() + " FROM ROLE " + sqlJoin(r.Roles, ", ")
 }
 
+func (p *PrivilegeOnQueue) SQL() string {
+	return sqlJoin(p.Privileges, ", ") + " ON QUEUE " + sqlJoin(p.Names, ", ")
+}
+
 func (p *PrivilegeOnTable) SQL() string {
 	return sqlJoin(p.Privileges, ", ") + " ON TABLE " + sqlJoin(p.Names, ", ")
 }

@@ -5268,7 +5268,7 @@ func (p *Parser) parsePrivilege() ast.Privilege {
 	if t := p.tryParsePrivilegeOnAllTablesInSchema(); t != nil {
 		return t
 	}
-	return p.parsePrivilegeOnTable()
+	return p.parsePrivilegeOnTableOrQueue()
 }
 
 func (p *Parser) tryParseSelectPrivilegeOnAllViewsInSchema() *ast.SelectPrivilegeOnAllViewsInSchema {
@@ -5518,11 +5518,23 @@ func (p *Parser) tryParsePrivilegeOnAllTablesInSchema() *ast.PrivilegeOnAllTable
 	}
 }
 
-func (p *Parser) parsePrivilegeOnTable() *ast.PrivilegeOnTable {
+func (p *Parser) parsePrivilegeOnTableOrQueue() ast.Privilege {
 	privileges := parseCommaSeparatedList(p, p.parseTablePrivilege)
 	p.expect("ON")
+
+	if p.Token.IsKeywordLike("QUEUE") {
+		p.nextToken()
+		names := parseCommaSeparatedList(p, p.parseIdent)
+
+		return &ast.PrivilegeOnQueue{
+			Privileges: privileges,
+			Names:      names,
+		}
+	}
+
 	p.expectKeywordLike("TABLE")
 	names := parseCommaSeparatedList(p, p.parsePath)
+
 	return &ast.PrivilegeOnTable{
 		Privileges: privileges,
 		Names:      names,
