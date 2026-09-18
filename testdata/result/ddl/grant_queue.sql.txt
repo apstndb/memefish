@@ -10,11 +10,15 @@ GRANT INSERT ON QUEUE Q TO ROLE producer
         Rparen: -1,
       },
     },
-    Names: []*ast.Ident{
-      &ast.Ident{
-        NamePos: 22,
-        NameEnd: 23,
-        Name:    "Q",
+    Names: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 22,
+            NameEnd: 23,
+            Name:    "Q",
+          },
+        },
       },
     },
   },

@@ -3750,7 +3750,7 @@ type PrivilegeOnQueue struct {
 	// end = Names[$].end
 
 	Privileges []TablePrivilege // len(Privileges) > 0
-	Names      []*Ident         // len(Names) > 0
+	Names      []*Path          // len(Names) > 0
 }
 
 // PrivilegeOnAllTablesInSchema is ON ALL TABLES IN SCHEMA privilege node in GRANT and REVOKE.

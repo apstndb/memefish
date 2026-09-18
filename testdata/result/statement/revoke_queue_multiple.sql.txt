@@ -17,16 +17,24 @@ REVOKE SELECT, INSERT, DELETE ON QUEUE Q, `queue` FROM ROLE producer, consumer
         Delete: 23,
       },
     },
-    Names: []*ast.Ident{
-      &ast.Ident{
-        NamePos: 39,
-        NameEnd: 40,
-        Name:    "Q",
+    Names: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 39,
+            NameEnd: 40,
+            Name:    "Q",
+          },
+        },
       },
-      &ast.Ident{
-        NamePos: 42,
-        NameEnd: 49,
-        Name:    "queue",
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 42,
+            NameEnd: 49,
+            Name:    "queue",
+          },
+        },
       },
     },
   },

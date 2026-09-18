@@ -17,16 +17,24 @@ GRANT SELECT, INSERT, DELETE ON QUEUE Q, OtherQueue TO ROLE producer, consumer
         Delete: 22,
       },
     },
-    Names: []*ast.Ident{
-      &ast.Ident{
-        NamePos: 38,
-        NameEnd: 39,
-        Name:    "Q",
+    Names: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 38,
+            NameEnd: 39,
+            Name:    "Q",
+          },
+        },
       },
-      &ast.Ident{
-        NamePos: 41,
-        NameEnd: 51,
-        Name:    "OtherQueue",
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 41,
+            NameEnd: 51,
+            Name:    "OtherQueue",
+          },
+        },
       },
     },
   },

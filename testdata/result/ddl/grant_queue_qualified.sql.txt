@@ -1,5 +1,5 @@
---- grant_queue_multiple.sql
-GRANT SELECT, INSERT, DELETE ON QUEUE Q, OtherQueue TO ROLE producer, consumer
+--- grant_queue_qualified.sql
+GRANT SELECT, INSERT, DELETE ON QUEUE app.`Queue`, other.Q TO ROLE worker
 
 --- AST
 &ast.Grant{
@@ -22,17 +22,27 @@ GRANT SELECT, INSERT, DELETE ON QUEUE Q, OtherQueue TO ROLE producer, consumer
         Idents: []*ast.Ident{
           &ast.Ident{
             NamePos: 38,
-            NameEnd: 39,
-            Name:    "Q",
+            NameEnd: 41,
+            Name:    "app",
+          },
+          &ast.Ident{
+            NamePos: 42,
+            NameEnd: 49,
+            Name:    "Queue",
           },
         },
       },
       &ast.Path{
         Idents: []*ast.Ident{
           &ast.Ident{
-            NamePos: 41,
-            NameEnd: 51,
-            Name:    "OtherQueue",
+            NamePos: 51,
+            NameEnd: 56,
+            Name:    "other",
+          },
+          &ast.Ident{
+            NamePos: 57,
+            NameEnd: 58,
+            Name:    "Q",
           },
         },
       },
@@ -40,17 +50,12 @@ GRANT SELECT, INSERT, DELETE ON QUEUE Q, OtherQueue TO ROLE producer, consumer
   },
   Roles: []*ast.Ident{
     &ast.Ident{
-      NamePos: 60,
-      NameEnd: 68,
-      Name:    "producer",
-    },
-    &ast.Ident{
-      NamePos: 70,
-      NameEnd: 78,
-      Name:    "consumer",
+      NamePos: 67,
+      NameEnd: 73,
+      Name:    "worker",
     },
   },
 }
 
 --- SQL
-GRANT SELECT, INSERT, DELETE ON QUEUE Q, OtherQueue TO ROLE producer, consumer
+GRANT SELECT, INSERT, DELETE ON QUEUE app.Queue, other.Q TO ROLE worker

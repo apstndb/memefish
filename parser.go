@@ -5524,7 +5524,7 @@ func (p *Parser) parsePrivilegeOnTableOrQueue() ast.Privilege {
 
 	if p.Token.IsKeywordLike("QUEUE") {
 		p.nextToken()
-		names := parseCommaSeparatedList(p, p.parseIdent)
+		names := parseCommaSeparatedList(p, p.parsePath)
 
 		return &ast.PrivilegeOnQueue{
 			Privileges: privileges,
