@@ -291,7 +291,28 @@ func TestParseStatement(t *testing.T) {
 
 	for _, inputPath := range inputPaths {
 		testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
-			return p.ParseStatement()
+			stmt, err := p.ParseStatement()
+			if err != nil {
+				return stmt, err
+			}
+			// Keep separators outside trailing line comments. Check both the
+			// final statement and a statement followed by another statement.
+			for i, suffix := range []string{"\n;", "\n; SELECT 1;"} {
+				stmts, err := memefish.ParseStatements(p.FilePath, p.Buffer+suffix)
+				if err != nil {
+					return stmt, fmt.Errorf("parsing with suffix %q: %w", suffix, err)
+				}
+				if len(stmts) != i+1 {
+					return stmt, fmt.Errorf("parsing with suffix %q: got %d statements, want %d", suffix, len(stmts), i+1)
+				}
+				if got, want := stmts[0].SQL(), stmt.SQL(); got != want {
+					return stmt, fmt.Errorf("parsing with suffix %q: SQL() = %q, want %q", suffix, got, want)
+				}
+				if len(stmts) == 2 && stmts[1].SQL() != "SELECT 1" {
+					return stmt, fmt.Errorf("parsing with suffix %q: unexpected following statement: %s", suffix, stmts[1].SQL())
+				}
+			}
+			return stmt, nil
 		})
 	}
 }
