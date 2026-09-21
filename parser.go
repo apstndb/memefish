@@ -7805,7 +7805,7 @@ func (p *Parser) parseGQLPropertyField() *ast.GQLPropertyField {
 
 func (p *Parser) parseGQLFilter() *ast.GQLFilter {
 	filterPos := p.expectKeywordLike("FILTER").Pos
-	var wherePos token.Pos
+	wherePos := token.InvalidPos
 	if p.Token.Kind == "WHERE" {
 		wherePos = p.expect("WHERE").Pos
 	}

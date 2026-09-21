@@ -4975,7 +4975,7 @@ type GQLWith struct {
 
 // GQLFilter is a FILTER statement in GQL.
 //
-//	FILTER {{.Where | sqlOpt}} {{.Expr | sql}}
+//	{{if not .Filter.Invalid}} FILTER {{end}} {{if not .Where.Invalid}} WHERE {{end}} {{.Expr | sql}}
 type GQLFilter struct {
 	// pos = Filter || Where
 	// end = Expr.end

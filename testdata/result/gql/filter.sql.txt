@@ -22,6 +22,7 @@ RETURN a
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLFilter{
             Filter: 15,
+            Where:  -1,
             Expr:   &ast.BinaryExpr{
               Op:   ">",
               Left: &ast.Ident{
@@ -57,4 +58,4 @@ RETURN a
 }
 
 --- SQL
-GRAPH FinGraph FILTER WHERE a > 1 RETURN a
+GRAPH FinGraph FILTER a > 1 RETURN a
