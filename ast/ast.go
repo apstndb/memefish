@@ -2453,7 +2453,7 @@ type Options struct {
 	Options token.Pos // position of "OPTIONS" keyword
 	Rparen  token.Pos // position of ")"
 
-	Records []*OptionsDef // may be empty in property graph definitions
+	Records []*OptionsDef // may be empty in some statements
 }
 
 // OptionsDef is single option definition for DDL statements.
