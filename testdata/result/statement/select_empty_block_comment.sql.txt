@@ -1,0 +1,30 @@
+--- select_empty_block_comment.sql
+SELECT 1 /**/ + 2 /* ordinary */
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.BinaryExpr{
+          Op:   "+",
+          Left: &ast.IntLiteral{
+            ValuePos: 7,
+            ValueEnd: 8,
+            Base:     10,
+            Value:    "1",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 16,
+            ValueEnd: 17,
+            Base:     10,
+            Value:    "2",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT 1 + 2

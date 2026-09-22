@@ -1,0 +1,49 @@
+--- !bad_overlapping_block_comment.sql
+SELECT 1 /*/
+--- Error
+syntax error: testdata/input/query/!bad_overlapping_block_comment.sql:1:10: unclosed comment
+  1|  SELECT 1 /*/
+   |           ^~~
+
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.BadExpr{
+          BadNode: &ast.BadNode{
+            NodePos: 7,
+            NodeEnd: 12,
+            Tokens:  []*token.Token{
+              &token.Token{
+                Kind:  "<int>",
+                Space: " ",
+                Raw:   "1",
+                Base:  10,
+                Pos:   7,
+                End:   8,
+              },
+              &token.Token{
+                Kind:     "<bad>",
+                Comments: []token.TokenComment{
+                  token.TokenComment{
+                    Space: " ",
+                    Raw:   "/*/",
+                    Pos:   9,
+                    End:   12,
+                  },
+                },
+                Pos: 12,
+                End: 12,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT 1

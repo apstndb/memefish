@@ -666,6 +666,7 @@ func (l *Lexer) skipComment(noPanic bool) bool {
 func (l *Lexer) skipBlockComment(noPanic bool) bool {
 	const end = "*/"
 	pos := token.Pos(l.pos)
+	l.skipN(2) // The opening star cannot also close the comment.
 	for !l.eof() {
 		if l.slice(0, len(end)) == end {
 			l.skipN(len(end))
