@@ -2960,18 +2960,18 @@ func (p *Parser) lookaheadSubQuery() bool {
 	}
 
 	p.nextToken()
-	// (SELECT ... indicates subquery.
-	if p.Token.Kind == "SELECT" {
+	// SELECT and FROM can both start a query.
+	if p.Token.Kind == "SELECT" || p.Token.Kind == "FROM" {
 		return true
 	}
 
-	// ((...(SELECT maybe indicate subquery.
+	// Nested SELECT or FROM queries may also indicate a subquery.
 	nest := 0
 	for p.Token.Kind == "(" {
 		nest++
 		p.nextToken()
 	}
-	if nest == 0 || p.Token.Kind != "SELECT" {
+	if nest == 0 || (p.Token.Kind != "SELECT" && p.Token.Kind != "FROM") {
 		return false
 	}
 

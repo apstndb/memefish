@@ -1,0 +1,45 @@
+--- from_subquery_table.sql
+SELECT * FROM (FROM UNNEST([1]))
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 14,
+        Rparen: 31,
+        Query:  &ast.FromQuery{
+          From: &ast.From{
+            From:   15,
+            Source: &ast.Unnest{
+              Unnest: 20,
+              Rparen: 30,
+              Expr:   &ast.ArrayLiteral{
+                Array:  -1,
+                Lbrack: 27,
+                Rbrack: 29,
+                Values: []ast.Expr{
+                  &ast.IntLiteral{
+                    ValuePos: 28,
+                    ValueEnd: 29,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM (FROM UNNEST([1]))
