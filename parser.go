@@ -1139,12 +1139,12 @@ func (p *Parser) parseTableExpr(toplevel bool) ast.TableExpr {
 
 		var method ast.JoinMethod
 		if op != ast.CommaJoin {
-			switch {
-			case p.Token.Kind == "HASH":
+			switch p.Token.Kind {
+			case "HASH":
 				p.nextToken()
 				method = ast.HashJoinMethod
 				needJoin = true
-			case p.Token.IsKeywordLike("LOOKUP"):
+			case "LOOKUP":
 				p.nextToken()
 				method = ast.LookupJoinMethod
 				needJoin = true
