@@ -2065,10 +2065,16 @@ func (p *Parser) parseLit() ast.Expr {
 	case token.TokenIdent:
 		id := p.Token
 		switch {
-		case id.IsKeywordLike("SAFE_CAST"):
-			return p.parseCastExpr()
-		case id.IsKeywordLike("REPLACE_FIELDS"):
-			return p.parseReplaceFieldsExpr()
+		case id.IsKeywordLike("SAFE_CAST"), id.IsKeywordLike("REPLACE_FIELDS"):
+			// These non-reserved names start special syntax only before "(".
+			lexer := p.cloneLexer()
+			lexer.nextToken(false)
+			if lexer.Token.Kind == "(" {
+				if id.IsKeywordLike("SAFE_CAST") {
+					return p.parseCastExpr()
+				}
+				return p.parseReplaceFieldsExpr()
+			}
 		case id.IsKeywordLike("VALUE"):
 			// VALUE is non-reserved, so look ahead for the `VALUE hint? {` form before choosing the GQL subquery parser.
 			if p.lookaheadValueGQLSubQuery() {

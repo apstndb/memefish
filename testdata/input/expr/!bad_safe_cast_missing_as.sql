@@ -1,0 +1,1 @@
+SAFE_CAST(1)

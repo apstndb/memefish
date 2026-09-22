@@ -1,0 +1,45 @@
+--- !bad_safe_cast_missing_as.sql
+SAFE_CAST(1)
+
+--- Error
+syntax error: testdata/input/expr/!bad_safe_cast_missing_as.sql:1:12: expected token: AS, but: )
+  1|  SAFE_CAST(1)
+   |             ^
+
+
+--- AST
+&ast.BadExpr{
+  BadNode: &ast.BadNode{
+    NodeEnd: 12,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "SAFE_CAST",
+        AsString: "SAFE_CAST",
+        End:      9,
+      },
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        Pos:  9,
+        End:  10,
+      },
+      &token.Token{
+        Kind: "<int>",
+        Raw:  "1",
+        Base: 10,
+        Pos:  10,
+        End:  11,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  11,
+        End:  12,
+      },
+    },
+  },
+}
+
+--- SQL
+SAFE_CAST(1)

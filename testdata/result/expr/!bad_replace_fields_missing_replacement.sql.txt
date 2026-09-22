@@ -1,0 +1,45 @@
+--- !bad_replace_fields_missing_replacement.sql
+REPLACE_FIELDS(p)
+
+--- Error
+syntax error: testdata/input/expr/!bad_replace_fields_missing_replacement.sql:1:17: expected token: ,, but: )
+  1|  REPLACE_FIELDS(p)
+   |                  ^
+
+
+--- AST
+&ast.BadExpr{
+  BadNode: &ast.BadNode{
+    NodeEnd: 17,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "REPLACE_FIELDS",
+        AsString: "REPLACE_FIELDS",
+        End:      14,
+      },
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        Pos:  14,
+        End:  15,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "p",
+        AsString: "p",
+        Pos:      15,
+        End:      16,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  16,
+        End:  17,
+      },
+    },
+  },
+}
+
+--- SQL
+REPLACE_FIELDS(p)
