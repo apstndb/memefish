@@ -5091,6 +5091,10 @@ func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 		restartCounterWith = p.parseRestartCounterWith()
 	}
 
+	if options == nil && skipRange == nil && noSkipRange == nil && restartCounterWith == nil {
+		p.panicfAtToken(&p.Token, "expected SET, SKIP, NO, or RESTART")
+	}
+
 	return &ast.AlterSequence{
 		Alter:              pos,
 		Name:               name,

@@ -1,0 +1,41 @@
+--- !bad_alter_sequence_missing_action.sql
+ALTER SEQUENCE S
+--- Error
+syntax error: testdata/input/ddl/!bad_alter_sequence_missing_action.sql:1:17: expected SET, SKIP, NO, or RESTART
+  1|  ALTER SEQUENCE S
+   |                  ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 16,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "ALTER",
+        AsString: "ALTER",
+        End:      5,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "SEQUENCE",
+        AsString: "SEQUENCE",
+        Pos:      6,
+        End:      14,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "S",
+        AsString: "S",
+        Pos:      15,
+        End:      16,
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER SEQUENCE S
