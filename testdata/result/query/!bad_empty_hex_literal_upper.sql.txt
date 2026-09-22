@@ -1,0 +1,34 @@
+--- !bad_empty_hex_literal_upper.sql
+SELECT 0X
+
+--- Error
+syntax error: testdata/input/query/!bad_empty_hex_literal_upper.sql:1:10: hexadecimal literal must contain at least one digit
+  1|  SELECT 0X
+   |           ^
+
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.BadQueryExpr{
+    BadNode: &ast.BadNode{
+      NodeEnd: 9,
+      Tokens:  []*token.Token{
+        &token.Token{
+          Kind: "SELECT",
+          Raw:  "SELECT",
+          End:  6,
+        },
+        &token.Token{
+          Kind:  "<bad>",
+          Space: " ",
+          Raw:   "0X",
+          Pos:   7,
+          End:   9,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT 0X

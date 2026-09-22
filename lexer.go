@@ -365,6 +365,13 @@ func (l *Lexer) consumeNumber(noPanic bool) {
 	}
 
 	l.skipN(i)
+	if base == 16 && i == 2 {
+		if noPanic {
+			l.Token.Kind = token.TokenBad
+			return
+		}
+		l.panicf("hexadecimal literal must contain at least one digit")
+	}
 	if int {
 		l.Token.Kind = token.TokenInt
 		l.Token.Base = base
