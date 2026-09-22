@@ -1403,7 +1403,7 @@ func (a *AlterSequence) Pos() token.Pos {
 }
 
 func (a *AlterSequence) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(a.NoSkipRange), wrapNode(a.SkipRange), wrapNode(a.RestartCounterWith), wrapNode(a.Options)))
+	return a.SequenceEnd
 }
 
 func (a *AlterChangeStream) Pos() token.Pos {

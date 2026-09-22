@@ -1,0 +1,32 @@
+--- alter_sequence_restart_no_skip.sql
+ALTER SEQUENCE S RESTART COUNTER WITH 3 NO SKIP RANGE
+
+--- AST
+&ast.AlterSequence{
+  SequenceEnd: 53,
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 15,
+        NameEnd: 16,
+        Name:    "S",
+      },
+    },
+  },
+  RestartCounterWith: &ast.RestartCounterWith{
+    Restart: 17,
+    Counter: &ast.IntLiteral{
+      ValuePos: 38,
+      ValueEnd: 39,
+      Base:     10,
+      Value:    "3",
+    },
+  },
+  NoSkipRange: &ast.NoSkipRange{
+    No:    40,
+    Range: 48,
+  },
+}
+
+--- SQL
+ALTER SEQUENCE S RESTART COUNTER WITH 3 NO SKIP RANGE

@@ -5070,34 +5070,29 @@ func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 	p.expectKeywordLike("SEQUENCE")
 	name := p.parsePath()
 
-	var options *ast.Options
-	if p.Token.Kind == "SET" {
-		p.nextToken()
-		options = p.parseOptions()
+	sequence := &ast.AlterSequence{
+		Alter:       pos,
+		SequenceEnd: token.InvalidPos,
+		Name:        name,
 	}
-
-	var skipRange *ast.SkipRange
-	if p.Token.IsKeywordLike("SKIP") {
-		skipRange = p.parseSkipRange()
-	}
-
-	var noSkipRange *ast.NoSkipRange
-	if p.Token.Kind == "NO" {
-		noSkipRange = p.parseNoSkipRange()
-	}
-
-	var restartCounterWith *ast.RestartCounterWith
-	if p.Token.IsKeywordLike("RESTART") {
-		restartCounterWith = p.parseRestartCounterWith()
-	}
-
-	return &ast.AlterSequence{
-		Alter:              pos,
-		Name:               name,
-		Options:            options,
-		RestartCounterWith: restartCounterWith,
-		SkipRange:          skipRange,
-		NoSkipRange:        noSkipRange,
+	for {
+		switch {
+		case p.Token.Kind == "SET" && sequence.Options == nil:
+			p.nextToken()
+			sequence.Options = p.parseOptions()
+			sequence.SequenceEnd = sequence.Options.End()
+		case p.Token.IsKeywordLike("SKIP") && sequence.SkipRange == nil:
+			sequence.SkipRange = p.parseSkipRange()
+			sequence.SequenceEnd = sequence.SkipRange.End()
+		case p.Token.Kind == "NO" && sequence.NoSkipRange == nil:
+			sequence.NoSkipRange = p.parseNoSkipRange()
+			sequence.SequenceEnd = sequence.NoSkipRange.End()
+		case p.Token.IsKeywordLike("RESTART") && sequence.RestartCounterWith == nil:
+			sequence.RestartCounterWith = p.parseRestartCounterWith()
+			sequence.SequenceEnd = sequence.RestartCounterWith.End()
+		default:
+			return sequence
+		}
 	}
 }
 

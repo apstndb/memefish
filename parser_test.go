@@ -152,6 +152,9 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 						// FIXME: The fields of `CreateTable` are not ordered by position for now,
 						// so we skips to check the order of positions of `CreateTable` fields.
 						_, isCreateTable := node.(*ast.CreateTable)
+						// ALTER SEQUENCE clauses may occur in either order;
+						// its fields and visitor retain their canonical order.
+						_, isAlterSequence := node.(*ast.AlterSequence)
 
 						lastEnd := token.InvalidPos
 						ast.Walk(node, &pathVisitor{
@@ -165,7 +168,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 									return true
 								}
 
-								if child.Pos() < lastEnd {
+								if child.Pos() < lastEnd && !isAlterSequence {
 									if !isCreateTable {
 										t.Errorf("pos must be larger or equal than end of last node pos %v, but got pos: %v on %v: %v", lastEnd, child.Pos(), childPath, child.SQL())
 									} else {
