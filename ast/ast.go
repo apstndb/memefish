@@ -4456,7 +4456,7 @@ type PropertyGraphPropertiesAre struct {
 //	PROPERTIES ({{.DerivedProperties | sqlJoin ", "}})
 type PropertyGraphDerivedPropertyList struct {
 	// pos = Properties
-	// end = Rparen
+	// end = Rparen + 1
 
 	Properties        token.Pos                       // position of "PROPERTIES"
 	Rparen            token.Pos                       // position of ")"

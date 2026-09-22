@@ -2227,7 +2227,7 @@ func (p *PropertyGraphDerivedPropertyList) Pos() token.Pos {
 }
 
 func (p *PropertyGraphDerivedPropertyList) End() token.Pos {
-	return p.Rparen
+	return posAdd(p.Rparen, 1)
 }
 
 func (p *PropertyGraphDerivedProperty) Pos() token.Pos {
