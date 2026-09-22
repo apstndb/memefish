@@ -507,7 +507,16 @@ func (s *SubscriptSpecifierKeyword) SQL() string {
 }
 
 func (c *CallExpr) SQL() string {
-	return c.Func.SQL() + "(" + strOpt(c.Distinct, "DISTINCT ") +
+	name := c.Func.SQL()
+	if len(c.Func.Idents) == 1 {
+		id := c.Func.Idents[0].Name
+		switch strings.ToUpper(id) {
+		case "SAFE_CAST", "REPLACE_FIELDS":
+			// Without quotes these names introduce special syntax, not a regular call.
+			name = "`" + id + "`"
+		}
+	}
+	return name + "(" + strOpt(c.Distinct, "DISTINCT ") +
 		sqlJoin(c.Args, ", ") +
 		strOpt(len(c.Args) > 0 && len(c.NamedArgs) > 0, ", ") +
 		sqlJoin(c.NamedArgs, ", ") +
