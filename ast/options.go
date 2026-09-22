@@ -61,7 +61,13 @@ func (o *Options) IntegerField(name string) (*int64, error) {
 	}
 	switch v := v.(type) {
 	case *IntLiteral:
-		n, err := strconv.ParseInt(v.Value, 10, 64)
+		base := 10
+		if v.Base == 16 {
+			// Base 0 recognizes the signed 0x prefix. Decimal literals,
+			// including those with leading zeroes, must remain base 10.
+			base = 0
+		}
+		n, err := strconv.ParseInt(v.Value, base, 64)
 		if err != nil {
 			return nil, err
 		}
