@@ -1,0 +1,18 @@
+--- create_sequence_bare.sql
+CREATE SEQUENCE S
+
+--- AST
+&ast.CreateSequence{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 16,
+        NameEnd: 17,
+        Name:    "S",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE SEQUENCE S

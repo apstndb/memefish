@@ -1,0 +1,30 @@
+--- create_sequence_counter_without_options.sql
+CREATE SEQUENCE IF NOT EXISTS S START COUNTER WITH 1
+
+--- AST
+&ast.CreateSequence{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 30,
+        NameEnd: 31,
+        Name:    "S",
+      },
+    },
+  },
+  IfNotExists: true,
+  Params:      []ast.SequenceParam{
+    &ast.StartCounterWith{
+      Start:   32,
+      Counter: &ast.IntLiteral{
+        ValuePos: 51,
+        ValueEnd: 52,
+        Base:     10,
+        Value:    "1",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE SEQUENCE IF NOT EXISTS S START COUNTER WITH 1
