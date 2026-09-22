@@ -1689,7 +1689,24 @@ func (n *GQLGraphPattern) SQL() string {
 }
 
 func (n *GQLTopLevelPathPattern) SQL() string {
-	return sqlOpt("", n.Hint, " ") + sqlOpt("", n.Variable, " = ") + sqlOpt("", n.SearchPrefix, " ") + sqlOpt("", n.Mode, " ") + n.Path.SQL()
+	variable := ""
+	if n.Variable != nil {
+		variable = sqlGQLVariable(n.Variable) + " = "
+	}
+	return sqlOpt("", n.Hint, " ") + variable + sqlOpt("", n.SearchPrefix, " ") + sqlOpt("", n.Mode, " ") + n.Path.SQL()
+}
+
+func sqlGQLVariable(variable *Ident) string {
+	if variable == nil {
+		return ""
+	}
+	// These words are reserved in graph patterns, but not in ordinary SQL expressions.
+	switch strings.ToUpper(variable.Name) {
+	case "WALK", "TRAIL", "SIMPLE", "ACYCLIC", "PATH", "PATHS":
+		return "`" + variable.Name + "`"
+	default:
+		return variable.SQL()
+	}
 }
 
 func (n *GQLPathSearchPrefix) SQL() string {
@@ -1727,7 +1744,7 @@ func (n *GQLEdgePattern) SQL() string {
 }
 
 func (n *GQLElementPatternFiller) SQL() string {
-	s := sqlOpt("", n.Hint, " ") + sqlOpt("", n.Variable, "")
+	s := sqlOpt("", n.Hint, " ") + sqlGQLVariable(n.Variable)
 	if n.Label != nil {
 		// "IS label" needs a space after the variable; ":label" does not.
 		if n.Variable != nil && n.Label.Colon.Invalid() {

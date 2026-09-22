@@ -5121,6 +5121,7 @@ type BadGQLGraphPattern struct {
 }
 
 // GQLTopLevelPathPattern represents a top-level path pattern in GQL.
+// SQL() quotes variable names reserved in graph patterns.
 //
 //	{{.Hint | sqlOpt}}{{if .Variable}}{{.Variable | sql}} = {{end}}{{.SearchPrefix | sqlOpt}}{{.Mode | sqlOpt}}{{.Path | sql}}
 type GQLTopLevelPathPattern struct {
@@ -5252,6 +5253,7 @@ type GQLEdgePattern struct {
 //	{{.Hint | sqlOpt}}{{.Variable | sqlOpt}}{{.Label | sqlOpt}}{{.Properties | sqlOpt}}{{.Where | sqlOpt}}{{.Cost | sqlOpt}}
 //
 // SQL() inserts a space before an IS label when a variable is present (":label" needs no space).
+// It quotes variable names reserved in graph patterns.
 type GQLElementPatternFiller struct {
 	// pos = (Hint ?? Variable ?? Label ?? Properties ?? Where ?? Cost).pos || EmptyPos
 	// end = (Cost ?? Where ?? Properties ?? Label ?? Variable ?? Hint).end || EmptyPos + 1
