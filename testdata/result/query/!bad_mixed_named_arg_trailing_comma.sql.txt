@@ -1,0 +1,91 @@
+--- !bad_mixed_named_arg_trailing_comma.sql
+SELECT F(1, x => 2,)
+
+--- Error
+syntax error: testdata/input/query/!bad_mixed_named_arg_trailing_comma.sql:1:20: expected token: <ident>, but: )
+  1|  SELECT F(1, x => 2,)
+   |                     ^
+
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.BadExpr{
+          BadNode: &ast.BadNode{
+            NodePos: 7,
+            NodeEnd: 20,
+            Tokens:  []*token.Token{
+              &token.Token{
+                Kind:     "<ident>",
+                Space:    " ",
+                Raw:      "F",
+                AsString: "F",
+                Pos:      7,
+                End:      8,
+              },
+              &token.Token{
+                Kind: "(",
+                Raw:  "(",
+                Pos:  8,
+                End:  9,
+              },
+              &token.Token{
+                Kind: "<int>",
+                Raw:  "1",
+                Base: 10,
+                Pos:  9,
+                End:  10,
+              },
+              &token.Token{
+                Kind: ",",
+                Raw:  ",",
+                Pos:  10,
+                End:  11,
+              },
+              &token.Token{
+                Kind:     "<ident>",
+                Space:    " ",
+                Raw:      "x",
+                AsString: "x",
+                Pos:      12,
+                End:      13,
+              },
+              &token.Token{
+                Kind:  "=>",
+                Space: " ",
+                Raw:   "=>",
+                Pos:   14,
+                End:   16,
+              },
+              &token.Token{
+                Kind:  "<int>",
+                Space: " ",
+                Raw:   "2",
+                Base:  10,
+                Pos:   17,
+                End:   18,
+              },
+              &token.Token{
+                Kind: ",",
+                Raw:  ",",
+                Pos:  18,
+                End:  19,
+              },
+              &token.Token{
+                Kind: ")",
+                Raw:  ")",
+                Pos:  19,
+                End:  20,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT F(1, x => 2,)
