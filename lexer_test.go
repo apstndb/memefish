@@ -176,6 +176,9 @@ var lexerWrongTestCase = []struct {
 	{"1from", 1, 1, "number literal cannot follow identifier without any spaces"},
 	{`'''0`, 0, 4, "unclosed triple-quoted string literal"},
 	{`/*`, 0, 2, "unclosed comment"},
+	{`/*/`, 0, 3, "unclosed comment"},
+	{`SELECT 1 /*/`, 9, 12, "unclosed comment"},
+	{`SELECT 1 /*/ + 2`, 9, 16, "unclosed comment"},
 }
 
 func testLexer(t *testing.T, source string, tokens []*Token) {
