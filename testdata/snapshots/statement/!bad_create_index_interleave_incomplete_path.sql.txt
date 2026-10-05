@@ -2,7 +2,7 @@
 CREATE INDEX app.Idx ON app.Child (Id), INTERLEAVE IN app.
 
 --- Error
-syntax error: testdata/input/ddl/!bad_create_index_interleave_incomplete_path.sql:2:1: expected token: <ident>, but: <eof>
+syntax error: testdata/inputs/ddl/!bad_create_index_interleave_incomplete_path.sql:2:1: expected token: <ident>, but: <eof>
   2|  
    |  ^
 
