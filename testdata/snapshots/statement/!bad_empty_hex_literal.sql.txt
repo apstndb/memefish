@@ -1,9 +1,9 @@
---- !bad_empty_hex_literal_upper.sql
-SELECT 0X
+--- !bad_empty_hex_literal.sql
+SELECT 0x
 
 --- Error
-syntax error: testdata/input/query/!bad_empty_hex_literal_upper.sql:1:10: hexadecimal literal must contain at least one digit
-  1|  SELECT 0X
+syntax error: testdata/inputs/query/!bad_empty_hex_literal.sql:1:10: hexadecimal literal must contain at least one digit
+  1|  SELECT 0x
    |           ^
 
 
@@ -21,7 +21,7 @@ syntax error: testdata/input/query/!bad_empty_hex_literal_upper.sql:1:10: hexade
         &token.Token{
           Kind:  "<bad>",
           Space: " ",
-          Raw:   "0X",
+          Raw:   "0x",
           Pos:   7,
           End:   9,
         },
@@ -31,4 +31,4 @@ syntax error: testdata/input/query/!bad_empty_hex_literal_upper.sql:1:10: hexade
 }
 
 --- SQL
-SELECT 0X
+SELECT 0x

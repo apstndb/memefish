@@ -2,7 +2,7 @@
 0x
 
 --- Error
-syntax error: testdata/input/expr/!bad_empty_hex_first_token.sql:1:3: hexadecimal literal must contain at least one digit
+syntax error: testdata/inputs/expr/!bad_empty_hex_first_token.sql:1:3: hexadecimal literal must contain at least one digit
   1|  0x
    |    ^
 
