@@ -1,7 +1,7 @@
 --- !bad_from_query_order_by.sql
 FROM t ORDER BY x
 --- Error
-syntax error: testdata/input/query/!bad_from_query_order_by.sql:1:8: order by is not supported after a FROM query; use pipe operator `|> ORDER BY` or parentheses around the FROM query
+syntax error: testdata/inputs/query/!bad_from_query_order_by.sql:1:8: order by is not supported after a FROM query; use pipe operator `|> ORDER BY` or parentheses around the FROM query
   1|  FROM t ORDER BY x
    |         ^~~~~
 

@@ -1,8 +1,8 @@
---- !bad_from_query_limit.sql
-FROM t LIMIT 1
+--- !bad_from_query_order_by.sql
+FROM t ORDER BY x
 --- Error
-syntax error: testdata/input/query/!bad_from_query_limit.sql:1:8: limit is not supported after a FROM query; use pipe operator `|> LIMIT` or parentheses around the FROM query
-  1|  FROM t LIMIT 1
+syntax error: testdata/inputs/query/!bad_from_query_order_by.sql:1:8: order by is not supported after a FROM query; use pipe operator `|> ORDER BY` or parentheses around the FROM query
+  1|  FROM t ORDER BY x
    |         ^~~~~
 
 
@@ -10,7 +10,7 @@ syntax error: testdata/input/query/!bad_from_query_limit.sql:1:8: limit is not s
 &ast.QueryStatement{
   Query: &ast.BadQueryExpr{
     BadNode: &ast.BadNode{
-      NodeEnd: 14,
+      NodeEnd: 17,
       Tokens:  []*token.Token{
         &token.Token{
           Kind: "FROM",
@@ -26,19 +26,26 @@ syntax error: testdata/input/query/!bad_from_query_limit.sql:1:8: limit is not s
           End:      6,
         },
         &token.Token{
-          Kind:  "LIMIT",
+          Kind:  "ORDER",
           Space: " ",
-          Raw:   "LIMIT",
+          Raw:   "ORDER",
           Pos:   7,
           End:   12,
         },
         &token.Token{
-          Kind:  "<int>",
+          Kind:  "BY",
           Space: " ",
-          Raw:   "1",
-          Base:  10,
+          Raw:   "BY",
           Pos:   13,
-          End:   14,
+          End:   15,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Space:    " ",
+          Raw:      "x",
+          AsString: "x",
+          Pos:      16,
+          End:      17,
         },
       },
     },
@@ -46,4 +53,4 @@ syntax error: testdata/input/query/!bad_from_query_limit.sql:1:8: limit is not s
 }
 
 --- SQL
-FROM t LIMIT 1
+FROM t ORDER BY x

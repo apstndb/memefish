@@ -1,7 +1,7 @@
 --- !bad_from_query_limit.sql
 FROM t LIMIT 1
 --- Error
-syntax error: testdata/input/query/!bad_from_query_limit.sql:1:8: limit is not supported after a FROM query; use pipe operator `|> LIMIT` or parentheses around the FROM query
+syntax error: testdata/inputs/query/!bad_from_query_limit.sql:1:8: limit is not supported after a FROM query; use pipe operator `|> LIMIT` or parentheses around the FROM query
   1|  FROM t LIMIT 1
    |         ^~~~~
 
