@@ -2,7 +2,7 @@
 CREATE TABLE Probe (Id INT64, CONSTRAINT PositiveId CHECK ()) PRIMARY KEY (Id)
 
 --- Error
-syntax error: testdata/input/ddl/!bad_create_table_named_constraint_missing_expr.sql:1:60: unexpected token: )
+syntax error: testdata/inputs/ddl/!bad_create_table_named_constraint_missing_expr.sql:1:60: unexpected token: )
   1|  CREATE TABLE Probe (Id INT64, CONSTRAINT PositiveId CHECK ()) PRIMARY KEY (Id)
    |                                                             ^
 

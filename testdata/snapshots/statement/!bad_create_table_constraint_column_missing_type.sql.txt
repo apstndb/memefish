@@ -2,7 +2,7 @@
 CREATE TABLE Probe (CONSTRAINT) PRIMARY KEY ()
 
 --- Error
-syntax error: testdata/input/ddl/!bad_create_table_constraint_column_missing_type.sql:1:31: expected token: ARRAY, <ident>, but: )
+syntax error: testdata/inputs/ddl/!bad_create_table_constraint_column_missing_type.sql:1:31: expected token: ARRAY, <ident>, but: )
   1|  CREATE TABLE Probe (CONSTRAINT) PRIMARY KEY ()
    |                                ^
 
