@@ -2,7 +2,7 @@
 INTERVAL '1-2' YEAR TO
 
 --- Error
-syntax error: testdata/input/expr/!bad_interval_range_missing_end.sql:2:1: expected token: <ident>, but: <eof>
+syntax error: testdata/inputs/expr/!bad_interval_range_missing_end.sql:2:1: expected token: <ident>, but: <eof>
   2|  
    |  ^
 

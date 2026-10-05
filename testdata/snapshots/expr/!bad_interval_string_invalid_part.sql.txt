@@ -2,7 +2,7 @@
 INTERVAL '1' INVALID
 
 --- Error
-syntax error: testdata/input/expr/!bad_interval_string_invalid_part.sql:1:14: invalid date time part: INVALID
+syntax error: testdata/inputs/expr/!bad_interval_string_invalid_part.sql:1:14: invalid date time part: INVALID
   1|  INTERVAL '1' INVALID
    |               ^~~~~~~
 

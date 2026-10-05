@@ -2,7 +2,7 @@
 INTERVAL '1'
 
 --- Error
-syntax error: testdata/input/expr/!bad_interval_string_missing_part.sql:2:1: expected token: <ident>, but: <eof>
+syntax error: testdata/inputs/expr/!bad_interval_string_missing_part.sql:2:1: expected token: <ident>, but: <eof>
   2|  
    |  ^
 
