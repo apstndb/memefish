@@ -2,7 +2,7 @@
 SELECT ABS(x => 1,)
 
 --- Error
-syntax error: testdata/input/query/!bad_named_arg_trailing_comma.sql:1:19: expected token: <ident>, but: )
+syntax error: testdata/inputs/query/!bad_named_arg_trailing_comma.sql:1:19: expected token: <ident>, but: )
   1|  SELECT ABS(x => 1,)
    |                    ^
 

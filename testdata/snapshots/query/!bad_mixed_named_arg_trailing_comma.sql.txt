@@ -2,7 +2,7 @@
 SELECT F(1, x => 2,)
 
 --- Error
-syntax error: testdata/input/query/!bad_mixed_named_arg_trailing_comma.sql:1:20: expected token: <ident>, but: )
+syntax error: testdata/inputs/query/!bad_mixed_named_arg_trailing_comma.sql:1:20: expected token: <ident>, but: )
   1|  SELECT F(1, x => 2,)
    |                     ^
 
