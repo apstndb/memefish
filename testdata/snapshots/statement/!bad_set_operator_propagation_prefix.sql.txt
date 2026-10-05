@@ -5,7 +5,7 @@ FULL STRICT UNION ALL
 RETURN 2 AS id
 
 --- Error
-syntax error: testdata/input/gql/!bad_set_operator_propagation_prefix.sql:3:1: expected token: <eof>, but: FULL
+syntax error: testdata/inputs/gql/!bad_set_operator_propagation_prefix.sql:3:1: expected token: <eof>, but: FULL
   3|  FULL STRICT UNION ALL
    |  ^~~~
 
