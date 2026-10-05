@@ -155,6 +155,13 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *PipeDrop:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
+	case *PipeSet:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
+
+	case *PipeSetItem:
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Column), visitor: v.Field("Column")})
+
 	case *PipeLimit:
 		stack = append(stack, &stackItem{node: wrapNode(n.Offset), visitor: v.Field("Offset")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Count), visitor: v.Field("Count")})
@@ -560,6 +567,24 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
+	case *CreateQueue:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{node: wrapNode(n.RowDeletionPolicy), visitor: v.Field("RowDeletionPolicy")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Cluster), visitor: v.Field("Cluster")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PrimaryKeys), visitor: v.Field("PrimaryKeys")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *AlterQueue:
+		stack = append(stack, &stackItem{node: wrapNode(n.QueueAlteration), visitor: v.Field("QueueAlteration")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *DropQueue:
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *QueueSetOptions:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+
 	case *Synonym:
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
@@ -772,6 +797,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *VectorIndexSetOptions:
 		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 
+	case *VectorIndexRebuild:
+		// nothing to do
+
 	case *CreateChangeStream:
 		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.For), visitor: v.Field("For")})
@@ -835,6 +863,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Privilege), visitor: v.Field("Privilege")})
 
 	case *PrivilegeOnTable:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Privileges), visitor: v.Field("Privileges")})
+
+	case *PrivilegeOnQueue:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Privileges), visitor: v.Field("Privileges")})
 
@@ -955,6 +987,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *CreatePropertyGraph:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Content), visitor: v.Field("Content")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
@@ -1093,6 +1126,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *Delete:
 		stack = append(stack, &stackItem{node: wrapNode(n.ThenReturn), visitor: v.Field("ThenReturn")})
+		stack = append(stack, &stackItem{node: wrapNode(n.AssertRowsModified), visitor: v.Field("AssertRowsModified")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
 		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
 		stack = append(stack, &stackItem{node: wrapNode(n.TableHint), visitor: v.Field("TableHint")})
