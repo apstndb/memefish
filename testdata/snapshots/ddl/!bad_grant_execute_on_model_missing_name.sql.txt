@@ -2,7 +2,7 @@
 GRANT EXECUTE ON MODEL TO ROLE MyRole
 
 --- Error
-syntax error: testdata/input/ddl/!bad_grant_execute_on_model_missing_name.sql:1:24: expected token: <ident>, but: TO
+syntax error: testdata/inputs/ddl/!bad_grant_execute_on_model_missing_name.sql:1:24: expected token: <ident>, but: TO
   1|  GRANT EXECUTE ON MODEL TO ROLE MyRole
    |                         ^~
 

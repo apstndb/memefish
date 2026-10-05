@@ -2,7 +2,7 @@
 REVOKE EXECUTE ON MODEL FROM ROLE MyRole
 
 --- Error
-syntax error: testdata/input/ddl/!bad_revoke_execute_on_model_missing_name.sql:1:25: expected token: <ident>, but: FROM
+syntax error: testdata/inputs/ddl/!bad_revoke_execute_on_model_missing_name.sql:1:25: expected token: <ident>, but: FROM
   1|  REVOKE EXECUTE ON MODEL FROM ROLE MyRole
    |                          ^~~~
 
