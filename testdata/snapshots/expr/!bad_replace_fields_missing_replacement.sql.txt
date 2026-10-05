@@ -2,7 +2,7 @@
 REPLACE_FIELDS(p)
 
 --- Error
-syntax error: testdata/input/expr/!bad_replace_fields_missing_replacement.sql:1:17: expected token: ,, but: )
+syntax error: testdata/inputs/expr/!bad_replace_fields_missing_replacement.sql:1:17: expected token: ,, but: )
   1|  REPLACE_FIELDS(p)
    |                  ^
 

@@ -2,7 +2,7 @@
 SAFE_CAST(1)
 
 --- Error
-syntax error: testdata/input/expr/!bad_safe_cast_missing_as.sql:1:12: expected token: AS, but: )
+syntax error: testdata/inputs/expr/!bad_safe_cast_missing_as.sql:1:12: expected token: AS, but: )
   1|  SAFE_CAST(1)
    |             ^
 
