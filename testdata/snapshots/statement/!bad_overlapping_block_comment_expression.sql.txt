@@ -1,7 +1,7 @@
 --- !bad_overlapping_block_comment_expression.sql
 SELECT 1 /*/ + 2
 --- Error
-syntax error: testdata/input/query/!bad_overlapping_block_comment_expression.sql:1:10: unclosed comment
+syntax error: testdata/inputs/query/!bad_overlapping_block_comment_expression.sql:1:10: unclosed comment
   1|  SELECT 1 /*/ + 2
    |           ^~~~~~~
 
