@@ -357,6 +357,10 @@ func (p *PipeAggregateGroupByItem) SQL() string {
 		strOpt(p.Dir != "", " "+string(p.Dir))
 }
 
+func (p *PipeSet) SQL() string { return "|> SET " + sqlJoin(p.Items, ", ") }
+
+func (p *PipeSetItem) SQL() string { return p.Column.SQL() + " = " + p.Expr.SQL() }
+
 func (p *PipeLimit) SQL() string {
 	return "|> LIMIT " + p.Count.SQL() + sqlOpt(" ", p.Offset, "")
 }
@@ -559,7 +563,8 @@ func (c *TVFCallExpr) SQL() string {
 		strOpt(len(c.Args) > 0 && len(c.NamedArgs) > 0, ", ") +
 		sqlJoin(c.NamedArgs, ", ") +
 		")" +
-		sqlOpt(" ", c.Hint, "")
+		sqlOpt(" ", c.Hint, "") +
+		sqlOpt(" ", c.Sample, "")
 }
 
 func (n *NamedArg) SQL() string { return n.Name.SQL() + " => " + n.Value.SQL() }
@@ -906,6 +911,24 @@ func (c *CreateTable) SQL() string {
 		sqlOpt(", ", c.Options, "")
 }
 
+func (c *CreateQueue) SQL() string {
+	return "CREATE QUEUE " + strOpt(c.IfNotExists, "IF NOT EXISTS ") +
+		c.Name.SQL() + " (\n" + indent + sqlJoin(c.Columns, ",\n"+indent) +
+		"\n) PRIMARY KEY (" + sqlJoin(c.PrimaryKeys, ", ") + ")" +
+		sqlOpt("", c.Cluster, "") + sqlOpt("", c.RowDeletionPolicy, "") +
+		sqlOpt(", ", c.Options, "")
+}
+
+func (a *AlterQueue) SQL() string {
+	return "ALTER QUEUE " + a.Name.SQL() + " " + a.QueueAlteration.SQL()
+}
+
+func (d *DropQueue) SQL() string {
+	return "DROP QUEUE " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
+}
+
+func (q *QueueSetOptions) SQL() string { return "SET " + q.Options.SQL() }
+
 func (s *Synonym) SQL() string { return "SYNONYM (" + s.Name.SQL() + ")" }
 
 func (c *CreateSequence) SQL() string {
@@ -1015,7 +1038,7 @@ func (r *RowDeletionPolicy) SQL() string {
 }
 
 func (a *AlterTable) SQL() string {
-	return "ALTER TABLE " + a.Name.SQL() + " " + a.TableAlteration.SQL()
+	return "ALTER TABLE " + strOpt(a.IfExists, "IF EXISTS ") + a.Name.SQL() + " " + a.TableAlteration.SQL()
 }
 
 func (s *AddSynonym) SQL() string { return "ADD SYNONYM " + s.Name.SQL() }
@@ -1132,6 +1155,8 @@ func (a *AlterVectorIndex) SQL() string {
 
 func (a *VectorIndexSetOptions) SQL() string { return "SET " + a.Options.SQL() }
 
+func (v *VectorIndexRebuild) SQL() string { return "REBUILD" }
+
 func (c *CreateChangeStream) SQL() string {
 	return "CREATE CHANGE STREAM " + c.Name.SQL() +
 		sqlOpt(" ", c.For, "") +
@@ -1216,6 +1241,10 @@ func (g *Grant) SQL() string {
 
 func (r *Revoke) SQL() string {
 	return "REVOKE " + r.Privilege.SQL() + " FROM ROLE " + sqlJoin(r.Roles, ", ")
+}
+
+func (p *PrivilegeOnQueue) SQL() string {
+	return sqlJoin(p.Privileges, ", ") + " ON QUEUE " + sqlJoin(p.Names, ", ")
 }
 
 func (p *PrivilegeOnTable) SQL() string {
@@ -1355,7 +1384,7 @@ func (c *CreatePropertyGraph) SQL() string {
 		strOpt(c.OrReplace, "OR REPLACE ") +
 		"PROPERTY GRAPH " +
 		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
-		c.Name.SQL() + " " + c.Content.SQL()
+		c.Name.SQL() + " " + c.Content.SQL() + sqlOpt(" ", c.Options, "")
 }
 
 func (p *PropertyGraphContent) SQL() string {
@@ -1517,7 +1546,8 @@ func (a *AssertRowsModified) SQL() string {
 func (i *Insert) SQL() string {
 	return sqlOpt("", i.Hint, " ") +
 		"INSERT " +
-		strOpt(i.InsertOrType != "", "OR "+string(i.InsertOrType)+" ") +
+		strOpt(!i.Or.Invalid(), "OR ") +
+		strOpt(i.InsertOrType != "", string(i.InsertOrType)+" ") +
 		"INTO " + i.TableName.SQL() +
 		sqlOpt("", i.TableHint, "") +
 		sqlOpt(" ", i.As, "") + " (" +
@@ -1579,6 +1609,7 @@ func (d *Delete) SQL() string {
 		sqlOpt("", d.TableHint, "") + " " +
 		sqlOpt("", d.As, " ") +
 		d.Where.SQL() +
+		sqlOpt(" ", d.AssertRowsModified, "") +
 		sqlOpt(" ", d.ThenReturn, "")
 }
 
