@@ -3,7 +3,7 @@ EXPORT DATA OPTIONS (uri = "gs://bucket/output.csv", format = "csv") AS
 CREATE TABLE T (Id INT64 NOT NULL) PRIMARY KEY (Id)
 
 --- Error
-syntax error: testdata/input/statement/!bad_export_data_ddl.sql:2:1: expected query after EXPORT DATA AS, but: CREATE
+syntax error: testdata/inputs/statement/!bad_export_data_ddl.sql:2:1: expected query after EXPORT DATA AS, but: CREATE
   2|  CREATE TABLE T (Id INT64 NOT NULL) PRIMARY KEY (Id)
    |  ^~~~~~
 
