@@ -1,0 +1,38 @@
+--- is_distinct_from_arithmetic.sql
+1 + 2 IS DISTINCT FROM 3 | 4
+
+--- AST
+&ast.IsDistinctFromExpr{
+  Left: &ast.BinaryExpr{
+    Op:   "+",
+    Left: &ast.IntLiteral{
+      ValueEnd: 1,
+      Base:     10,
+      Value:    "1",
+    },
+    Right: &ast.IntLiteral{
+      ValuePos: 4,
+      ValueEnd: 5,
+      Base:     10,
+      Value:    "2",
+    },
+  },
+  Right: &ast.BinaryExpr{
+    Op:   "|",
+    Left: &ast.IntLiteral{
+      ValuePos: 23,
+      ValueEnd: 24,
+      Base:     10,
+      Value:    "3",
+    },
+    Right: &ast.IntLiteral{
+      ValuePos: 27,
+      ValueEnd: 28,
+      Base:     10,
+      Value:    "4",
+    },
+  },
+}
+
+--- SQL
+1 + 2 IS DISTINCT FROM 3 | 4

@@ -1,0 +1,6 @@
+SELECT
+  1 IS DISTINCT FROM 2 AS distinct_values,
+  1 IS NOT DISTINCT FROM 2 AS not_distinct_values,
+  1 IS DISTINCT FROM NULL AS one_null,
+  NULL IS DISTINCT FROM NULL AS both_null,
+  NULL IS NOT DISTINCT FROM NULL AS both_null_not

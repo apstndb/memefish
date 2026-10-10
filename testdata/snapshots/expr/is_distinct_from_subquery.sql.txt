@@ -1,0 +1,42 @@
+--- is_distinct_from_subquery.sql
+(SELECT 1) IS DISTINCT FROM (SELECT 2)
+
+--- AST
+&ast.IsDistinctFromExpr{
+  Left: &ast.ScalarSubQuery{
+    Rparen: 9,
+    Query:  &ast.Select{
+      Select:  1,
+      Results: []ast.SelectItem{
+        &ast.ExprSelectItem{
+          Expr: &ast.IntLiteral{
+            ValuePos: 8,
+            ValueEnd: 9,
+            Base:     10,
+            Value:    "1",
+          },
+        },
+      },
+    },
+  },
+  Right: &ast.ScalarSubQuery{
+    Lparen: 28,
+    Rparen: 37,
+    Query:  &ast.Select{
+      Select:  29,
+      Results: []ast.SelectItem{
+        &ast.ExprSelectItem{
+          Expr: &ast.IntLiteral{
+            ValuePos: 36,
+            ValueEnd: 37,
+            Base:     10,
+            Value:    "2",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+(SELECT 1) IS DISTINCT FROM (SELECT 2)

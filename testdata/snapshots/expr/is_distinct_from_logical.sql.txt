@@ -1,0 +1,48 @@
+--- is_distinct_from_logical.sql
+NOT 1 IS DISTINCT FROM 1 AND 2 IS NOT DISTINCT FROM 2 OR FALSE
+
+--- AST
+&ast.BinaryExpr{
+  Op:   "OR",
+  Left: &ast.BinaryExpr{
+    Op:   "AND",
+    Left: &ast.UnaryExpr{
+      Op:   "NOT",
+      Expr: &ast.IsDistinctFromExpr{
+        Left: &ast.IntLiteral{
+          ValuePos: 4,
+          ValueEnd: 5,
+          Base:     10,
+          Value:    "1",
+        },
+        Right: &ast.IntLiteral{
+          ValuePos: 23,
+          ValueEnd: 24,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+    Right: &ast.IsDistinctFromExpr{
+      Not:  true,
+      Left: &ast.IntLiteral{
+        ValuePos: 29,
+        ValueEnd: 30,
+        Base:     10,
+        Value:    "2",
+      },
+      Right: &ast.IntLiteral{
+        ValuePos: 52,
+        ValueEnd: 53,
+        Base:     10,
+        Value:    "2",
+      },
+    },
+  },
+  Right: &ast.BoolLiteral{
+    ValuePos: 57,
+  },
+}
+
+--- SQL
+NOT 1 IS DISTINCT FROM 1 AND 2 IS NOT DISTINCT FROM 2 OR FALSE

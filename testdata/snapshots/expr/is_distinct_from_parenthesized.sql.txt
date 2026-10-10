@@ -1,0 +1,33 @@
+--- is_distinct_from_parenthesized.sql
+(TRUE OR FALSE) IS NOT DISTINCT FROM (NULL IS NULL)
+
+--- AST
+&ast.IsDistinctFromExpr{
+  Not:  true,
+  Left: &ast.ParenExpr{
+    Rparen: 14,
+    Expr:   &ast.BinaryExpr{
+      Op:   "OR",
+      Left: &ast.BoolLiteral{
+        ValuePos: 1,
+        Value:    true,
+      },
+      Right: &ast.BoolLiteral{
+        ValuePos: 9,
+      },
+    },
+  },
+  Right: &ast.ParenExpr{
+    Lparen: 37,
+    Rparen: 50,
+    Expr:   &ast.IsNullExpr{
+      Null: 46,
+      Left: &ast.NullLiteral{
+        Null: 38,
+      },
+    },
+  },
+}
+
+--- SQL
+(TRUE OR FALSE) IS NOT DISTINCT FROM (NULL IS NULL)

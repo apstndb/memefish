@@ -316,6 +316,16 @@ func TestParseExpr(t *testing.T) {
 	})
 }
 
+func TestParseExprIsDistinctFromMissingRightOperand(t *testing.T) {
+	// FROM is an expression-recovery boundary, so the recovered SQL cannot
+	// preserve this malformed input for the snapshot reparse check.
+	for _, input := range []string{"1 IS DISTINCT FROM", "1 IS NOT DISTINCT FROM"} {
+		if _, err := memefish.ParseExpr("", input); err == nil {
+			t.Errorf("ParseExpr(%q) succeeded without a right operand", input)
+		}
+	}
+}
+
 func TestParseStatement(t *testing.T) {
 	inputPaths := []string{
 		"./testdata/inputs/query",

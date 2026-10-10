@@ -1,0 +1,125 @@
+--- select_is_distinct_from.sql
+SELECT
+  1 IS DISTINCT FROM 2 AS distinct_values,
+  1 IS NOT DISTINCT FROM 2 AS not_distinct_values,
+  1 IS DISTINCT FROM NULL AS one_null,
+  NULL IS DISTINCT FROM NULL AS both_null,
+  NULL IS NOT DISTINCT FROM NULL AS both_null_not
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.IsDistinctFromExpr{
+          Left: &ast.IntLiteral{
+            ValuePos: 9,
+            ValueEnd: 10,
+            Base:     10,
+            Value:    "1",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 28,
+            ValueEnd: 29,
+            Base:     10,
+            Value:    "2",
+          },
+        },
+        As: &ast.AsAlias{
+          As:    30,
+          Alias: &ast.Ident{
+            NamePos: 33,
+            NameEnd: 48,
+            Name:    "distinct_values",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.IsDistinctFromExpr{
+          Not:  true,
+          Left: &ast.IntLiteral{
+            ValuePos: 52,
+            ValueEnd: 53,
+            Base:     10,
+            Value:    "1",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 75,
+            ValueEnd: 76,
+            Base:     10,
+            Value:    "2",
+          },
+        },
+        As: &ast.AsAlias{
+          As:    77,
+          Alias: &ast.Ident{
+            NamePos: 80,
+            NameEnd: 99,
+            Name:    "not_distinct_values",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.IsDistinctFromExpr{
+          Left: &ast.IntLiteral{
+            ValuePos: 103,
+            ValueEnd: 104,
+            Base:     10,
+            Value:    "1",
+          },
+          Right: &ast.NullLiteral{
+            Null: 122,
+          },
+        },
+        As: &ast.AsAlias{
+          As:    127,
+          Alias: &ast.Ident{
+            NamePos: 130,
+            NameEnd: 138,
+            Name:    "one_null",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.IsDistinctFromExpr{
+          Left: &ast.NullLiteral{
+            Null: 142,
+          },
+          Right: &ast.NullLiteral{
+            Null: 164,
+          },
+        },
+        As: &ast.AsAlias{
+          As:    169,
+          Alias: &ast.Ident{
+            NamePos: 172,
+            NameEnd: 181,
+            Name:    "both_null",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.IsDistinctFromExpr{
+          Not:  true,
+          Left: &ast.NullLiteral{
+            Null: 185,
+          },
+          Right: &ast.NullLiteral{
+            Null: 211,
+          },
+        },
+        As: &ast.AsAlias{
+          As:    216,
+          Alias: &ast.Ident{
+            NamePos: 219,
+            NameEnd: 232,
+            Name:    "both_null_not",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT 1 IS DISTINCT FROM 2 AS distinct_values, 1 IS NOT DISTINCT FROM 2 AS not_distinct_values, 1 IS DISTINCT FROM NULL AS one_null, NULL IS DISTINCT FROM NULL AS both_null, NULL IS NOT DISTINCT FROM NULL AS both_null_not

@@ -1,0 +1,20 @@
+--- is_distinct_from.sql
+1 IS DISTINCT FROM 2
+
+--- AST
+&ast.IsDistinctFromExpr{
+  Left: &ast.IntLiteral{
+    ValueEnd: 1,
+    Base:     10,
+    Value:    "1",
+  },
+  Right: &ast.IntLiteral{
+    ValuePos: 19,
+    ValueEnd: 20,
+    Base:     10,
+    Value:    "2",
+  },
+}
+
+--- SQL
+1 IS DISTINCT FROM 2

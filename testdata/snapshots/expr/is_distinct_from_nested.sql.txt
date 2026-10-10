@@ -1,0 +1,45 @@
+--- is_distinct_from_nested.sql
+(1 IS DISTINCT FROM 2) IS DISTINCT FROM (3 IS NOT DISTINCT FROM 4)
+
+--- AST
+&ast.IsDistinctFromExpr{
+  Left: &ast.ParenExpr{
+    Rparen: 21,
+    Expr:   &ast.IsDistinctFromExpr{
+      Left: &ast.IntLiteral{
+        ValuePos: 1,
+        ValueEnd: 2,
+        Base:     10,
+        Value:    "1",
+      },
+      Right: &ast.IntLiteral{
+        ValuePos: 20,
+        ValueEnd: 21,
+        Base:     10,
+        Value:    "2",
+      },
+    },
+  },
+  Right: &ast.ParenExpr{
+    Lparen: 40,
+    Rparen: 65,
+    Expr:   &ast.IsDistinctFromExpr{
+      Not:  true,
+      Left: &ast.IntLiteral{
+        ValuePos: 41,
+        ValueEnd: 42,
+        Base:     10,
+        Value:    "3",
+      },
+      Right: &ast.IntLiteral{
+        ValuePos: 64,
+        ValueEnd: 65,
+        Base:     10,
+        Value:    "4",
+      },
+    },
+  },
+}
+
+--- SQL
+(1 IS DISTINCT FROM 2) IS DISTINCT FROM (3 IS NOT DISTINCT FROM 4)
