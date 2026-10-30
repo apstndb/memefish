@@ -226,6 +226,31 @@ func testParser(t *testing.T, inputPath, snapshotPath string, parse func(p *meme
 			fmt.Fprintf(&buf, "--- SQL\n")
 			fmt.Fprintln(&buf, node.SQL())
 
+			// Check before updating goldens, too: recovery is not a successful
+			// round trip for a positive fixture.
+			s1 := node.SQL()
+			p1 := &memefish.Parser{
+				Lexer: &memefish.Lexer{
+					File: &token.File{FilePath: in.Name() + " (SQL)", Buffer: s1},
+				},
+			}
+			node1, reparseErr := parse(p1)
+			if !bad && reparseErr != nil {
+				t.Fatalf("SQL() output failed to parse: %v\nSQL: %s", reparseErr, s1)
+			}
+			s2 := node1.SQL()
+			if s1 != s2 {
+				t.Errorf("%q != %q", s1, s2)
+			}
+
+			// The unparsed source can only witness errors located within the
+			// node; an error past its end (trailing tokens) is out of scope.
+			want := errorMessagesWithin(parseErr, string(b), node.End())
+			got := errorMessages(reparseErr)
+			if !slices.Equal(want, got) {
+				t.Errorf("error mismatch on re-parsing the unparsed source\nsource: %q\nwant errors: %q\ngot errors: %q", s1, want, got)
+			}
+
 			actual := buf.Bytes()
 
 			if *update {
@@ -254,27 +279,6 @@ func testParser(t *testing.T, inputPath, snapshotPath string, parse func(p *meme
 				}
 				t.Error(d)
 				return
-			}
-			s1 := node.SQL()
-			p1 := &memefish.Parser{
-				Lexer: &memefish.Lexer{
-					File: &token.File{FilePath: in.Name() + " (SQL)", Buffer: s1},
-				},
-			}
-
-			node1, err1 := parse(p1)
-
-			s2 := node1.SQL()
-			if s1 != s2 {
-				t.Errorf("%q != %q", s1, s2)
-			}
-
-			// The unparsed source can only witness errors located within the
-			// node; an error past its end (trailing tokens) is out of scope.
-			want := errorMessagesWithin(parseErr, string(b), node.End())
-			got := errorMessages(err1)
-			if !slices.Equal(want, got) {
-				t.Errorf("error mismatch on re-parsing the unparsed source\nsource: %q\nwant errors: %q\ngot errors: %q", s1, want, got)
 			}
 		})
 	}
@@ -328,7 +332,25 @@ func TestParseStatement(t *testing.T) {
 
 	for _, inputPath := range inputPaths {
 		testParser(t, inputPath, snapshotPath, func(p *memefish.Parser) (ast.Node, error) {
-			return p.ParseStatement()
+			stmt, err := p.ParseStatement()
+			if err != nil {
+				return stmt, err
+			}
+			// Keep the separator outside any trailing line comment.
+			stmts, err := memefish.ParseStatements(p.FilePath, p.Buffer+"\n; SELECT 1;")
+			if err != nil {
+				return stmt, fmt.Errorf("parsing with a following statement: %w", err)
+			}
+			if len(stmts) != 2 {
+				return stmt, fmt.Errorf("parsing with a following statement: got %d statements, want 2", len(stmts))
+			}
+			if got, want := stmts[0].SQL(), stmt.SQL(); got != want {
+				return stmt, fmt.Errorf("parsing with a following statement: SQL() = %q, want %q", got, want)
+			}
+			if got := stmts[1].SQL(); got != "SELECT 1" {
+				return stmt, fmt.Errorf("unexpected following statement: %s", got)
+			}
+			return stmt, nil
 		})
 	}
 }
