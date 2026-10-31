@@ -4893,15 +4893,6 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlteration {
 	switch {
 	case p.Token.IsKeywordLike("SYNONYM"):
 		alteration = p.parseAddSynonym(pos)
-	case p.Token.IsKeywordLike("COLUMN"):
-		p.expectKeywordLike("COLUMN")
-		ifNotExists := p.parseIfNotExists()
-		column := p.parseColumnDef()
-		alteration = &ast.AddColumn{
-			Add:         pos,
-			IfNotExists: ifNotExists,
-			Column:      column,
-		}
 	case p.Token.IsKeywordLike("CONSTRAINT"):
 		alteration = &ast.AddTableConstraint{
 			Add:             pos,
@@ -4933,7 +4924,15 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlteration {
 			RowDeletionPolicy: rdp,
 		}
 	default:
-		p.panicfAtToken(&p.Token, "expected pseuso keyword: COLUMN, CONSTRAINT, FOREIGN, but: %s", p.Token.AsString)
+		if p.Token.IsKeywordLike("COLUMN") {
+			p.nextToken()
+		}
+		ifNotExists := p.parseIfNotExists()
+		alteration = &ast.AddColumn{
+			Add:         pos,
+			IfNotExists: ifNotExists,
+			Column:      p.parseColumnDef(),
+		}
 	}
 
 	return alteration
@@ -4949,13 +4948,6 @@ func (p *Parser) parseAlterTableDrop() ast.TableAlteration {
 		p.expectKeywordLike("SYNONYM")
 		name := p.parseIdent()
 		alteration = &ast.DropSynonym{
-			Drop: pos,
-			Name: name,
-		}
-	case p.Token.IsKeywordLike("COLUMN"):
-		p.expectKeywordLike("COLUMN")
-		name := p.parseIdent()
-		alteration = &ast.DropColumn{
 			Drop: pos,
 			Name: name,
 		}
@@ -4975,7 +4967,13 @@ func (p *Parser) parseAlterTableDrop() ast.TableAlteration {
 			Policy: policyPos,
 		}
 	default:
-		p.panicfAtToken(&p.Token, "expected pseuso keyword: COLUMN, CONSTRAINT, but: %s", p.Token.AsString)
+		if p.Token.IsKeywordLike("COLUMN") {
+			p.nextToken()
+		}
+		alteration = &ast.DropColumn{
+			Drop: pos,
+			Name: p.parseIdent(),
+		}
 	}
 
 	return alteration
@@ -5176,7 +5174,9 @@ func (p *Parser) parseIdentityAlteration() ast.IdentityAlteration {
 }
 func (p *Parser) parseAlterColumn() ast.TableAlteration {
 	pos := p.expectKeywordLike("ALTER").Pos
-	p.expectKeywordLike("COLUMN")
+	if p.Token.IsKeywordLike("COLUMN") {
+		p.nextToken()
+	}
 
 	name := p.parseIdent()
 

@@ -1,0 +1,35 @@
+--- alter_table_alter_without_column.sql
+ALTER TABLE Singers ALTER SingerInfo STRING(MAX)
+
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 19,
+        Name:    "Singers",
+      },
+    },
+  },
+  TableAlteration: &ast.AlterColumn{
+    Alter: 20,
+    Name:  &ast.Ident{
+      NamePos: 26,
+      NameEnd: 36,
+      Name:    "SingerInfo",
+    },
+    Alteration: &ast.AlterColumnType{
+      Type: &ast.SizedSchemaType{
+        NamePos: 37,
+        Rparen:  47,
+        Name:    "STRING",
+        Max:     true,
+      },
+      Null: -1,
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE Singers ALTER COLUMN SingerInfo STRING(MAX)

@@ -1,0 +1,1 @@
+ALTER TABLE Singers ADD SingerInfo STRING(MAX)
