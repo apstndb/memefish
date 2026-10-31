@@ -1,0 +1,71 @@
+--- select_lookup_join.sql
+SELECT * FROM A LOOKUP JOIN B ON A.id = B.id
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.Join{
+        Left: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 14,
+            NameEnd: 15,
+            Name:    "A",
+          },
+        },
+        Op:     "INNER",
+        Method: "LOOKUP",
+        Right:  &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 28,
+            NameEnd: 29,
+            Name:    "B",
+          },
+        },
+        Cond: &ast.On{
+          On:   30,
+          Expr: &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 33,
+                  NameEnd: 34,
+                  Name:    "A",
+                },
+                &ast.Ident{
+                  NamePos: 35,
+                  NameEnd: 37,
+                  Name:    "id",
+                },
+              },
+            },
+            Right: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 40,
+                  NameEnd: 41,
+                  Name:    "B",
+                },
+                &ast.Ident{
+                  NamePos: 42,
+                  NameEnd: 44,
+                  Name:    "id",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM A INNER LOOKUP JOIN B ON A.id = B.id

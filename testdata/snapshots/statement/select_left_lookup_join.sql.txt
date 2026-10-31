@@ -1,0 +1,48 @@
+--- select_left_lookup_join.sql
+SELECT * FROM A LEFT OUTER LOOKUP JOIN B USING (id)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.Join{
+        Left: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 14,
+            NameEnd: 15,
+            Name:    "A",
+          },
+        },
+        Op:     "LEFT OUTER",
+        Method: "LOOKUP",
+        Right:  &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 39,
+            NameEnd: 40,
+            Name:    "B",
+          },
+        },
+        Cond: &ast.Using{
+          Using:  41,
+          Rparen: 50,
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 48,
+              NameEnd: 50,
+              Name:    "id",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM A LEFT OUTER LOOKUP JOIN B USING (id)
