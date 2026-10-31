@@ -48,6 +48,13 @@ func errorMessagesWithin(err error, input string, end token.Pos) []string {
 	return msgs
 }
 
+func checkGoldenUpdateSelection(updating bool, run, skip string) error {
+	if updating && (run != "" || skip != "") {
+		return fmt.Errorf("-update-snapshots cannot be combined with -run or -skip: use make update-snapshots")
+	}
+	return nil
+}
+
 type pathVisitor struct {
 	f    func(path string, node ast.Node) bool
 	path string
@@ -84,6 +91,9 @@ func (v *pathVisitor) Index(index int) ast.Visitor {
 }
 
 func testParser(t *testing.T, inputPath, snapshotPath string, parse func(p *memefish.Parser) (ast.Node, error)) {
+	if err := checkGoldenUpdateSelection(*update, flag.Lookup("test.run").Value.String(), flag.Lookup("test.skip").Value.String()); err != nil {
+		t.Fatal(err)
+	}
 	if *update {
 		_, err := os.Stat(snapshotPath)
 		if err == nil {
