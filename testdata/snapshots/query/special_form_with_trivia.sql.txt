@@ -1,0 +1,71 @@
+--- special_form_with_trivia.sql
+SELECT SAFE_CAST /* comment */ ("1" AS INT64),
+       REPLACE_FIELDS /* comment */ (p, 1 AS x)
+FROM T
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.CastExpr{
+          Cast:   7,
+          Rparen: 44,
+          Safe:   true,
+          Expr:   &ast.StringLiteral{
+            ValuePos: 32,
+            ValueEnd: 35,
+            Value:    "1",
+          },
+          Type: &ast.SimpleType{
+            NamePos: 39,
+            Name:    "INT64",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.ReplaceFieldsExpr{
+          ReplaceFields: 54,
+          Rparen:        93,
+          Expr:          &ast.Ident{
+            NamePos: 84,
+            NameEnd: 85,
+            Name:    "p",
+          },
+          Fields: []*ast.ReplaceFieldsArg{
+            &ast.ReplaceFieldsArg{
+              Expr: &ast.IntLiteral{
+                ValuePos: 87,
+                ValueEnd: 88,
+                Base:     10,
+                Value:    "1",
+              },
+              Field: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 92,
+                    NameEnd: 93,
+                    Name:    "x",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   95,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 100,
+          NameEnd: 101,
+          Name:    "T",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT SAFE_CAST("1" AS INT64), REPLACE_FIELDS(p, 1 AS x) FROM T
