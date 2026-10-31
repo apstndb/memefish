@@ -1,0 +1,138 @@
+--- create_table_constraint_column_and_constraints.sql
+CREATE TABLE Probe (
+  Id INT64 NOT NULL,
+  CONSTRAINT BOOL,
+  CONSTRAINT PositiveId CHECK (Id > 0),
+  CONSTRAINT ParentId FOREIGN KEY (Id) REFERENCES Parent (Id)
+) PRIMARY KEY (Id)
+
+--- AST
+&ast.CreateTable{
+  Rparen:           163,
+  PrimaryKeyRparen: 180,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 18,
+        Name:    "Probe",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 36,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 23,
+        NameEnd: 25,
+        Name:    "Id",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 26,
+        Name:    "INT64",
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 44,
+        NameEnd: 54,
+        Name:    "CONSTRAINT",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 55,
+        Name:    "BOOL",
+      },
+      Hidden: -1,
+    },
+  },
+  TableConstraints: []*ast.TableConstraint{
+    &ast.TableConstraint{
+      ConstraintPos: 63,
+      Name:          &ast.Ident{
+        NamePos: 74,
+        NameEnd: 84,
+        Name:    "PositiveId",
+      },
+      Constraint: &ast.Check{
+        Check:  85,
+        Rparen: 98,
+        Expr:   &ast.BinaryExpr{
+          Op:   ">",
+          Left: &ast.Ident{
+            NamePos: 92,
+            NameEnd: 94,
+            Name:    "Id",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 97,
+            ValueEnd: 98,
+            Base:     10,
+            Value:    "0",
+          },
+        },
+      },
+    },
+    &ast.TableConstraint{
+      ConstraintPos: 103,
+      Name:          &ast.Ident{
+        NamePos: 114,
+        NameEnd: 122,
+        Name:    "ParentId",
+      },
+      Constraint: &ast.ForeignKey{
+        Foreign:     123,
+        Rparen:      161,
+        OnDeleteEnd: -1,
+        Enforced:    -1,
+        Columns:     []*ast.Ident{
+          &ast.Ident{
+            NamePos: 136,
+            NameEnd: 138,
+            Name:    "Id",
+          },
+        },
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 151,
+              NameEnd: 157,
+              Name:    "Parent",
+            },
+          },
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 159,
+            NameEnd: 161,
+            Name:    "Id",
+          },
+        },
+      },
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
+      Name:   &ast.Ident{
+        NamePos: 178,
+        NameEnd: 180,
+        Name:    "Id",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE Probe (
+  Id INT64 NOT NULL,
+  CONSTRAINT BOOL,
+  CONSTRAINT PositiveId CHECK (Id > 0),
+  CONSTRAINT ParentId FOREIGN KEY (Id) REFERENCES Parent (Id)
+) PRIMARY KEY (Id)
