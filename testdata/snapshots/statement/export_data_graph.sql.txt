@@ -1,0 +1,125 @@
+--- export_data_graph.sql
+EXPORT DATA OPTIONS (uri = "gs://bucket/output.csv", format = "csv") AS
+GRAPH FinGraph
+MATCH (n:Account)
+RETURN n.id
+
+--- AST
+&ast.ExportData{
+  Options: &ast.Options{
+    Options: 12,
+    Rparen:  67,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 21,
+          NameEnd: 24,
+          Name:    "uri",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 27,
+          ValueEnd: 51,
+          Value:    "gs://bucket/output.csv",
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 53,
+          NameEnd: 59,
+          Name:    "format",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 62,
+          ValueEnd: 67,
+          Value:    "csv",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLGraphQuery{
+    GraphClause: &ast.GQLGraphClause{
+      Graph:             72,
+      PropertyGraphName: &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 78,
+            NameEnd: 86,
+            Name:    "FinGraph",
+          },
+        },
+      },
+    },
+    Query: &ast.GQLMultiLinearQueryStatement{
+      Statements: []ast.GQLLinearQueryStatement{
+        &ast.GQLSimpleLinearQueryStatement{
+          Statements: []ast.GQLPrimitiveQueryStatement{
+            &ast.GQLMatch{
+              Optional: -1,
+              Match:    87,
+              Pattern:  &ast.GQLGraphPattern{
+                Paths: []*ast.GQLTopLevelPathPattern{
+                  &ast.GQLTopLevelPathPattern{
+                    Path: &ast.GQLPathPattern{
+                      Terms: []*ast.GQLPathTerm{
+                        &ast.GQLPathTerm{
+                          Primary: &ast.GQLNodePattern{
+                            Lparen:  93,
+                            Rparen:  103,
+                            Pattern: &ast.GQLElementPatternFiller{
+                              EmptyPos: -1,
+                              Variable: &ast.Ident{
+                                NamePos: 94,
+                                NameEnd: 95,
+                                Name:    "n",
+                              },
+                              Label: &ast.GQLLabelFilter{
+                                Is:    -1,
+                                Colon: 95,
+                                Expr:  &ast.GQLNameLabel{
+                                  Name: &ast.Ident{
+                                    NamePos: 96,
+                                    NameEnd: 103,
+                                    Name:    "Account",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            &ast.GQLReturn{
+              Return: 105,
+              Items:  []*ast.GQLReturnItem{
+                &ast.GQLReturnItem{
+                  Star: -1,
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 112,
+                        NameEnd: 113,
+                        Name:    "n",
+                      },
+                      &ast.Ident{
+                        NamePos: 114,
+                        NameEnd: 116,
+                        Name:    "id",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+EXPORT DATA OPTIONS (uri = "gs://bucket/output.csv", format = "csv") AS GRAPH FinGraph MATCH (n:Account) RETURN n.id

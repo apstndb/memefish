@@ -317,7 +317,7 @@ func (p *Parser) parseStatementInternal(hint *ast.Hint) (stmt ast.Statement) {
 		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE") ||
 		p.Token.IsKeywordLike("ANALYZE"):
 		return p.parseDDL()
-	case p.Token.IsKeywordLike("CALL"):
+	case p.Token.IsKeywordLike("CALL") || p.Token.IsKeywordLike("EXPORT"):
 		return p.parseOtherStatement()
 	}
 
@@ -328,9 +328,34 @@ func (p *Parser) parseOtherStatement() ast.Statement {
 	switch {
 	case p.Token.IsKeywordLike("CALL"):
 		return p.parseCall()
+	case p.Token.IsKeywordLike("EXPORT"):
+		return p.parseExportData()
 	}
 
 	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
+}
+
+func (p *Parser) parseExportData() *ast.ExportData {
+	export := p.expectKeywordLike("EXPORT").Pos
+	p.expectKeywordLike("DATA")
+	options := p.parseOptions()
+	p.expect("AS")
+
+	var query ast.QueryStatementNode
+	switch {
+	case p.Token.Kind == "SELECT" || p.Token.Kind == "WITH" || p.Token.Kind == "(" || p.Token.Kind == "FROM":
+		query = p.parseQueryStatementInternal(nil)
+	case p.Token.IsKeywordLike("GRAPH"):
+		query = p.parseGQLQueryInternal(nil)
+	default:
+		p.panicfAtToken(&p.Token, "expected query after EXPORT DATA AS, but: %s", p.Token.Kind)
+	}
+
+	return &ast.ExportData{
+		Export:  export,
+		Options: options,
+		Query:   query,
+	}
 }
 
 func (p *Parser) parseCall() *ast.Call {

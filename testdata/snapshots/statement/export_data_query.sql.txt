@@ -1,0 +1,63 @@
+--- export_data_query.sql
+EXPORT DATA OPTIONS (uri = "gs://bucket/output.csv", format = "csv") AS
+SELECT 1 AS value
+
+--- AST
+&ast.ExportData{
+  Options: &ast.Options{
+    Options: 12,
+    Rparen:  67,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 21,
+          NameEnd: 24,
+          Name:    "uri",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 27,
+          ValueEnd: 51,
+          Value:    "gs://bucket/output.csv",
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 53,
+          NameEnd: 59,
+          Name:    "format",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 62,
+          ValueEnd: 67,
+          Value:    "csv",
+        },
+      },
+    },
+  },
+  Query: &ast.QueryStatement{
+    Query: &ast.Select{
+      Select:  72,
+      Results: []ast.SelectItem{
+        &ast.Alias{
+          Expr: &ast.IntLiteral{
+            ValuePos: 79,
+            ValueEnd: 80,
+            Base:     10,
+            Value:    "1",
+          },
+          As: &ast.AsAlias{
+            As:    81,
+            Alias: &ast.Ident{
+              NamePos: 84,
+              NameEnd: 89,
+              Name:    "value",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+EXPORT DATA OPTIONS (uri = "gs://bucket/output.csv", format = "csv") AS SELECT 1 AS value

@@ -1094,6 +1094,14 @@ func (o *OptionsDef) End() token.Pos {
 	return nodeEnd(wrapNode(o.Value))
 }
 
+func (e *ExportData) Pos() token.Pos {
+	return e.Export
+}
+
+func (e *ExportData) End() token.Pos {
+	return nodeEnd(wrapNode(e.Query))
+}
+
 func (c *CreateSchema) Pos() token.Pos {
 	return c.Create
 }
