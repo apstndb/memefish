@@ -1,0 +1,186 @@
+--- pipe_extend.sql
+SELECT * FROM (
+  SELECT * FROM Singers
+  |> EXTEND FirstName, LastName AS family_name, FirstName given_name
+  |> EXTEND LENGTH(family_name) AS family_name_length
+  |> EXTEND Singers.* EXCEPT (SingerId) REPLACE (UPPER(FirstName) AS FirstName),
+)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 14,
+        Rparen: 244,
+        Query:  &ast.Query{
+          Query: &ast.Select{
+            Select:  18,
+            Results: []ast.SelectItem{
+              &ast.Star{
+                Star: 25,
+              },
+            },
+            From: &ast.From{
+              From:   27,
+              Source: &ast.TableName{
+                Table: &ast.Ident{
+                  NamePos: 32,
+                  NameEnd: 39,
+                  Name:    "Singers",
+                },
+              },
+            },
+          },
+          PipeOperators: []ast.PipeOperator{
+            &ast.PipeExtend{
+              Pipe:    42,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 52,
+                    NameEnd: 61,
+                    Name:    "FirstName",
+                  },
+                },
+                &ast.Alias{
+                  Expr: &ast.Ident{
+                    NamePos: 63,
+                    NameEnd: 71,
+                    Name:    "LastName",
+                  },
+                  As: &ast.AsAlias{
+                    As:    72,
+                    Alias: &ast.Ident{
+                      NamePos: 75,
+                      NameEnd: 86,
+                      Name:    "family_name",
+                    },
+                  },
+                },
+                &ast.Alias{
+                  Expr: &ast.Ident{
+                    NamePos: 88,
+                    NameEnd: 97,
+                    Name:    "FirstName",
+                  },
+                  As: &ast.AsAlias{
+                    As:    -1,
+                    Alias: &ast.Ident{
+                      NamePos: 98,
+                      NameEnd: 108,
+                      Name:    "given_name",
+                    },
+                  },
+                },
+              },
+            },
+            &ast.PipeExtend{
+              Pipe:    111,
+              Results: []ast.SelectItem{
+                &ast.Alias{
+                  Expr: &ast.CallExpr{
+                    Rparen: 139,
+                    Func:   &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 121,
+                          NameEnd: 127,
+                          Name:    "LENGTH",
+                        },
+                      },
+                    },
+                    Args: []ast.Arg{
+                      &ast.ExprArg{
+                        Expr: &ast.Ident{
+                          NamePos: 128,
+                          NameEnd: 139,
+                          Name:    "family_name",
+                        },
+                      },
+                    },
+                  },
+                  As: &ast.AsAlias{
+                    As:    141,
+                    Alias: &ast.Ident{
+                      NamePos: 144,
+                      NameEnd: 162,
+                      Name:    "family_name_length",
+                    },
+                  },
+                },
+              },
+            },
+            &ast.PipeExtend{
+              Pipe:    165,
+              Results: []ast.SelectItem{
+                &ast.DotStar{
+                  Star: 183,
+                  Expr: &ast.Ident{
+                    NamePos: 175,
+                    NameEnd: 182,
+                    Name:    "Singers",
+                  },
+                  Except: &ast.StarModifierExcept{
+                    Except:  185,
+                    Rparen:  201,
+                    Columns: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 193,
+                        NameEnd: 201,
+                        Name:    "SingerId",
+                      },
+                    },
+                  },
+                  Replace: &ast.StarModifierReplace{
+                    Replace: 203,
+                    Rparen:  241,
+                    Columns: []*ast.StarModifierReplaceItem{
+                      &ast.StarModifierReplaceItem{
+                        Expr: &ast.CallExpr{
+                          Rparen: 227,
+                          Func:   &ast.Path{
+                            Idents: []*ast.Ident{
+                              &ast.Ident{
+                                NamePos: 212,
+                                NameEnd: 217,
+                                Name:    "UPPER",
+                              },
+                            },
+                          },
+                          Args: []ast.Arg{
+                            &ast.ExprArg{
+                              Expr: &ast.Ident{
+                                NamePos: 218,
+                                NameEnd: 227,
+                                Name:    "FirstName",
+                              },
+                            },
+                          },
+                        },
+                        Name: &ast.Ident{
+                          NamePos: 232,
+                          NameEnd: 241,
+                          Name:    "FirstName",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM (SELECT * FROM Singers |> EXTEND FirstName, LastName AS family_name, FirstName given_name |> EXTEND LENGTH(family_name) AS family_name_length |> EXTEND Singers.* EXCEPT (SingerId) REPLACE (UPPER(FirstName) AS FirstName))

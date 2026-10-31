@@ -407,8 +407,8 @@ func (p *Parser) parseQueryStatementInternal(hint *ast.Hint) (stmt *ast.QuerySta
 
 func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	pos := p.expect("|>").Pos
-	switch p.Token.Kind {
-	case "SELECT":
+	switch {
+	case p.Token.Kind == "SELECT":
 		p.nextToken()
 
 		allOrDistinct := p.tryParseAllOrDistinct()
@@ -421,17 +421,32 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 			As:            as,
 			Results:       results,
 		}
-	case "WHERE":
+	case p.Token.Kind == "WHERE":
 		p.nextToken()
 		expr := p.parseExpr()
 		return &ast.PipeWhere{
 			Pipe: pos,
 			Expr: expr,
 		}
-	case "AS":
+	case p.Token.Kind == "AS":
 		p.nextToken()
 		return &ast.PipeAs{Pipe: pos, Alias: p.parseIdent()}
-	case "SET":
+	case p.Token.IsKeywordLike("EXTEND"):
+		p.nextToken()
+		results := []ast.SelectItem{p.parsePipeExtendItem()}
+		for p.Token.Kind == "," {
+			p.nextToken()
+			// Pipe operators permit a trailing comma before a closing parenthesis, next pipe, statement separator, or EOF.
+			if p.Token.Kind == ")" || p.Token.Kind == "|>" || p.Token.Kind == ";" || p.Token.Kind == token.TokenEOF {
+				break
+			}
+			results = append(results, p.parsePipeExtendItem())
+		}
+		return &ast.PipeExtend{
+			Pipe:    pos,
+			Results: results,
+		}
+	case p.Token.Kind == "SET":
 		p.nextToken()
 		items := []*ast.PipeSetItem{p.parsePipeSetItem()}
 		for p.Token.Kind == "," {
@@ -442,11 +457,8 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 			}
 			items = append(items, p.parsePipeSetItem())
 		}
-		return &ast.PipeSet{
-			Pipe:  pos,
-			Items: items,
-		}
-	case "LIMIT":
+		return &ast.PipeSet{Pipe: pos, Items: items}
+	case p.Token.Kind == "LIMIT":
 		p.nextToken()
 		return &ast.PipeLimit{
 			Pipe:   pos,
@@ -456,6 +468,15 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
 	}
+}
+
+func (p *Parser) parsePipeExtendItem() ast.SelectItem {
+	item := p.parseSelectItem()
+	switch item.(type) {
+	case *ast.Star:
+		panic(p.errorfAtPosition(item.Pos(), item.End(), "star expansion is not allowed in EXTEND"))
+	}
+	return item
 }
 
 func (p *Parser) parsePipeSetItem() *ast.PipeSetItem {
