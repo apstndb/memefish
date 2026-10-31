@@ -1,0 +1,79 @@
+--- pipe_rename.sql
+SELECT * FROM (
+  SELECT * FROM Singers
+  |> RENAME FirstName AS given_name, LastName family_name,
+)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 14,
+        Rparen: 99,
+        Query:  &ast.Query{
+          Query: &ast.Select{
+            Select:  18,
+            Results: []ast.SelectItem{
+              &ast.Star{
+                Star: 25,
+              },
+            },
+            From: &ast.From{
+              From:   27,
+              Source: &ast.TableName{
+                Table: &ast.Ident{
+                  NamePos: 32,
+                  NameEnd: 39,
+                  Name:    "Singers",
+                },
+              },
+            },
+          },
+          PipeOperators: []ast.PipeOperator{
+            &ast.PipeRename{
+              Pipe:  42,
+              Items: []*ast.PipeRenameItem{
+                &ast.PipeRenameItem{
+                  Old: &ast.Ident{
+                    NamePos: 52,
+                    NameEnd: 61,
+                    Name:    "FirstName",
+                  },
+                  As:  62,
+                  New: &ast.Ident{
+                    NamePos: 65,
+                    NameEnd: 75,
+                    Name:    "given_name",
+                  },
+                },
+                &ast.PipeRenameItem{
+                  Old: &ast.Ident{
+                    NamePos: 77,
+                    NameEnd: 85,
+                    Name:    "LastName",
+                  },
+                  As:  -1,
+                  New: &ast.Ident{
+                    NamePos: 86,
+                    NameEnd: 97,
+                    Name:    "family_name",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM (SELECT * FROM Singers |> RENAME FirstName AS given_name, LastName family_name)

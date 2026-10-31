@@ -158,6 +158,7 @@ type PipeOperator interface {
 func (PipeSelect) isPipeOperator() {}
 func (PipeWhere) isPipeOperator()  {}
 func (PipeAs) isPipeOperator()     {}
+func (PipeRename) isPipeOperator() {}
 func (PipeSet) isPipeOperator()    {}
 func (PipeLimit) isPipeOperator()  {}
 
@@ -1200,6 +1201,30 @@ type PipeAs struct {
 
 	Pipe  token.Pos // position of "|>"
 	Alias *Ident
+}
+
+// PipeRename is RENAME pipe operator node.
+//
+//	|> RENAME {{.Items | sqlJoin ", "}}
+type PipeRename struct {
+	// pos = Pipe
+	// end = Items[$].end
+
+	Pipe token.Pos // position of "|>"
+
+	Items []*PipeRenameItem // len(Items) > 0
+}
+
+// PipeRenameItem is a single rename in PipeRename.
+//
+//	{{.Old | sql}} {{if not .As.Invalid}}AS {{end}}{{.New | sql}}
+type PipeRenameItem struct {
+	// pos = Old.pos
+	// end = New.end
+
+	Old *Ident
+	As  token.Pos // position of "AS", optional
+	New *Ident
 }
 
 // PipeSet is SET pipe operator node.
@@ -3145,7 +3170,7 @@ type AlterTable struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	IfExists       bool
+	IfExists        bool
 	Name            *Path
 	TableAlteration TableAlteration
 }
