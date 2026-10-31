@@ -431,6 +431,11 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	case "AS":
 		p.nextToken()
 		return &ast.PipeAs{Pipe: pos, Alias: p.parseIdent()}
+	case "TABLESAMPLE":
+		return &ast.PipeTableSample{
+			Pipe:   pos,
+			Sample: p.tryParseTableSample(),
+		}
 	case "SET":
 		p.nextToken()
 		items := []*ast.PipeSetItem{p.parsePipeSetItem()}

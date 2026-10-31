@@ -1,0 +1,42 @@
+--- pipe_tablesample.sql
+FROM LargeTable |> TABLESAMPLE BERNOULLI (1 PERCENT)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 15,
+            Name:    "LargeTable",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeTableSample{
+        Pipe:   16,
+        Sample: &ast.TableSample{
+          TableSample: 19,
+          Method:      "BERNOULLI",
+          Size:        &ast.TableSampleSize{
+            Lparen: 41,
+            Rparen: 51,
+            Value:  &ast.IntLiteral{
+              ValuePos: 42,
+              ValueEnd: 43,
+              Base:     10,
+              Value:    "1",
+            },
+            Unit: "PERCENT",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM LargeTable |> TABLESAMPLE BERNOULLI (1 PERCENT)
