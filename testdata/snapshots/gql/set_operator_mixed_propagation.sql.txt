@@ -1,0 +1,124 @@
+--- set_operator_mixed_propagation.sql
+GRAPH FinGraph
+RETURN 1 AS id
+FULL UNION ALL
+RETURN 2 AS id
+UNION ALL
+RETURN 3 AS id
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLCompoundLinearQueryStatement{
+        Left: &ast.GQLSimpleLinearQueryStatement{
+          Statements: []ast.GQLPrimitiveQueryStatement{
+            &ast.GQLReturn{
+              Return: 15,
+              Items:  []*ast.GQLReturnItem{
+                &ast.GQLReturnItem{
+                  Star: -1,
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 22,
+                    ValueEnd: 23,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                  Alias: &ast.AsAlias{
+                    As:    24,
+                    Alias: &ast.Ident{
+                      NamePos: 27,
+                      NameEnd: 29,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        Operations: []*ast.GQLSetOperation{
+          &ast.GQLSetOperation{
+            ColumnPropagationModePos: 30,
+            ColumnPropagationMode:    "FULL",
+            OpPos:                    35,
+            Op:                       "UNION",
+            AllOrDistinct:            "ALL",
+            Right:                    &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLReturn{
+                  Return: 45,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 52,
+                        ValueEnd: 53,
+                        Base:     10,
+                        Value:    "2",
+                      },
+                      Alias: &ast.AsAlias{
+                        As:    54,
+                        Alias: &ast.Ident{
+                          NamePos: 57,
+                          NameEnd: 59,
+                          Name:    "id",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLSetOperation{
+            ColumnPropagationModePos: -1,
+            OpPos:                    60,
+            Op:                       "UNION",
+            AllOrDistinct:            "ALL",
+            Right:                    &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLReturn{
+                  Return: 70,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 77,
+                        ValueEnd: 78,
+                        Base:     10,
+                        Value:    "3",
+                      },
+                      Alias: &ast.AsAlias{
+                        As:    79,
+                        Alias: &ast.Ident{
+                          NamePos: 82,
+                          NameEnd: 84,
+                          Name:    "id",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph RETURN 1 AS id FULL UNION ALL RETURN 2 AS id UNION ALL RETURN 3 AS id

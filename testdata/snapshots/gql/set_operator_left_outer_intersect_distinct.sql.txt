@@ -1,0 +1,125 @@
+--- set_operator_left_outer_intersect_distinct.sql
+GRAPH FinGraph
+RETURN 1 AS id
+LEFT OUTER INTERSECT DISTINCT
+RETURN 2 AS id
+LEFT OUTER INTERSECT DISTINCT
+RETURN 3 AS id
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLCompoundLinearQueryStatement{
+        Left: &ast.GQLSimpleLinearQueryStatement{
+          Statements: []ast.GQLPrimitiveQueryStatement{
+            &ast.GQLReturn{
+              Return: 15,
+              Items:  []*ast.GQLReturnItem{
+                &ast.GQLReturnItem{
+                  Star: -1,
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 22,
+                    ValueEnd: 23,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                  Alias: &ast.AsAlias{
+                    As:    24,
+                    Alias: &ast.Ident{
+                      NamePos: 27,
+                      NameEnd: 29,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        Operations: []*ast.GQLSetOperation{
+          &ast.GQLSetOperation{
+            ColumnPropagationModePos: 30,
+            ColumnPropagationMode:    "LEFT",
+            OpPos:                    41,
+            Op:                       "INTERSECT",
+            AllOrDistinct:            "DISTINCT",
+            Right:                    &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLReturn{
+                  Return: 60,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 67,
+                        ValueEnd: 68,
+                        Base:     10,
+                        Value:    "2",
+                      },
+                      Alias: &ast.AsAlias{
+                        As:    69,
+                        Alias: &ast.Ident{
+                          NamePos: 72,
+                          NameEnd: 74,
+                          Name:    "id",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLSetOperation{
+            ColumnPropagationModePos: 75,
+            ColumnPropagationMode:    "LEFT",
+            OpPos:                    86,
+            Op:                       "INTERSECT",
+            AllOrDistinct:            "DISTINCT",
+            Right:                    &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLReturn{
+                  Return: 105,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 112,
+                        ValueEnd: 113,
+                        Base:     10,
+                        Value:    "3",
+                      },
+                      Alias: &ast.AsAlias{
+                        As:    114,
+                        Alias: &ast.Ident{
+                          NamePos: 117,
+                          NameEnd: 119,
+                          Name:    "id",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph RETURN 1 AS id LEFT INTERSECT DISTINCT RETURN 2 AS id LEFT INTERSECT DISTINCT RETURN 3 AS id

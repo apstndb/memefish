@@ -1,0 +1,186 @@
+--- set_operator_inner.sql
+GRAPH FinGraph
+MATCH (a:Account)
+RETURN a.id AS id
+INNER UNION ALL
+MATCH (a:Account)
+RETURN a.id AS id
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLCompoundLinearQueryStatement{
+        Left: &ast.GQLSimpleLinearQueryStatement{
+          Statements: []ast.GQLPrimitiveQueryStatement{
+            &ast.GQLMatch{
+              Optional: -1,
+              Match:    15,
+              Pattern:  &ast.GQLGraphPattern{
+                Paths: []*ast.GQLTopLevelPathPattern{
+                  &ast.GQLTopLevelPathPattern{
+                    Path: &ast.GQLPathPattern{
+                      Terms: []*ast.GQLPathTerm{
+                        &ast.GQLPathTerm{
+                          Primary: &ast.GQLNodePattern{
+                            Lparen:  21,
+                            Rparen:  31,
+                            Pattern: &ast.GQLElementPatternFiller{
+                              EmptyPos: -1,
+                              Variable: &ast.Ident{
+                                NamePos: 22,
+                                NameEnd: 23,
+                                Name:    "a",
+                              },
+                              Label: &ast.GQLLabelFilter{
+                                Is:    -1,
+                                Colon: 23,
+                                Expr:  &ast.GQLNameLabel{
+                                  Name: &ast.Ident{
+                                    NamePos: 24,
+                                    NameEnd: 31,
+                                    Name:    "Account",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            &ast.GQLReturn{
+              Return: 33,
+              Items:  []*ast.GQLReturnItem{
+                &ast.GQLReturnItem{
+                  Star: -1,
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 40,
+                        NameEnd: 41,
+                        Name:    "a",
+                      },
+                      &ast.Ident{
+                        NamePos: 42,
+                        NameEnd: 44,
+                        Name:    "id",
+                      },
+                    },
+                  },
+                  Alias: &ast.AsAlias{
+                    As:    45,
+                    Alias: &ast.Ident{
+                      NamePos: 48,
+                      NameEnd: 50,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        Operations: []*ast.GQLSetOperation{
+          &ast.GQLSetOperation{
+            ColumnPropagationModePos: 51,
+            ColumnPropagationMode:    "INNER",
+            OpPos:                    57,
+            Op:                       "UNION",
+            AllOrDistinct:            "ALL",
+            Right:                    &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLMatch{
+                  Optional: -1,
+                  Match:    67,
+                  Pattern:  &ast.GQLGraphPattern{
+                    Paths: []*ast.GQLTopLevelPathPattern{
+                      &ast.GQLTopLevelPathPattern{
+                        Path: &ast.GQLPathPattern{
+                          Terms: []*ast.GQLPathTerm{
+                            &ast.GQLPathTerm{
+                              Primary: &ast.GQLNodePattern{
+                                Lparen:  73,
+                                Rparen:  83,
+                                Pattern: &ast.GQLElementPatternFiller{
+                                  EmptyPos: -1,
+                                  Variable: &ast.Ident{
+                                    NamePos: 74,
+                                    NameEnd: 75,
+                                    Name:    "a",
+                                  },
+                                  Label: &ast.GQLLabelFilter{
+                                    Is:    -1,
+                                    Colon: 75,
+                                    Expr:  &ast.GQLNameLabel{
+                                      Name: &ast.Ident{
+                                        NamePos: 76,
+                                        NameEnd: 83,
+                                        Name:    "Account",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                &ast.GQLReturn{
+                  Return: 85,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.Path{
+                        Idents: []*ast.Ident{
+                          &ast.Ident{
+                            NamePos: 92,
+                            NameEnd: 93,
+                            Name:    "a",
+                          },
+                          &ast.Ident{
+                            NamePos: 94,
+                            NameEnd: 96,
+                            Name:    "id",
+                          },
+                        },
+                      },
+                      Alias: &ast.AsAlias{
+                        As:    97,
+                        Alias: &ast.Ident{
+                          NamePos: 100,
+                          NameEnd: 102,
+                          Name:    "id",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (a:Account) RETURN a.id AS id INNER UNION ALL MATCH (a:Account) RETURN a.id AS id

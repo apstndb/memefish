@@ -141,30 +141,26 @@ RETURN
                   Query:  &ast.GQLMultiLinearQueryStatement{
                     Statements: []ast.GQLLinearQueryStatement{
                       &ast.GQLCompoundLinearQueryStatement{
-                        Op:            "UNION",
-                        AllOrDistinct: "ALL",
-                        Statements:    []ast.GQLLinearQueryStatement{
-                          &ast.GQLSimpleLinearQueryStatement{
-                            Statements: []ast.GQLPrimitiveQueryStatement{
-                              &ast.GQLMatch{
-                                Optional: -1,
-                                Match:    104,
-                                Pattern:  &ast.GQLGraphPattern{
-                                  Paths: []*ast.GQLTopLevelPathPattern{
-                                    &ast.GQLTopLevelPathPattern{
-                                      Path: &ast.GQLPathPattern{
-                                        Terms: []*ast.GQLPathTerm{
-                                          &ast.GQLPathTerm{
-                                            Primary: &ast.GQLNodePattern{
-                                              Lparen:  110,
-                                              Rparen:  112,
-                                              Pattern: &ast.GQLElementPatternFiller{
-                                                EmptyPos: -1,
-                                                Variable: &ast.Ident{
-                                                  NamePos: 111,
-                                                  NameEnd: 112,
-                                                  Name:    "m",
-                                                },
+                        Left: &ast.GQLSimpleLinearQueryStatement{
+                          Statements: []ast.GQLPrimitiveQueryStatement{
+                            &ast.GQLMatch{
+                              Optional: -1,
+                              Match:    104,
+                              Pattern:  &ast.GQLGraphPattern{
+                                Paths: []*ast.GQLTopLevelPathPattern{
+                                  &ast.GQLTopLevelPathPattern{
+                                    Path: &ast.GQLPathPattern{
+                                      Terms: []*ast.GQLPathTerm{
+                                        &ast.GQLPathTerm{
+                                          Primary: &ast.GQLNodePattern{
+                                            Lparen:  110,
+                                            Rparen:  112,
+                                            Pattern: &ast.GQLElementPatternFiller{
+                                              EmptyPos: -1,
+                                              Variable: &ast.Ident{
+                                                NamePos: 111,
+                                                NameEnd: 112,
+                                                Name:    "m",
                                               },
                                             },
                                           },
@@ -174,32 +170,40 @@ RETURN
                                   },
                                 },
                               },
-                              &ast.GQLReturn{
-                                Return: 114,
-                                Items:  []*ast.GQLReturnItem{
-                                  &ast.GQLReturnItem{
-                                    Star: -1,
-                                    Expr: &ast.Ident{
-                                      NamePos: 121,
-                                      NameEnd: 122,
-                                      Name:    "m",
-                                    },
+                            },
+                            &ast.GQLReturn{
+                              Return: 114,
+                              Items:  []*ast.GQLReturnItem{
+                                &ast.GQLReturnItem{
+                                  Star: -1,
+                                  Expr: &ast.Ident{
+                                    NamePos: 121,
+                                    NameEnd: 122,
+                                    Name:    "m",
                                   },
                                 },
                               },
                             },
                           },
-                          &ast.GQLSimpleLinearQueryStatement{
-                            Statements: []ast.GQLPrimitiveQueryStatement{
-                              &ast.GQLReturn{
-                                Return: 133,
-                                Items:  []*ast.GQLReturnItem{
-                                  &ast.GQLReturnItem{
-                                    Star: -1,
-                                    Expr: &ast.Ident{
-                                      NamePos: 140,
-                                      NameEnd: 141,
-                                      Name:    "m",
+                        },
+                        Operations: []*ast.GQLSetOperation{
+                          &ast.GQLSetOperation{
+                            ColumnPropagationModePos: -1,
+                            OpPos:                    123,
+                            Op:                       "UNION",
+                            AllOrDistinct:            "ALL",
+                            Right:                    &ast.GQLSimpleLinearQueryStatement{
+                              Statements: []ast.GQLPrimitiveQueryStatement{
+                                &ast.GQLReturn{
+                                  Return: 133,
+                                  Items:  []*ast.GQLReturnItem{
+                                    &ast.GQLReturnItem{
+                                      Star: -1,
+                                      Expr: &ast.Ident{
+                                        NamePos: 140,
+                                        NameEnd: 141,
+                                        Name:    "m",
+                                      },
                                     },
                                   },
                                 },
