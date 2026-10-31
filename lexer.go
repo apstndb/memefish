@@ -615,6 +615,14 @@ scan:
 			l.panicfAtPosition(token.Pos(l.pos), token.Pos(l.pos+i), "unclosed %s: newline appears in non triple-quoted", name)
 		}
 
+		// Normalize source newlines, not characters produced by escape sequences.
+		if len(q) == 3 && c == '\r' {
+			if l.peekIs(i+1, '\n') {
+				i++
+			}
+			c = '\n'
+		}
+
 		content = append(content, c)
 		i++
 	}
