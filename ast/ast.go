@@ -1624,6 +1624,7 @@ type SubscriptSpecifierKeyword struct {
 
 // CallExpr is function call expression node.
 // It can represent both regular function calls and aggregate function calls.
+// SQL() quotes the function name when needed to distinguish it from special syntax.
 //
 //	{{.Func | sql}}(
 //		{{if .Distinct}}DISTINCT{{end}}
