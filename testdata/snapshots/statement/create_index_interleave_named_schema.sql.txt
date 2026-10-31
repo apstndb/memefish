@@ -1,0 +1,67 @@
+--- create_index_interleave_named_schema.sql
+CREATE INDEX app.Idx ON app.Child (Id), INTERLEAVE IN app.Parent
+
+--- AST
+&ast.CreateIndex{
+  Rparen: 37,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 16,
+        Name:    "app",
+      },
+      &ast.Ident{
+        NamePos: 17,
+        NameEnd: 20,
+        Name:    "Idx",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 24,
+        NameEnd: 27,
+        Name:    "app",
+      },
+      &ast.Ident{
+        NamePos: 28,
+        NameEnd: 33,
+        Name:    "Child",
+      },
+    },
+  },
+  Keys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
+      Name:   &ast.Ident{
+        NamePos: 35,
+        NameEnd: 37,
+        Name:    "Id",
+      },
+    },
+  },
+  InterleaveIn: &ast.InterleaveIn{
+    Comma:     38,
+    TableName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 54,
+          NameEnd: 57,
+          Name:    "app",
+        },
+        &ast.Ident{
+          NamePos: 58,
+          NameEnd: 64,
+          Name:    "Parent",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE INDEX app.Idx ON app.Child(Id), INTERLEAVE IN app.Parent
