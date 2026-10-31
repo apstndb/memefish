@@ -1,0 +1,1 @@
+CREATE LOCALITY GROUP IF NOT EXISTS separate_storage

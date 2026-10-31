@@ -1,0 +1,15 @@
+--- drop_locality_group_if_exists.sql
+DROP LOCALITY GROUP IF EXISTS separate_storage
+
+--- AST
+&ast.DropLocalityGroup{
+  IfExists: true,
+  Name:     &ast.Ident{
+    NamePos: 30,
+    NameEnd: 46,
+    Name:    "separate_storage",
+  },
+}
+
+--- SQL
+DROP LOCALITY GROUP IF EXISTS separate_storage
