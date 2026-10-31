@@ -1,0 +1,65 @@
+--- create_sequence_multiple_params.sql
+CREATE SEQUENCE S BIT_REVERSED_POSITIVE SKIP RANGE 1, 10 START COUNTER WITH 11 OPTIONS (sequence_kind = 'bit_reversed_positive')
+
+--- AST
+&ast.CreateSequence{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 16,
+        NameEnd: 17,
+        Name:    "S",
+      },
+    },
+  },
+  Params: []ast.SequenceParam{
+    &ast.BitReversedPositive{
+      BitReversedPositive: 18,
+    },
+    &ast.SkipRange{
+      Skip: 40,
+      Min:  &ast.IntLiteral{
+        ValuePos: 51,
+        ValueEnd: 52,
+        Base:     10,
+        Value:    "1",
+      },
+      Max: &ast.IntLiteral{
+        ValuePos: 54,
+        ValueEnd: 56,
+        Base:     10,
+        Value:    "10",
+      },
+    },
+    &ast.StartCounterWith{
+      Start:   57,
+      Counter: &ast.IntLiteral{
+        ValuePos: 76,
+        ValueEnd: 78,
+        Base:     10,
+        Value:    "11",
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 79,
+    Rparen:  127,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 88,
+          NameEnd: 101,
+          Name:    "sequence_kind",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 104,
+          ValueEnd: 127,
+          Value:    "bit_reversed_positive",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE SEQUENCE S BIT_REVERSED_POSITIVE SKIP RANGE 1, 10 START COUNTER WITH 11 OPTIONS (sequence_kind = "bit_reversed_positive")
