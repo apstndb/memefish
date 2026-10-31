@@ -158,6 +158,7 @@ type PipeOperator interface {
 func (PipeSelect) isPipeOperator() {}
 func (PipeWhere) isPipeOperator()  {}
 func (PipeAs) isPipeOperator()     {}
+func (PipeJoin) isPipeOperator()   {}
 func (PipeSet) isPipeOperator()    {}
 func (PipeLimit) isPipeOperator()  {}
 
@@ -1200,6 +1201,22 @@ type PipeAs struct {
 
 	Pipe  token.Pos // position of "|>"
 	Alias *Ident
+}
+
+// PipeJoin is JOIN pipe operator node. The left input is the preceding query result.
+//
+//	|> {{.Op}} {{.Method}} JOIN {{.Hint | sqlOpt}} {{.Right | sql}} {{.Cond | sqlOpt}}
+type PipeJoin struct {
+	// pos = Pipe
+	// end = (Cond ?? Right).end
+
+	Pipe token.Pos // position of "|>"
+
+	Op     JoinOp
+	Method JoinMethod // optional
+	Hint   *Hint      // optional
+	Right  TableExpr
+	Cond   JoinCondition // optional for non-CROSS joins
 }
 
 // PipeSet is SET pipe operator node.
