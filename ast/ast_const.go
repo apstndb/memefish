@@ -48,6 +48,13 @@ const (
 	DirectionDesc Direction = "DESC"
 )
 
+type NullOrderMode string
+
+const (
+	NullOrderFirst NullOrderMode = "FIRST"
+	NullOrderLast  NullOrderMode = "LAST"
+)
+
 type TableSampleMethod string
 
 const (

@@ -1,0 +1,85 @@
+--- select_order_by_nulls.sql
+SELECT x
+FROM UNNEST([1]) AS x
+ORDER BY x ASC NULLS /* mode */ FIRST, x DESC NULLS LAST
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.Select{
+      Results: []ast.SelectItem{
+        &ast.ExprSelectItem{
+          Expr: &ast.Ident{
+            NamePos: 7,
+            NameEnd: 8,
+            Name:    "x",
+          },
+        },
+      },
+      From: &ast.From{
+        From:   9,
+        Source: &ast.Unnest{
+          Unnest: 14,
+          Rparen: 24,
+          Expr:   &ast.ArrayLiteral{
+            Array:  -1,
+            Lbrack: 21,
+            Rbrack: 23,
+            Values: []ast.Expr{
+              &ast.IntLiteral{
+                ValuePos: 22,
+                ValueEnd: 23,
+                Base:     10,
+                Value:    "1",
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    26,
+            Alias: &ast.Ident{
+              NamePos: 29,
+              NameEnd: 30,
+              Name:    "x",
+            },
+          },
+        },
+      },
+    },
+    OrderBy: &ast.OrderBy{
+      Order: 31,
+      Items: []*ast.OrderByItem{
+        &ast.OrderByItem{
+          DirPos: 42,
+          Expr:   &ast.Ident{
+            NamePos: 40,
+            NameEnd: 41,
+            Name:    "x",
+          },
+          Dir:       "ASC",
+          NullOrder: &ast.NullOrder{
+            Nulls:   46,
+            ModePos: 63,
+            Mode:    "FIRST",
+          },
+        },
+        &ast.OrderByItem{
+          DirPos: 72,
+          Expr:   &ast.Ident{
+            NamePos: 70,
+            NameEnd: 71,
+            Name:    "x",
+          },
+          Dir:       "DESC",
+          NullOrder: &ast.NullOrder{
+            Nulls:   77,
+            ModePos: 83,
+            Mode:    "LAST",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT x FROM UNNEST([1]) AS x ORDER BY x ASC NULLS FIRST, x DESC NULLS LAST

@@ -1,0 +1,57 @@
+--- pipe_order_by.sql
+FROM t |> ORDER BY a DESC NULLS    LAST, b ASC NULLS FIRST,
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 6,
+            Name:    "t",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeOrderBy{
+        Pipe:  7,
+        Items: []*ast.OrderByItem{
+          &ast.OrderByItem{
+            DirPos: 21,
+            Expr:   &ast.Ident{
+              NamePos: 19,
+              NameEnd: 20,
+              Name:    "a",
+            },
+            Dir:       "DESC",
+            NullOrder: &ast.NullOrder{
+              Nulls:   26,
+              ModePos: 35,
+              Mode:    "LAST",
+            },
+          },
+          &ast.OrderByItem{
+            DirPos: 43,
+            Expr:   &ast.Ident{
+              NamePos: 41,
+              NameEnd: 42,
+              Name:    "b",
+            },
+            Dir:       "ASC",
+            NullOrder: &ast.NullOrder{
+              Nulls:   47,
+              ModePos: 53,
+              Mode:    "FIRST",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM t |> ORDER BY a DESC NULLS LAST, b ASC NULLS FIRST
