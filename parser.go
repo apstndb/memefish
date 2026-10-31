@@ -4003,6 +4003,15 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	switch {
 	case p.Token.Kind == "DEFAULT":
 		defaultSemantics = p.parseColumnDefaultExpr()
+	case p.Token.Kind == "ON":
+		onUpdate := p.parseOnUpdate()
+		defaultExpr := p.parseRequiredColumnDefaultExpr()
+		defaultSemantics = &ast.ColumnOnUpdateDefaultExpr{
+			OnUpdate: onUpdate,
+			Default:  defaultExpr.Default,
+			Rparen:   defaultExpr.Rparen,
+			Expr:     defaultExpr.Expr,
+		}
 	case p.Token.Kind == "AS":
 		defaultSemantics = p.parseGeneratedColumnExpr()
 	case p.Token.IsKeywordLike("GENERATED"):
@@ -4164,21 +4173,23 @@ func (p *Parser) parseTypeNotNull() (t ast.SchemaType, notNull bool, null token.
 }
 
 func (p *Parser) parseColumnDefaultExpr() *ast.ColumnDefaultExpr {
+	defaultExpr := p.parseRequiredColumnDefaultExpr()
+	if p.Token.Kind == "ON" {
+		defaultExpr.OnUpdate = p.parseOnUpdate()
+	}
+	return defaultExpr
+}
+
+func (p *Parser) parseRequiredColumnDefaultExpr() *ast.ColumnDefaultExpr {
 	def := p.expect("DEFAULT").Pos
 	p.expect("(")
 	expr := p.parseExpr()
 	rparen := p.expect(")").Pos
 
-	var onUpdate *ast.OnUpdate
-	if p.Token.Kind == "ON" {
-		onUpdate = p.parseOnUpdate()
-	}
-
 	return &ast.ColumnDefaultExpr{
-		Default:  def,
-		Rparen:   rparen,
-		Expr:     expr,
-		OnUpdate: onUpdate,
+		Default: def,
+		Rparen:  rparen,
+		Expr:    expr,
 	}
 }
 
@@ -5105,19 +5116,30 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 		t, notNull, null := p.parseTypeNotNull()
 
 		var defaultExpr *ast.ColumnDefaultExpr
+		var onUpdateDefaultExpr *ast.ColumnOnUpdateDefaultExpr
 		var generatedExpr *ast.GeneratedColumnExpr
 		switch p.Token.Kind {
 		case "DEFAULT":
 			defaultExpr = p.parseColumnDefaultExpr()
+		case "ON":
+			onUpdate := p.parseOnUpdate()
+			reverseDefaultExpr := p.parseRequiredColumnDefaultExpr()
+			onUpdateDefaultExpr = &ast.ColumnOnUpdateDefaultExpr{
+				OnUpdate: onUpdate,
+				Default:  reverseDefaultExpr.Default,
+				Rparen:   reverseDefaultExpr.Rparen,
+				Expr:     reverseDefaultExpr.Expr,
+			}
 		case "AS":
 			generatedExpr = p.parseGeneratedColumnExpr()
 		}
 		return &ast.AlterColumnType{
-			Type:          t,
-			Null:          null,
-			NotNull:       notNull,
-			DefaultExpr:   defaultExpr,
-			GeneratedExpr: generatedExpr,
+			Type:                t,
+			Null:                null,
+			NotNull:             notNull,
+			DefaultExpr:         defaultExpr,
+			OnUpdateDefaultExpr: onUpdateDefaultExpr,
+			GeneratedExpr:       generatedExpr,
 		}
 	}
 }
