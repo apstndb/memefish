@@ -1,0 +1,44 @@
+--- revoke_execute_on_models.sql
+REVOKE EXECUTE ON MODEL MyModel, OtherModel FROM ROLE MyRole, OtherRole
+
+--- AST
+&ast.Revoke{
+  Privilege: &ast.ExecutePrivilegeOnModel{
+    Execute: 7,
+    Names:   []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 24,
+            NameEnd: 31,
+            Name:    "MyModel",
+          },
+        },
+      },
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 33,
+            NameEnd: 43,
+            Name:    "OtherModel",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 54,
+      NameEnd: 60,
+      Name:    "MyRole",
+    },
+    &ast.Ident{
+      NamePos: 62,
+      NameEnd: 71,
+      Name:    "OtherRole",
+    },
+  },
+}
+
+--- SQL
+REVOKE EXECUTE ON MODEL MyModel, OtherModel FROM ROLE MyRole, OtherRole

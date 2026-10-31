@@ -5437,7 +5437,7 @@ func (p *Parser) parsePrivilege() ast.Privilege {
 	if s := p.tryParseSelectPrivilegeOnView(); s != nil {
 		return s
 	}
-	if e := p.tryParseExecutePrivilegeOnTableFunction(); e != nil {
+	if e := p.tryParseExecutePrivilege(); e != nil {
 		return e
 	}
 	if u := p.tryParseUsagePrivilegeOnSchema(); u != nil {
@@ -5517,12 +5517,19 @@ func (p *Parser) tryParseSelectPrivilegeOnView() *ast.SelectPrivilegeOnView {
 	}
 }
 
-func (p *Parser) tryParseExecutePrivilegeOnTableFunction() *ast.ExecutePrivilegeOnTableFunction {
+func (p *Parser) tryParseExecutePrivilege() ast.Privilege {
 	if !p.Token.IsKeywordLike("EXECUTE") {
 		return nil
 	}
 	pos := p.expectKeywordLike("EXECUTE").Pos
 	p.expect("ON")
+	if p.Token.IsKeywordLike("MODEL") {
+		p.nextToken()
+		return &ast.ExecutePrivilegeOnModel{
+			Execute: pos,
+			Names:   parseCommaSeparatedList(p, p.parsePath),
+		}
+	}
 	p.expectKeywordLike("TABLE")
 	p.expectKeywordLike("FUNCTION")
 	names := parseCommaSeparatedList(p, p.parsePath)

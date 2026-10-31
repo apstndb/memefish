@@ -548,6 +548,7 @@ func (SelectPrivilegeOnAllChangeStreamsInSchema) isPrivilege() {}
 func (SelectPrivilegeOnView) isPrivilege()                     {}
 func (SelectPrivilegeOnAllViewsInSchema) isPrivilege()         {}
 func (ExecutePrivilegeOnTableFunction) isPrivilege()           {}
+func (ExecutePrivilegeOnModel) isPrivilege()                   {}
 func (UsagePrivilegeOnSchema) isPrivilege()                    {}
 func (RolePrivilege) isPrivilege()                             {}
 
@@ -4014,6 +4015,18 @@ type SelectPrivilegeOnAllViewsInSchema struct {
 //
 //	EXECUTE ON TABLE FUNCTION {{.Names | sqlJoin ","}}
 type ExecutePrivilegeOnTableFunction struct {
+	// pos = Execute
+	// end = Names[$].end
+
+	Execute token.Pos
+
+	Names []*Path // len(Names) > 0
+}
+
+// ExecutePrivilegeOnModel is EXECUTE ON MODEL privilege node in GRANT and REVOKE.
+//
+//	EXECUTE ON MODEL {{.Names | sqlJoin ", "}}
+type ExecutePrivilegeOnModel struct {
 	// pos = Execute
 	// end = Names[$].end
 

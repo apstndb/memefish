@@ -1998,6 +1998,14 @@ func (e *ExecutePrivilegeOnTableFunction) End() token.Pos {
 	return nodeEnd(nodeSliceLast(e.Names))
 }
 
+func (e *ExecutePrivilegeOnModel) Pos() token.Pos {
+	return e.Execute
+}
+
+func (e *ExecutePrivilegeOnModel) End() token.Pos {
+	return nodeEnd(nodeSliceLast(e.Names))
+}
+
 func (u *UsagePrivilegeOnSchema) Pos() token.Pos {
 	return u.Usage
 }
