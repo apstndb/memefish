@@ -1,0 +1,114 @@
+--- create_model_struct_sized_fields.sql
+CREATE MODEL m
+INPUT (x STRUCT<a STRING(MAX), b BYTES(MAX), c STRING(10)>)
+OUTPUT (y STRUCT<d BYTES(8)>)
+REMOTE
+
+--- AST
+&ast.CreateModel{
+  Remote: 105,
+  Name:   &ast.Ident{
+    NamePos: 13,
+    NameEnd: 14,
+    Name:    "m",
+  },
+  InputOutput: &ast.CreateModelInputOutput{
+    Input:        15,
+    Rparen:       103,
+    InputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 22,
+          NameEnd: 23,
+          Name:    "x",
+        },
+        DataType: &ast.StructType{
+          Struct: 24,
+          Gt:     72,
+          Fields: []*ast.StructField{
+            &ast.StructField{
+              Ident: &ast.Ident{
+                NamePos: 31,
+                NameEnd: 32,
+                Name:    "a",
+              },
+              Type: &ast.SizedSchemaType{
+                NamePos: 33,
+                Rparen:  43,
+                Name:    "STRING",
+                Max:     true,
+              },
+            },
+            &ast.StructField{
+              Ident: &ast.Ident{
+                NamePos: 46,
+                NameEnd: 47,
+                Name:    "b",
+              },
+              Type: &ast.SizedSchemaType{
+                NamePos: 48,
+                Rparen:  57,
+                Name:    "BYTES",
+                Max:     true,
+              },
+            },
+            &ast.StructField{
+              Ident: &ast.Ident{
+                NamePos: 60,
+                NameEnd: 61,
+                Name:    "c",
+              },
+              Type: &ast.SizedSchemaType{
+                NamePos: 62,
+                Rparen:  71,
+                Name:    "STRING",
+                Size:    &ast.IntLiteral{
+                  ValuePos: 69,
+                  ValueEnd: 71,
+                  Base:     10,
+                  Value:    "10",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    OutputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 83,
+          NameEnd: 84,
+          Name:    "y",
+        },
+        DataType: &ast.StructType{
+          Struct: 85,
+          Gt:     102,
+          Fields: []*ast.StructField{
+            &ast.StructField{
+              Ident: &ast.Ident{
+                NamePos: 92,
+                NameEnd: 93,
+                Name:    "d",
+              },
+              Type: &ast.SizedSchemaType{
+                NamePos: 94,
+                Rparen:  101,
+                Name:    "BYTES",
+                Size:    &ast.IntLiteral{
+                  ValuePos: 100,
+                  ValueEnd: 101,
+                  Base:     10,
+                  Value:    "8",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE MODEL m INPUT (x STRUCT<a STRING(MAX), b BYTES(MAX), c STRING(10)>) OUTPUT (y STRUCT<d BYTES(8)>) REMOTE
