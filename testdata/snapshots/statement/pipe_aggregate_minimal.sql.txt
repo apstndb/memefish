@@ -1,0 +1,37 @@
+--- pipe_aggregate_minimal.sql
+FROM Sales
+|> AGGREGATE COUNT(*)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 10,
+            Name:    "Sales",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeAggregate{
+        Pipe:  11,
+        Items: []*ast.PipeAggregateItem{
+          &ast.PipeAggregateItem{
+            DirPos: -1,
+            Expr:   &ast.CountStarExpr{
+              Count:  24,
+              Rparen: 31,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM Sales |> AGGREGATE COUNT(*)

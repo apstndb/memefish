@@ -1,0 +1,3 @@
+FROM UNNEST([1]) AS x
+|> AGGREGATE COUNT(*) AS n GROUP BY x,
+|> WHERE n > 0

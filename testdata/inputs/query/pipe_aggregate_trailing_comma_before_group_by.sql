@@ -1,0 +1,2 @@
+FROM Sales
+|> AGGREGATE COUNT(*) AS n, GROUP BY region

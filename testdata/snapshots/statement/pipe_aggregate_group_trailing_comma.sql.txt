@@ -1,0 +1,81 @@
+--- pipe_aggregate_group_trailing_comma.sql
+FROM UNNEST([1]) AS x
+|> AGGREGATE COUNT(*) AS n GROUP BY x,
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.Unnest{
+          Unnest: 5,
+          Rparen: 15,
+          Expr:   &ast.ArrayLiteral{
+            Array:  -1,
+            Lbrack: 12,
+            Rbrack: 14,
+            Values: []ast.Expr{
+              &ast.IntLiteral{
+                ValuePos: 13,
+                ValueEnd: 14,
+                Base:     10,
+                Value:    "1",
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    17,
+            Alias: &ast.Ident{
+              NamePos: 20,
+              NameEnd: 21,
+              Name:    "x",
+            },
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeAggregate{
+        Pipe:  22,
+        Items: []*ast.PipeAggregateItem{
+          &ast.PipeAggregateItem{
+            DirPos: -1,
+            Expr:   &ast.CountStarExpr{
+              Count:  35,
+              Rparen: 42,
+            },
+            As: &ast.AsAlias{
+              As:    44,
+              Alias: &ast.Ident{
+                NamePos: 47,
+                NameEnd: 48,
+                Name:    "n",
+              },
+            },
+          },
+        },
+        GroupBy: &ast.PipeAggregateGroupBy{
+          Group:  49,
+          And:    -1,
+          Order:  -1,
+          By:     55,
+          Lparen: -1,
+          Rparen: -1,
+          Items:  []*ast.PipeAggregateGroupByItem{
+            &ast.PipeAggregateGroupByItem{
+              DirPos: -1,
+              Expr:   &ast.Ident{
+                NamePos: 58,
+                NameEnd: 59,
+                Name:    "x",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM UNNEST([1]) AS x |> AGGREGATE COUNT(*) AS n GROUP BY x

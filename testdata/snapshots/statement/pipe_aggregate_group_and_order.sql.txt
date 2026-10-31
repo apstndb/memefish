@@ -1,0 +1,99 @@
+--- pipe_aggregate_group_and_order.sql
+FROM Sales
+|> AGGREGATE SUM(amount) AS total ASC
+   GROUP AND ORDER BY category, region area DESC
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 10,
+            Name:    "Sales",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeAggregate{
+        Pipe:  11,
+        Items: []*ast.PipeAggregateItem{
+          &ast.PipeAggregateItem{
+            DirPos: 45,
+            Expr:   &ast.CallExpr{
+              Rparen: 34,
+              Func:   &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 24,
+                    NameEnd: 27,
+                    Name:    "SUM",
+                  },
+                },
+              },
+              Args: []ast.Arg{
+                &ast.ExprArg{
+                  Expr: &ast.Ident{
+                    NamePos: 28,
+                    NameEnd: 34,
+                    Name:    "amount",
+                  },
+                },
+              },
+            },
+            As: &ast.AsAlias{
+              As:    36,
+              Alias: &ast.Ident{
+                NamePos: 39,
+                NameEnd: 44,
+                Name:    "total",
+              },
+            },
+            Dir: "ASC",
+          },
+        },
+        GroupBy: &ast.PipeAggregateGroupBy{
+          Group:  52,
+          And:    58,
+          Order:  62,
+          By:     68,
+          Lparen: -1,
+          Rparen: -1,
+          Items:  []*ast.PipeAggregateGroupByItem{
+            &ast.PipeAggregateGroupByItem{
+              DirPos: -1,
+              Expr:   &ast.Ident{
+                NamePos: 71,
+                NameEnd: 79,
+                Name:    "category",
+              },
+            },
+            &ast.PipeAggregateGroupByItem{
+              DirPos: 93,
+              Expr:   &ast.Ident{
+                NamePos: 81,
+                NameEnd: 87,
+                Name:    "region",
+              },
+              As: &ast.AsAlias{
+                As:    -1,
+                Alias: &ast.Ident{
+                  NamePos: 88,
+                  NameEnd: 92,
+                  Name:    "area",
+                },
+              },
+              Dir: "DESC",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM Sales |> AGGREGATE SUM(amount) AS total ASC GROUP AND ORDER BY category, region area DESC

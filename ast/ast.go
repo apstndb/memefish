@@ -155,11 +155,12 @@ type PipeOperator interface {
 	isPipeOperator()
 }
 
-func (PipeSelect) isPipeOperator() {}
-func (PipeWhere) isPipeOperator()  {}
-func (PipeAs) isPipeOperator()     {}
-func (PipeSet) isPipeOperator()    {}
-func (PipeLimit) isPipeOperator()  {}
+func (PipeSelect) isPipeOperator()    {}
+func (PipeWhere) isPipeOperator()     {}
+func (PipeAs) isPipeOperator()        {}
+func (PipeAggregate) isPipeOperator() {}
+func (PipeSet) isPipeOperator()       {}
+func (PipeLimit) isPipeOperator()     {}
 
 // SelectItem represents expression in SELECT clause result columns list.
 type SelectItem interface {
@@ -1200,6 +1201,64 @@ type PipeAs struct {
 
 	Pipe  token.Pos // position of "|>"
 	Alias *Ident
+}
+
+// PipeAggregate is AGGREGATE pipe operator node.
+//
+//	|> AGGREGATE {{.Items | sqlJoin ", "}} {{.GroupBy | sqlOpt}}
+type PipeAggregate struct {
+	// pos = Pipe
+	// end = (GroupBy ?? Items[$]).end
+
+	Pipe token.Pos // position of "|>"
+
+	Items   []*PipeAggregateItem
+	GroupBy *PipeAggregateGroupBy // optional
+}
+
+// PipeAggregateItem is an expression in an AGGREGATE pipe operator.
+//
+//	{{.Expr | sql}} {{.As | sqlOpt}} {{.Dir}}
+type PipeAggregateItem struct {
+	// pos = Expr.pos
+	// end = DirPos + len(Dir) || (As ?? Expr).end
+
+	DirPos token.Pos // position of Dir
+
+	Expr Expr
+	As   *AsAlias  // optional
+	Dir  Direction // optional
+}
+
+// PipeAggregateGroupBy is a GROUP BY or GROUP AND ORDER BY clause in an AGGREGATE pipe operator.
+//
+//	GROUP {{if not .And.Invalid}}AND ORDER {{end}}BY {{if not .Lparen.Invalid}}(){{else}}{{.Items | sqlJoin ", "}}{{end}}
+type PipeAggregateGroupBy struct {
+	// pos = Group
+	// end = Rparen + 1 || Items[$].end
+
+	Group  token.Pos // position of "GROUP" keyword
+	And    token.Pos // position of "AND" keyword, optional
+	Order  token.Pos // position of "ORDER" keyword, optional
+	By     token.Pos // position of "BY" keyword
+	Lparen token.Pos // position of "(", optional
+	Rparen token.Pos // position of ")", optional
+
+	Items []*PipeAggregateGroupByItem
+}
+
+// PipeAggregateGroupByItem is an expression in the grouping list of an AGGREGATE pipe operator.
+//
+//	{{.Expr | sql}} {{.As | sqlOpt}} {{.Dir}}
+type PipeAggregateGroupByItem struct {
+	// pos = Expr.pos
+	// end = DirPos + len(Dir) || (As ?? Expr).end
+
+	DirPos token.Pos // position of Dir
+
+	Expr Expr
+	As   *AsAlias  // optional
+	Dir  Direction // optional
 }
 
 // PipeSet is SET pipe operator node.
@@ -3145,7 +3204,7 @@ type AlterTable struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	IfExists       bool
+	IfExists        bool
 	Name            *Path
 	TableAlteration TableAlteration
 }

@@ -1,0 +1,87 @@
+--- pipe_aggregate_group_trailing_comma_before_rparen.sql
+(
+  FROM UNNEST([1]) AS x
+  |> AGGREGATE COUNT(*) AS n GROUP BY x,
+)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.SubQuery{
+    Rparen: 67,
+    Query:  &ast.Query{
+      Query: &ast.FromQuery{
+        From: &ast.From{
+          From:   4,
+          Source: &ast.Unnest{
+            Unnest: 9,
+            Rparen: 19,
+            Expr:   &ast.ArrayLiteral{
+              Array:  -1,
+              Lbrack: 16,
+              Rbrack: 18,
+              Values: []ast.Expr{
+                &ast.IntLiteral{
+                  ValuePos: 17,
+                  ValueEnd: 18,
+                  Base:     10,
+                  Value:    "1",
+                },
+              },
+            },
+            As: &ast.AsAlias{
+              As:    21,
+              Alias: &ast.Ident{
+                NamePos: 24,
+                NameEnd: 25,
+                Name:    "x",
+              },
+            },
+          },
+        },
+      },
+      PipeOperators: []ast.PipeOperator{
+        &ast.PipeAggregate{
+          Pipe:  28,
+          Items: []*ast.PipeAggregateItem{
+            &ast.PipeAggregateItem{
+              DirPos: -1,
+              Expr:   &ast.CountStarExpr{
+                Count:  41,
+                Rparen: 48,
+              },
+              As: &ast.AsAlias{
+                As:    50,
+                Alias: &ast.Ident{
+                  NamePos: 53,
+                  NameEnd: 54,
+                  Name:    "n",
+                },
+              },
+            },
+          },
+          GroupBy: &ast.PipeAggregateGroupBy{
+            Group:  55,
+            And:    -1,
+            Order:  -1,
+            By:     61,
+            Lparen: -1,
+            Rparen: -1,
+            Items:  []*ast.PipeAggregateGroupByItem{
+              &ast.PipeAggregateGroupByItem{
+                DirPos: -1,
+                Expr:   &ast.Ident{
+                  NamePos: 64,
+                  NameEnd: 65,
+                  Name:    "x",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+(FROM UNNEST([1]) AS x |> AGGREGATE COUNT(*) AS n GROUP BY x)
