@@ -1,0 +1,357 @@
+--- quoted_path_reserved_variables.sql
+`WALK` = (`WALK`)-[`TRAIL`]->(`SIMPLE`),
+`ACYCLIC` = (`ACYCLIC`)-[`PATH`]->(`PATHS`),
+`PATH` = (`walk` IS Person)-[`Trail`:Knows]->(`Simple`),
+`PATHS` = (`path`),
+`TRAIL` = (`trail`),
+`SIMPLE` = (`simple`),
+ordinary = TRAIL PATHS (a:WALK)-[e:PATH]->(b)
+
+--- AST
+&ast.GQLGraphPattern{
+  Paths: []*ast.GQLTopLevelPathPattern{
+    &ast.GQLTopLevelPathPattern{
+      Variable: &ast.Ident{
+        NameEnd: 6,
+        Name:    "WALK",
+      },
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  9,
+              Rparen:  16,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 10,
+                  NameEnd: 16,
+                  Name:    "WALK",
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLEdgePattern{
+              StartPos:  17,
+              EndPos:    29,
+              Direction: "RIGHT",
+              Filler:    &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 19,
+                  NameEnd: 26,
+                  Name:    "TRAIL",
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  29,
+              Rparen:  38,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 30,
+                  NameEnd: 38,
+                  Name:    "SIMPLE",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    &ast.GQLTopLevelPathPattern{
+      Variable: &ast.Ident{
+        NamePos: 41,
+        NameEnd: 50,
+        Name:    "ACYCLIC",
+      },
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  53,
+              Rparen:  63,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 54,
+                  NameEnd: 63,
+                  Name:    "ACYCLIC",
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLEdgePattern{
+              StartPos:  64,
+              EndPos:    75,
+              Direction: "RIGHT",
+              Filler:    &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 66,
+                  NameEnd: 72,
+                  Name:    "PATH",
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  75,
+              Rparen:  83,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 76,
+                  NameEnd: 83,
+                  Name:    "PATHS",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    &ast.GQLTopLevelPathPattern{
+      Variable: &ast.Ident{
+        NamePos: 86,
+        NameEnd: 92,
+        Name:    "PATH",
+      },
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  95,
+              Rparen:  112,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 96,
+                  NameEnd: 102,
+                  Name:    "walk",
+                },
+                Label: &ast.GQLLabelFilter{
+                  Is:    103,
+                  Colon: -1,
+                  Expr:  &ast.GQLNameLabel{
+                    Name: &ast.Ident{
+                      NamePos: 106,
+                      NameEnd: 112,
+                      Name:    "Person",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLEdgePattern{
+              StartPos:  113,
+              EndPos:    131,
+              Direction: "RIGHT",
+              Filler:    &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 115,
+                  NameEnd: 122,
+                  Name:    "Trail",
+                },
+                Label: &ast.GQLLabelFilter{
+                  Is:    -1,
+                  Colon: 122,
+                  Expr:  &ast.GQLNameLabel{
+                    Name: &ast.Ident{
+                      NamePos: 123,
+                      NameEnd: 128,
+                      Name:    "Knows",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  131,
+              Rparen:  140,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 132,
+                  NameEnd: 140,
+                  Name:    "Simple",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    &ast.GQLTopLevelPathPattern{
+      Variable: &ast.Ident{
+        NamePos: 143,
+        NameEnd: 150,
+        Name:    "PATHS",
+      },
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  153,
+              Rparen:  160,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 154,
+                  NameEnd: 160,
+                  Name:    "path",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    &ast.GQLTopLevelPathPattern{
+      Variable: &ast.Ident{
+        NamePos: 163,
+        NameEnd: 170,
+        Name:    "TRAIL",
+      },
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  173,
+              Rparen:  181,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 174,
+                  NameEnd: 181,
+                  Name:    "trail",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    &ast.GQLTopLevelPathPattern{
+      Variable: &ast.Ident{
+        NamePos: 184,
+        NameEnd: 192,
+        Name:    "SIMPLE",
+      },
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  195,
+              Rparen:  204,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 196,
+                  NameEnd: 204,
+                  Name:    "simple",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    &ast.GQLTopLevelPathPattern{
+      Variable: &ast.Ident{
+        NamePos: 207,
+        NameEnd: 215,
+        Name:    "ordinary",
+      },
+      Mode: &ast.GQLPathModeClause{
+        StartPos: 218,
+        EndPos:   229,
+        Mode:     "TRAIL",
+        Suffix:   "PATHS",
+      },
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  230,
+              Rparen:  237,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 231,
+                  NameEnd: 232,
+                  Name:    "a",
+                },
+                Label: &ast.GQLLabelFilter{
+                  Is:    -1,
+                  Colon: 232,
+                  Expr:  &ast.GQLNameLabel{
+                    Name: &ast.Ident{
+                      NamePos: 233,
+                      NameEnd: 237,
+                      Name:    "WALK",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLEdgePattern{
+              StartPos:  238,
+              EndPos:    249,
+              Direction: "RIGHT",
+              Filler:    &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 240,
+                  NameEnd: 241,
+                  Name:    "e",
+                },
+                Label: &ast.GQLLabelFilter{
+                  Is:    -1,
+                  Colon: 241,
+                  Expr:  &ast.GQLNameLabel{
+                    Name: &ast.Ident{
+                      NamePos: 242,
+                      NameEnd: 246,
+                      Name:    "PATH",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  249,
+              Rparen:  251,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 250,
+                  NameEnd: 251,
+                  Name:    "b",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+`WALK` = (`WALK`)-[`TRAIL`]->(`SIMPLE`), `ACYCLIC` = (`ACYCLIC`)-[`PATH`]->(`PATHS`), `PATH` = (`walk` IS Person)-[`Trail`:Knows]->(`Simple`), `PATHS` = (`path`), `TRAIL` = (`trail`), `SIMPLE` = (`simple`), ordinary = TRAIL PATHS (a:WALK)-[e:PATH]->(b)
