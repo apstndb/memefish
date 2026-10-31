@@ -1,0 +1,2 @@
+FROM UNNEST([1, 2, 2]) AS number
+|> EXCEPT ALL (SELECT 1)

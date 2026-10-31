@@ -1,0 +1,107 @@
+--- pipe_except_distinct_multi.sql
+FROM UNNEST([1, 2, 3]) AS number
+|> EXCEPT DISTINCT (SELECT 1), (SELECT 2 |> WHERE TRUE)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.Unnest{
+          Unnest: 5,
+          Rparen: 21,
+          Expr:   &ast.ArrayLiteral{
+            Array:  -1,
+            Lbrack: 12,
+            Rbrack: 20,
+            Values: []ast.Expr{
+              &ast.IntLiteral{
+                ValuePos: 13,
+                ValueEnd: 14,
+                Base:     10,
+                Value:    "1",
+              },
+              &ast.IntLiteral{
+                ValuePos: 16,
+                ValueEnd: 17,
+                Base:     10,
+                Value:    "2",
+              },
+              &ast.IntLiteral{
+                ValuePos: 19,
+                ValueEnd: 20,
+                Base:     10,
+                Value:    "3",
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    23,
+            Alias: &ast.Ident{
+              NamePos: 26,
+              NameEnd: 32,
+              Name:    "number",
+            },
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeSetOperation{
+        Pipe:          33,
+        Op:            "EXCEPT",
+        AllOrDistinct: "DISTINCT",
+        Queries:       []*ast.SubQuery{
+          &ast.SubQuery{
+            Lparen: 52,
+            Rparen: 61,
+            Query:  &ast.Select{
+              Select:  53,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 60,
+                    ValueEnd: 61,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                },
+              },
+            },
+          },
+          &ast.SubQuery{
+            Lparen: 64,
+            Rparen: 87,
+            Query:  &ast.Query{
+              Query: &ast.Select{
+                Select:  65,
+                Results: []ast.SelectItem{
+                  &ast.ExprSelectItem{
+                    Expr: &ast.IntLiteral{
+                      ValuePos: 72,
+                      ValueEnd: 73,
+                      Base:     10,
+                      Value:    "2",
+                    },
+                  },
+                },
+              },
+              PipeOperators: []ast.PipeOperator{
+                &ast.PipeWhere{
+                  Pipe: 74,
+                  Expr: &ast.BoolLiteral{
+                    ValuePos: 83,
+                    Value:    true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM UNNEST([1, 2, 3]) AS number |> EXCEPT DISTINCT (SELECT 1), (SELECT 2 |> WHERE TRUE)

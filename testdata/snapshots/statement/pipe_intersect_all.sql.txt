@@ -1,0 +1,79 @@
+--- pipe_intersect_all.sql
+FROM UNNEST([1, 2, 2]) AS number
+|> INTERSECT ALL (SELECT 2)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.Unnest{
+          Unnest: 5,
+          Rparen: 21,
+          Expr:   &ast.ArrayLiteral{
+            Array:  -1,
+            Lbrack: 12,
+            Rbrack: 20,
+            Values: []ast.Expr{
+              &ast.IntLiteral{
+                ValuePos: 13,
+                ValueEnd: 14,
+                Base:     10,
+                Value:    "1",
+              },
+              &ast.IntLiteral{
+                ValuePos: 16,
+                ValueEnd: 17,
+                Base:     10,
+                Value:    "2",
+              },
+              &ast.IntLiteral{
+                ValuePos: 19,
+                ValueEnd: 20,
+                Base:     10,
+                Value:    "2",
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    23,
+            Alias: &ast.Ident{
+              NamePos: 26,
+              NameEnd: 32,
+              Name:    "number",
+            },
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeSetOperation{
+        Pipe:          33,
+        Op:            "INTERSECT",
+        AllOrDistinct: "ALL",
+        Queries:       []*ast.SubQuery{
+          &ast.SubQuery{
+            Lparen: 50,
+            Rparen: 59,
+            Query:  &ast.Select{
+              Select:  51,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 58,
+                    ValueEnd: 59,
+                    Base:     10,
+                    Value:    "2",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM UNNEST([1, 2, 2]) AS number |> INTERSECT ALL (SELECT 2)
