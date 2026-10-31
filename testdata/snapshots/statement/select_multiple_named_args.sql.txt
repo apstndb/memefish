@@ -1,0 +1,65 @@
+--- select_multiple_named_args.sql
+SELECT F(1, x => 2, y => 3)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 26,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 7,
+                NameEnd: 8,
+                Name:    "F",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.IntLiteral{
+                ValuePos: 9,
+                ValueEnd: 10,
+                Base:     10,
+                Value:    "1",
+              },
+            },
+          },
+          NamedArgs: []*ast.NamedArg{
+            &ast.NamedArg{
+              Name: &ast.Ident{
+                NamePos: 12,
+                NameEnd: 13,
+                Name:    "x",
+              },
+              Value: &ast.IntLiteral{
+                ValuePos: 17,
+                ValueEnd: 18,
+                Base:     10,
+                Value:    "2",
+              },
+            },
+            &ast.NamedArg{
+              Name: &ast.Ident{
+                NamePos: 20,
+                NameEnd: 21,
+                Name:    "y",
+              },
+              Value: &ast.IntLiteral{
+                ValuePos: 25,
+                ValueEnd: 26,
+                Base:     10,
+                Value:    "3",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT F(1, x => 2, y => 3)

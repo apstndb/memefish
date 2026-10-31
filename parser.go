@@ -2193,16 +2193,8 @@ func (p *Parser) parseCallLike() ast.Expr {
 	// https://github.com/google/zetasql/blob/master/docs/functions-reference.md#named-arguments
 	// You cannot specify positional arguments after named arguments.
 	var namedArgs []*ast.NamedArg
-	for {
-		namedArg := p.tryParseNamedArg()
-		if namedArg == nil {
-			break
-		}
-		namedArgs = append(namedArgs, namedArg)
-		if p.Token.Kind != "," {
-			break
-		}
-		p.nextToken()
+	if p.lookaheadNamedArg() {
+		namedArgs = parseCommaSeparatedList(p, p.parseNamedArg)
 	}
 
 	nullHandling := p.tryParseNullHandlingModifier()
@@ -2249,14 +2241,6 @@ func (p *Parser) parseNamedArg() *ast.NamedArg {
 		Name:  name,
 		Value: value,
 	}
-}
-
-func (p *Parser) tryParseNamedArg() *ast.NamedArg {
-	if !p.lookaheadNamedArg() {
-		return nil
-	}
-
-	return p.parseNamedArg()
 }
 
 func (p *Parser) lookaheadLambdaArg() bool {
