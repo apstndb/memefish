@@ -1,0 +1,85 @@
+--- from_subquery_nested_union.sql
+SELECT 1 IN ((FROM UNNEST([1])) UNION ALL (FROM UNNEST([2])))
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.InExpr{
+          Left: &ast.IntLiteral{
+            ValuePos: 7,
+            ValueEnd: 8,
+            Base:     10,
+            Value:    "1",
+          },
+          Right: &ast.SubQueryInCondition{
+            Lparen: 12,
+            Rparen: 60,
+            Query:  &ast.CompoundQuery{
+              Op:            "UNION",
+              AllOrDistinct: "ALL",
+              Queries:       []ast.QueryExpr{
+                &ast.SubQuery{
+                  Lparen: 13,
+                  Rparen: 30,
+                  Query:  &ast.FromQuery{
+                    From: &ast.From{
+                      From:   14,
+                      Source: &ast.Unnest{
+                        Unnest: 19,
+                        Rparen: 29,
+                        Expr:   &ast.ArrayLiteral{
+                          Array:  -1,
+                          Lbrack: 26,
+                          Rbrack: 28,
+                          Values: []ast.Expr{
+                            &ast.IntLiteral{
+                              ValuePos: 27,
+                              ValueEnd: 28,
+                              Base:     10,
+                              Value:    "1",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                &ast.SubQuery{
+                  Lparen: 42,
+                  Rparen: 59,
+                  Query:  &ast.FromQuery{
+                    From: &ast.From{
+                      From:   43,
+                      Source: &ast.Unnest{
+                        Unnest: 48,
+                        Rparen: 58,
+                        Expr:   &ast.ArrayLiteral{
+                          Array:  -1,
+                          Lbrack: 55,
+                          Rbrack: 57,
+                          Values: []ast.Expr{
+                            &ast.IntLiteral{
+                              ValuePos: 56,
+                              ValueEnd: 57,
+                              Base:     10,
+                              Value:    "2",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT 1 IN ((FROM UNNEST([1])) UNION ALL (FROM UNNEST([2])))

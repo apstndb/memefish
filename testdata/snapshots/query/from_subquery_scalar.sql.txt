@@ -1,0 +1,41 @@
+--- from_subquery_scalar.sql
+SELECT (FROM UNNEST([1]))
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.ScalarSubQuery{
+          Lparen: 7,
+          Rparen: 24,
+          Query:  &ast.FromQuery{
+            From: &ast.From{
+              From:   8,
+              Source: &ast.Unnest{
+                Unnest: 13,
+                Rparen: 23,
+                Expr:   &ast.ArrayLiteral{
+                  Array:  -1,
+                  Lbrack: 20,
+                  Rbrack: 22,
+                  Values: []ast.Expr{
+                    &ast.IntLiteral{
+                      ValuePos: 21,
+                      ValueEnd: 22,
+                      Base:     10,
+                      Value:    "1",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT (FROM UNNEST([1]))
