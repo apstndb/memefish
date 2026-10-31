@@ -1,0 +1,57 @@
+--- select_unicode_numeric_escapes.sql
+SELECT '\xff', '\377', '\xc3\xa9', b'\xff\377', `\xff`, `\377`
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 7,
+          ValueEnd: 13,
+          Value:    "ÿ",
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 15,
+          ValueEnd: 21,
+          Value:    "ÿ",
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 23,
+          ValueEnd: 33,
+          Value:    "Ã©",
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.BytesLiteral{
+          ValuePos: 35,
+          ValueEnd: 46,
+          Value:    []uint8{
+            255, 255,
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 48,
+          NameEnd: 54,
+          Name:    "ÿ",
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 56,
+          NameEnd: 62,
+          Name:    "ÿ",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT "ÿ", "ÿ", "Ã©", b"\xff\xff", `ÿ`, `ÿ`

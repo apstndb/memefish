@@ -533,7 +533,11 @@ scan:
 					}
 					l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+2), "invalid escape sequence: %v", err)
 				}
-				content = append(content, byte(u))
+				if unicode {
+					content = utf8.AppendRune(content, rune(u))
+				} else {
+					content = append(content, byte(u))
+				}
 				i += 2
 			case 'u', 'U':
 				if !unicode {
@@ -593,7 +597,11 @@ scan:
 					}
 					l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+2), "invalid escape sequence: %v", err)
 				}
-				content = append(content, byte(u))
+				if unicode {
+					content = utf8.AppendRune(content, rune(u))
+				} else {
+					content = append(content, byte(u))
+				}
 				i += 2
 			default:
 				if noPanic {
