@@ -452,6 +452,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *IntervalLiteralSingle:
+		stack = append(stack, &stackItem{node: wrapNode(n.StringValue), visitor: v.Field("StringValue")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *IntervalLiteralRange:
