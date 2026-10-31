@@ -56,7 +56,7 @@ func (f *File) Position(pos, end Pos) *Position {
 	case pos.Invalid() || end.Invalid():
 		break
 	case line == endLine:
-		lineBuffer := f.Buffer[f.lines[line] : f.lines[line+1]-1]
+		lineBuffer := strings.TrimRight(f.Buffer[f.lines[line]:f.lines[line+1]-1], "\r\n")
 		count := max(endColumn-column-1, 0)
 		fmt.Fprintf(&source, "%3d|  %s\n", line+1, lineBuffer)
 		fmt.Fprintf(&source, "   |  %s^%s", strings.Repeat(" ", column), strings.Repeat("~", count))
@@ -65,7 +65,7 @@ func (f *File) Position(pos, end Pos) *Position {
 			if l > 0 {
 				fmt.Fprintln(&source)
 			}
-			lineBuffer := f.Buffer[f.lines[l] : f.lines[l+1]-1]
+			lineBuffer := strings.TrimRight(f.Buffer[f.lines[l]:f.lines[l+1]-1], "\r\n")
 			fmt.Fprintf(&source, "%3d|  %s", l+1, lineBuffer)
 		}
 	}
@@ -110,8 +110,17 @@ func (f *File) init() {
 	}
 
 	lines := []Pos{0}
-	for i, line := range strings.Split(f.Buffer, "\n") {
-		lines = append(lines, Pos(int(lines[i])+len(line)+1))
+	for i := 0; i < len(f.Buffer); i++ {
+		switch f.Buffer[i] {
+		case '\r':
+			if i+1 < len(f.Buffer) && f.Buffer[i+1] == '\n' {
+				i++
+			}
+			lines = append(lines, Pos(i+1))
+		case '\n':
+			lines = append(lines, Pos(i+1))
+		}
 	}
+	lines = append(lines, Pos(len(f.Buffer)+1))
 	f.lines = lines
 }
