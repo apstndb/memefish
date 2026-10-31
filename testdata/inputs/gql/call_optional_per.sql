@@ -1,0 +1,3 @@
+GRAPH FinGraph
+OPTIONAL CALL PER () PageRank()
+RETURN n

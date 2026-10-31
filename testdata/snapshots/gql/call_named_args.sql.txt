@@ -1,0 +1,144 @@
+--- call_named_args.sql
+GRAPH FinGraph
+CALL PageRank(node_labels => ['Account'], edge_labels => ['Transfers']) YIELD node, score
+RETURN node.id, score AS page_rank
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLTVFCall{
+            Optional: -1,
+            Call:     15,
+            Per:      -1,
+            TVF:      &ast.TVFCallExpr{
+              Rparen: 85,
+              Name:   &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 20,
+                    NameEnd: 28,
+                    Name:    "PageRank",
+                  },
+                },
+              },
+              NamedArgs: []*ast.NamedArg{
+                &ast.NamedArg{
+                  Name: &ast.Ident{
+                    NamePos: 29,
+                    NameEnd: 40,
+                    Name:    "node_labels",
+                  },
+                  Value: &ast.ArrayLiteral{
+                    Array:  -1,
+                    Lbrack: 44,
+                    Rbrack: 54,
+                    Values: []ast.Expr{
+                      &ast.StringLiteral{
+                        ValuePos: 45,
+                        ValueEnd: 54,
+                        Value:    "Account",
+                      },
+                    },
+                  },
+                },
+                &ast.NamedArg{
+                  Name: &ast.Ident{
+                    NamePos: 57,
+                    NameEnd: 68,
+                    Name:    "edge_labels",
+                  },
+                  Value: &ast.ArrayLiteral{
+                    Array:  -1,
+                    Lbrack: 72,
+                    Rbrack: 84,
+                    Values: []ast.Expr{
+                      &ast.StringLiteral{
+                        ValuePos: 73,
+                        ValueEnd: 84,
+                        Value:    "Transfers",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            Yield: &ast.GQLCallYield{
+              Yield: 87,
+              Items: []*ast.GQLCallYieldItem{
+                &ast.GQLCallYieldItem{
+                  Name: &ast.Ident{
+                    NamePos: 93,
+                    NameEnd: 97,
+                    Name:    "node",
+                  },
+                },
+                &ast.GQLCallYieldItem{
+                  Name: &ast.Ident{
+                    NamePos: 99,
+                    NameEnd: 104,
+                    Name:    "score",
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 105,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 112,
+                      NameEnd: 116,
+                      Name:    "node",
+                    },
+                    &ast.Ident{
+                      NamePos: 117,
+                      NameEnd: 119,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 121,
+                  NameEnd: 126,
+                  Name:    "score",
+                },
+                Alias: &ast.AsAlias{
+                  As:    127,
+                  Alias: &ast.Ident{
+                    NamePos: 130,
+                    NameEnd: 139,
+                    Name:    "page_rank",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph CALL PageRank(node_labels => ["Account"], edge_labels => ["Transfers"]) YIELD node, score RETURN node.id, score AS page_rank

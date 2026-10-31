@@ -1,0 +1,178 @@
+--- call_inline_empty_vars.sql
+GRAPH FinGraph
+MATCH (p:Person)
+CALL () {
+  MATCH (x:Person)
+  RETURN COUNT(*) AS total_persons
+}
+RETURN p.name, total_persons
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  21,
+                          Rparen:  30,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "p",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 23,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLInlineCall{
+            Optional: -1,
+            Call:     32,
+            Lparen:   37,
+            Rparen:   38,
+            Lbrace:   40,
+            Rbrace:   96,
+            Query:    &ast.GQLMultiLinearQueryStatement{
+              Statements: []ast.GQLLinearQueryStatement{
+                &ast.GQLSimpleLinearQueryStatement{
+                  Statements: []ast.GQLPrimitiveQueryStatement{
+                    &ast.GQLMatch{
+                      Optional: -1,
+                      Match:    44,
+                      Pattern:  &ast.GQLGraphPattern{
+                        Paths: []*ast.GQLTopLevelPathPattern{
+                          &ast.GQLTopLevelPathPattern{
+                            Path: &ast.GQLPathPattern{
+                              Terms: []*ast.GQLPathTerm{
+                                &ast.GQLPathTerm{
+                                  Primary: &ast.GQLNodePattern{
+                                    Lparen:  50,
+                                    Rparen:  59,
+                                    Pattern: &ast.GQLElementPatternFiller{
+                                      EmptyPos: -1,
+                                      Variable: &ast.Ident{
+                                        NamePos: 51,
+                                        NameEnd: 52,
+                                        Name:    "x",
+                                      },
+                                      Label: &ast.GQLLabelFilter{
+                                        Is:    -1,
+                                        Colon: 52,
+                                        Expr:  &ast.GQLNameLabel{
+                                          Name: &ast.Ident{
+                                            NamePos: 53,
+                                            NameEnd: 59,
+                                            Name:    "Person",
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                    &ast.GQLReturn{
+                      Return: 63,
+                      Items:  []*ast.GQLReturnItem{
+                        &ast.GQLReturnItem{
+                          Star: -1,
+                          Expr: &ast.CountStarExpr{
+                            Count:  70,
+                            Rparen: 77,
+                          },
+                          Alias: &ast.AsAlias{
+                            As:    79,
+                            Alias: &ast.Ident{
+                              NamePos: 82,
+                              NameEnd: 95,
+                              Name:    "total_persons",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 98,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 105,
+                      NameEnd: 106,
+                      Name:    "p",
+                    },
+                    &ast.Ident{
+                      NamePos: 107,
+                      NameEnd: 111,
+                      Name:    "name",
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 113,
+                  NameEnd: 126,
+                  Name:    "total_persons",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (p:Person) CALL () { MATCH (x:Person) RETURN COUNT(*) AS total_persons } RETURN p.name, total_persons

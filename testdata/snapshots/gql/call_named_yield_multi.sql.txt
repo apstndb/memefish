@@ -1,0 +1,169 @@
+--- call_named_yield_multi.sql
+GRAPH FinGraph
+MATCH (p:Person)
+CALL my_tvf(p) YIELD Id AS tvf_Id, score
+RETURN p.Id AS person_Id, tvf_Id, score
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  21,
+                          Rparen:  30,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "p",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 23,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLTVFCall{
+            Optional: -1,
+            Call:     32,
+            Per:      -1,
+            TVF:      &ast.TVFCallExpr{
+              Rparen: 45,
+              Name:   &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 37,
+                    NameEnd: 43,
+                    Name:    "my_tvf",
+                  },
+                },
+              },
+              Args: []ast.TVFArg{
+                &ast.ExprArg{
+                  Expr: &ast.Ident{
+                    NamePos: 44,
+                    NameEnd: 45,
+                    Name:    "p",
+                  },
+                },
+              },
+            },
+            Yield: &ast.GQLCallYield{
+              Yield: 47,
+              Items: []*ast.GQLCallYieldItem{
+                &ast.GQLCallYieldItem{
+                  Name: &ast.Ident{
+                    NamePos: 53,
+                    NameEnd: 55,
+                    Name:    "Id",
+                  },
+                  Alias: &ast.AsAlias{
+                    As:    56,
+                    Alias: &ast.Ident{
+                      NamePos: 59,
+                      NameEnd: 65,
+                      Name:    "tvf_Id",
+                    },
+                  },
+                },
+                &ast.GQLCallYieldItem{
+                  Name: &ast.Ident{
+                    NamePos: 67,
+                    NameEnd: 72,
+                    Name:    "score",
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 73,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 80,
+                      NameEnd: 81,
+                      Name:    "p",
+                    },
+                    &ast.Ident{
+                      NamePos: 82,
+                      NameEnd: 84,
+                      Name:    "Id",
+                    },
+                  },
+                },
+                Alias: &ast.AsAlias{
+                  As:    85,
+                  Alias: &ast.Ident{
+                    NamePos: 88,
+                    NameEnd: 97,
+                    Name:    "person_Id",
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 99,
+                  NameEnd: 105,
+                  Name:    "tvf_Id",
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 107,
+                  NameEnd: 112,
+                  Name:    "score",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (p:Person) CALL my_tvf(p) YIELD Id AS tvf_Id, score RETURN p.Id AS person_Id, tvf_Id, score
