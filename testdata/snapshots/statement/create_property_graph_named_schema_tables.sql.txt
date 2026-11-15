@@ -1,0 +1,168 @@
+--- create_property_graph_named_schema_tables.sql
+CREATE PROPERTY GRAPH G
+NODE TABLES (
+  sch.People AS Person,
+  sch.Accounts AS Account
+)
+EDGE TABLES (
+  sch.Owns AS Own
+    SOURCE KEY (PersonId) REFERENCES Person (Id)
+    DESTINATION KEY (AccountId) REFERENCES Account (Id)
+)
+
+--- AST
+&ast.CreatePropertyGraph{
+  Name: &ast.Ident{
+    NamePos: 22,
+    NameEnd: 23,
+    Name:    "G",
+  },
+  Content: &ast.PropertyGraphContent{
+    NodeTables: &ast.PropertyGraphNodeTables{
+      Node:   24,
+      Tables: &ast.PropertyGraphElementList{
+        Lparen:   36,
+        Rparen:   88,
+        Elements: []*ast.PropertyGraphElement{
+          &ast.PropertyGraphElement{
+            Name: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 40,
+                  NameEnd: 43,
+                  Name:    "sch",
+                },
+                &ast.Ident{
+                  NamePos: 44,
+                  NameEnd: 50,
+                  Name:    "People",
+                },
+              },
+            },
+            Alias: &ast.Ident{
+              NamePos: 54,
+              NameEnd: 60,
+              Name:    "Person",
+            },
+          },
+          &ast.PropertyGraphElement{
+            Name: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 64,
+                  NameEnd: 67,
+                  Name:    "sch",
+                },
+                &ast.Ident{
+                  NamePos: 68,
+                  NameEnd: 76,
+                  Name:    "Accounts",
+                },
+              },
+            },
+            Alias: &ast.Ident{
+              NamePos: 80,
+              NameEnd: 87,
+              Name:    "Account",
+            },
+          },
+        },
+      },
+    },
+    EdgeTables: &ast.PropertyGraphEdgeTables{
+      Edge:   90,
+      Tables: &ast.PropertyGraphElementList{
+        Lparen:   102,
+        Rparen:   227,
+        Elements: []*ast.PropertyGraphElement{
+          &ast.PropertyGraphElement{
+            Name: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 106,
+                  NameEnd: 109,
+                  Name:    "sch",
+                },
+                &ast.Ident{
+                  NamePos: 110,
+                  NameEnd: 114,
+                  Name:    "Owns",
+                },
+              },
+            },
+            Alias: &ast.Ident{
+              NamePos: 118,
+              NameEnd: 121,
+              Name:    "Own",
+            },
+            Keys: &ast.PropertyGraphEdgeElementKeys{
+              Source: &ast.PropertyGraphSourceKey{
+                Source: 126,
+                Keys:   &ast.PropertyGraphColumnNameList{
+                  Lparen:         137,
+                  Rparen:         146,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 138,
+                      NameEnd: 146,
+                      Name:    "PersonId",
+                    },
+                  },
+                },
+                ElementReference: &ast.Ident{
+                  NamePos: 159,
+                  NameEnd: 165,
+                  Name:    "Person",
+                },
+                ReferenceColumns: &ast.PropertyGraphColumnNameList{
+                  Lparen:         166,
+                  Rparen:         169,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 167,
+                      NameEnd: 169,
+                      Name:    "Id",
+                    },
+                  },
+                },
+              },
+              Destination: &ast.PropertyGraphDestinationKey{
+                Destination: 175,
+                Keys:        &ast.PropertyGraphColumnNameList{
+                  Lparen:         191,
+                  Rparen:         201,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 192,
+                      NameEnd: 201,
+                      Name:    "AccountId",
+                    },
+                  },
+                },
+                ElementReference: &ast.Ident{
+                  NamePos: 214,
+                  NameEnd: 221,
+                  Name:    "Account",
+                },
+                ReferenceColumns: &ast.PropertyGraphColumnNameList{
+                  Lparen:         222,
+                  Rparen:         225,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 223,
+                      NameEnd: 225,
+                      Name:    "Id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE PROPERTY GRAPH G NODE TABLES (sch.People AS Person, sch.Accounts AS Account) EDGE TABLES (sch.Owns AS Own SOURCE KEY (PersonId) REFERENCES Person (Id) DESTINATION KEY (AccountId) REFERENCES Account (Id))

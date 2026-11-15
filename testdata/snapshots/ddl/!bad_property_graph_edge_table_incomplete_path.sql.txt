@@ -1,0 +1,127 @@
+--- !bad_property_graph_edge_table_incomplete_path.sql
+CREATE PROPERTY GRAPH G NODE TABLES (People) EDGE TABLES (sch.)
+
+--- Error
+syntax error: testdata/inputs/ddl/!bad_property_graph_edge_table_incomplete_path.sql:1:63: expected token: <ident>, but: )
+  1|  CREATE PROPERTY GRAPH G NODE TABLES (People) EDGE TABLES (sch.)
+   |                                                                ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 63,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "CREATE",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "PROPERTY",
+        AsString: "PROPERTY",
+        Pos:      7,
+        End:      15,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "GRAPH",
+        AsString: "GRAPH",
+        Pos:      16,
+        End:      21,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "G",
+        AsString: "G",
+        Pos:      22,
+        End:      23,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "NODE",
+        AsString: "NODE",
+        Pos:      24,
+        End:      28,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TABLES",
+        AsString: "TABLES",
+        Pos:      29,
+        End:      35,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   36,
+        End:   37,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "People",
+        AsString: "People",
+        Pos:      37,
+        End:      43,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  43,
+        End:  44,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "EDGE",
+        AsString: "EDGE",
+        Pos:      45,
+        End:      49,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TABLES",
+        AsString: "TABLES",
+        Pos:      50,
+        End:      56,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   57,
+        End:   58,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "sch",
+        AsString: "sch",
+        Pos:      58,
+        End:      61,
+      },
+      &token.Token{
+        Kind: ".",
+        Raw:  ".",
+        Pos:  61,
+        End:  62,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  62,
+        End:  63,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE PROPERTY GRAPH G NODE TABLES (People) EDGE TABLES (sch.)

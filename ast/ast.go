@@ -4420,14 +4420,14 @@ type PropertyGraphElementList struct {
 
 // PropertyGraphElement represents a single element in NODE TABLES or EDGE TABLES.
 //
-//	{{.Name | sql}} {{if .Alias | isnil | not)}}AS {{.Alias | sql}}{{end}}
+//	{{.Name | sql}} {{if .Alias | isnil | not}}AS {{.Alias | sql}}{{end}}
 //	{{.Keys | sqlOpt}} {{.Properties | sqlOpt}}
 //	{{.DynamicLabel | sqlOpt}} {{.DynamicProperties | sqlOpt}}
 type PropertyGraphElement struct {
 	// pos = Name.pos
 	// end = (DynamicProperties ?? DynamicLabel ?? Properties ?? Keys ?? Alias ?? Name).end
 
-	Name              *Ident
+	Name              *Path
 	Alias             *Ident                          // optional
 	Keys              PropertyGraphElementKeys        // optional
 	Properties        PropertyGraphLabelsOrProperties // optional

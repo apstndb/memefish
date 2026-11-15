@@ -5885,7 +5885,7 @@ func (p *Parser) parsePropertyGraphElementList() *ast.PropertyGraphElementList {
 }
 
 func (p *Parser) parsePropertyGraphElement() *ast.PropertyGraphElement {
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	var alias *ast.Ident
 	if p.Token.Kind == "AS" {

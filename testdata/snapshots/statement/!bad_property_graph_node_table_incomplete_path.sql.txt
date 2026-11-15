@@ -1,0 +1,91 @@
+--- !bad_property_graph_node_table_incomplete_path.sql
+CREATE PROPERTY GRAPH G NODE TABLES (sch.)
+
+--- Error
+syntax error: testdata/inputs/ddl/!bad_property_graph_node_table_incomplete_path.sql:1:42: expected token: <ident>, but: )
+  1|  CREATE PROPERTY GRAPH G NODE TABLES (sch.)
+   |                                           ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 42,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "CREATE",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "PROPERTY",
+        AsString: "PROPERTY",
+        Pos:      7,
+        End:      15,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "GRAPH",
+        AsString: "GRAPH",
+        Pos:      16,
+        End:      21,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "G",
+        AsString: "G",
+        Pos:      22,
+        End:      23,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "NODE",
+        AsString: "NODE",
+        Pos:      24,
+        End:      28,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TABLES",
+        AsString: "TABLES",
+        Pos:      29,
+        End:      35,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   36,
+        End:   37,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "sch",
+        AsString: "sch",
+        Pos:      37,
+        End:      40,
+      },
+      &token.Token{
+        Kind: ".",
+        Raw:  ".",
+        Pos:  40,
+        End:  41,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  41,
+        End:  42,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE PROPERTY GRAPH G NODE TABLES (sch.)

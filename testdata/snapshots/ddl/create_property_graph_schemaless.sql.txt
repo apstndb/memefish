@@ -28,10 +28,14 @@ CREATE PROPERTY GRAPH FinGraph
         Rparen:   129,
         Elements: []*ast.PropertyGraphElement{
           &ast.PropertyGraphElement{
-            Name: &ast.Ident{
-              NamePos: 51,
-              NameEnd: 60,
-              Name:    "GraphNode",
+            Name: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 51,
+                  NameEnd: 60,
+                  Name:    "GraphNode",
+                },
+              },
             },
             DynamicLabel: &ast.PropertyGraphDynamicLabel{
               Dynamic:    67,
@@ -62,10 +66,14 @@ CREATE PROPERTY GRAPH FinGraph
         Rparen:   333,
         Elements: []*ast.PropertyGraphElement{
           &ast.PropertyGraphElement{
-            Name: &ast.Ident{
-              NamePos: 151,
-              NameEnd: 160,
-              Name:    "GraphEdge",
+            Name: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 151,
+                  NameEnd: 160,
+                  Name:    "GraphEdge",
+                },
+              },
             },
             Keys: &ast.PropertyGraphEdgeElementKeys{
               Source: &ast.PropertyGraphSourceKey{
