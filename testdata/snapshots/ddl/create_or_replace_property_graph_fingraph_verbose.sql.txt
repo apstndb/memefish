@@ -30,10 +30,14 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
 --- AST
 &ast.CreatePropertyGraph{
   OrReplace: true,
-  Name:      &ast.Ident{
-    NamePos: 33,
-    NameEnd: 41,
-    Name:    "FinGraph",
+  Name:      &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 33,
+        NameEnd: 41,
+        Name:    "FinGraph",
+      },
+    },
   },
   Content: &ast.PropertyGraphContent{
     NodeTables: &ast.PropertyGraphNodeTables{

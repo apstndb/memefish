@@ -15,10 +15,14 @@ CREATE PROPERTY GRAPH FinGraph
 
 --- AST
 &ast.CreatePropertyGraph{
-  Name: &ast.Ident{
-    NamePos: 22,
-    NameEnd: 30,
-    Name:    "FinGraph",
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 22,
+        NameEnd: 30,
+        Name:    "FinGraph",
+      },
+    },
   },
   Content: &ast.PropertyGraphContent{
     NodeTables: &ast.PropertyGraphNodeTables{

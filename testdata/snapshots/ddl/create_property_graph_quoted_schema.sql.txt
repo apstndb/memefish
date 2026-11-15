@@ -1,0 +1,42 @@
+--- create_property_graph_quoted_schema.sql
+CREATE OR REPLACE PROPERTY GRAPH `order`.`group` NODE TABLES (People)
+
+--- AST
+&ast.CreatePropertyGraph{
+  OrReplace: true,
+  Name:      &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 33,
+        NameEnd: 40,
+        Name:    "order",
+      },
+      &ast.Ident{
+        NamePos: 41,
+        NameEnd: 48,
+        Name:    "group",
+      },
+    },
+  },
+  Content: &ast.PropertyGraphContent{
+    NodeTables: &ast.PropertyGraphNodeTables{
+      Node:   49,
+      Tables: &ast.PropertyGraphElementList{
+        Lparen:   61,
+        Rparen:   68,
+        Elements: []*ast.PropertyGraphElement{
+          &ast.PropertyGraphElement{
+            Name: &ast.Ident{
+              NamePos: 62,
+              NameEnd: 68,
+              Name:    "People",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE OR REPLACE PROPERTY GRAPH `order`.`group` NODE TABLES (People)

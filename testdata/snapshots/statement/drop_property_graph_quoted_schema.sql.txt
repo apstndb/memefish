@@ -1,0 +1,24 @@
+--- drop_property_graph_quoted_schema.sql
+DROP PROPERTY GRAPH IF EXISTS `order`.`group`
+
+--- AST
+&ast.DropPropertyGraph{
+  IfExists: true,
+  Name:     &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 30,
+        NameEnd: 37,
+        Name:    "order",
+      },
+      &ast.Ident{
+        NamePos: 38,
+        NameEnd: 45,
+        Name:    "group",
+      },
+    },
+  },
+}
+
+--- SQL
+DROP PROPERTY GRAPH IF EXISTS `order`.`group`

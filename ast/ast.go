@@ -4369,7 +4369,7 @@ type CreatePropertyGraph struct {
 	Create      token.Pos // position of "CREATE" keyword
 	OrReplace   bool
 	IfNotExists bool
-	Name        *Ident
+	Name        *Path
 	Content     *PropertyGraphContent
 	Options     *Options // optional
 }
@@ -4647,7 +4647,7 @@ type DropPropertyGraph struct {
 	Drop token.Pos
 
 	IfExists bool
-	Name     *Ident
+	Name     *Path
 }
 
 // ================================================================================

@@ -1,0 +1,56 @@
+--- !bad_drop_property_graph_incomplete_path.sql
+DROP PROPERTY GRAPH sch.
+
+--- Error
+syntax error: testdata/inputs/ddl/!bad_drop_property_graph_incomplete_path.sql:2:1: expected token: <ident>, but: <eof>
+  2|  
+   |  ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 24,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "DROP",
+        AsString: "DROP",
+        End:      4,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "PROPERTY",
+        AsString: "PROPERTY",
+        Pos:      5,
+        End:      13,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "GRAPH",
+        AsString: "GRAPH",
+        Pos:      14,
+        End:      19,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "sch",
+        AsString: "sch",
+        Pos:      20,
+        End:      23,
+      },
+      &token.Token{
+        Kind: ".",
+        Raw:  ".",
+        Pos:  23,
+        End:  24,
+      },
+    },
+  },
+}
+
+--- SQL
+DROP PROPERTY GRAPH sch.

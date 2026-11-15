@@ -7,10 +7,14 @@ OPTIONS (validate_element_key_uniqueness = true)
 --- AST
 &ast.CreatePropertyGraph{
   OrReplace: true,
-  Name:      &ast.Ident{
-    NamePos: 33,
-    NameEnd: 34,
-    Name:    "g",
+  Name:      &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 33,
+        NameEnd: 34,
+        Name:    "g",
+      },
+    },
   },
   Content: &ast.PropertyGraphContent{
     NodeTables: &ast.PropertyGraphNodeTables{

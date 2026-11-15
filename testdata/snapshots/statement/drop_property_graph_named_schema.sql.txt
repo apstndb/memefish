@@ -1,0 +1,23 @@
+--- drop_property_graph_named_schema.sql
+DROP PROPERTY GRAPH sch.G
+
+--- AST
+&ast.DropPropertyGraph{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 20,
+        NameEnd: 23,
+        Name:    "sch",
+      },
+      &ast.Ident{
+        NamePos: 24,
+        NameEnd: 25,
+        Name:    "G",
+      },
+    },
+  },
+}
+
+--- SQL
+DROP PROPERTY GRAPH sch.G

@@ -1,0 +1,55 @@
+--- !bad_create_property_graph_incomplete_path.sql
+CREATE PROPERTY GRAPH sch.
+
+--- Error
+syntax error: testdata/inputs/ddl/!bad_create_property_graph_incomplete_path.sql:2:1: expected token: <ident>, but: <eof>
+  2|  
+   |  ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 26,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "CREATE",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "PROPERTY",
+        AsString: "PROPERTY",
+        Pos:      7,
+        End:      15,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "GRAPH",
+        AsString: "GRAPH",
+        Pos:      16,
+        End:      21,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "sch",
+        AsString: "sch",
+        Pos:      22,
+        End:      25,
+      },
+      &token.Token{
+        Kind: ".",
+        Raw:  ".",
+        Pos:  25,
+        End:  26,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE PROPERTY GRAPH sch.

@@ -5831,7 +5831,7 @@ func (p *Parser) parseCreatePropertyGraph(pos token.Pos, orReplace bool) *ast.Cr
 	p.expectKeywordLike("GRAPH")
 
 	ifNotExists := p.parseIfNotExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	content := p.parsePropertyGraphContent()
 	options := p.tryParsePropertyGraphOptions()
 
@@ -6182,7 +6182,7 @@ func (p *Parser) parseDropPropertyGraph(pos token.Pos) *ast.DropPropertyGraph {
 	p.expectKeywordLike("PROPERTY")
 	p.expectKeywordLike("GRAPH")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	return &ast.DropPropertyGraph{
 		Drop:     pos,
