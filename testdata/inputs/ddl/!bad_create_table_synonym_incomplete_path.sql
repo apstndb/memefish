@@ -1,0 +1,4 @@
+CREATE TABLE sch.T (
+  Id INT64,
+  SYNONYM (sch.)
+) PRIMARY KEY (Id)

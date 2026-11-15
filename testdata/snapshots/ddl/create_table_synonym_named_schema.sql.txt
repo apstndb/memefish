@@ -1,0 +1,79 @@
+--- create_table_synonym_named_schema.sql
+CREATE TABLE sch.T (
+  Id INT64,
+  SYNONYM (sch.TAlias)
+) PRIMARY KEY (Id)
+
+--- AST
+&ast.CreateTable{
+  Rparen:           56,
+  PrimaryKeyRparen: 73,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 16,
+        Name:    "sch",
+      },
+      &ast.Ident{
+        NamePos: 17,
+        NameEnd: 18,
+        Name:    "T",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 23,
+        NameEnd: 25,
+        Name:    "Id",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 26,
+        Name:    "INT64",
+      },
+      Hidden: -1,
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
+      Name:   &ast.Ident{
+        NamePos: 71,
+        NameEnd: 73,
+        Name:    "Id",
+      },
+    },
+  },
+  Synonyms: []*ast.Synonym{
+    &ast.Synonym{
+      Synonym: 35,
+      Rparen:  54,
+      Name:    &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 44,
+            NameEnd: 47,
+            Name:    "sch",
+          },
+          &ast.Ident{
+            NamePos: 48,
+            NameEnd: 54,
+            Name:    "TAlias",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE sch.T (
+  Id INT64,
+  SYNONYM (sch.TAlias)
+) PRIMARY KEY (Id)

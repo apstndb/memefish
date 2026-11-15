@@ -2820,7 +2820,7 @@ type QueueSetOptions struct {
 
 // Synonym is SYNONYM node in CREATE TABLE
 //
-//	SYNONYM ({.Name | sql})
+//	SYNONYM ({{.Name | sql}})
 type Synonym struct {
 	// pos = Synonym
 	// end = Rparen + 1
@@ -2828,7 +2828,7 @@ type Synonym struct {
 	Synonym token.Pos // position of "SYNONYM" pseudo keyword
 	Rparen  token.Pos // position of ")"
 
-	Name *Ident
+	Name *Path
 }
 
 // CreateSequence is CREATE SEQUENCE statement node.

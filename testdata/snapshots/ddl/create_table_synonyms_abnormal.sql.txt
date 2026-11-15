@@ -74,19 +74,27 @@ CREATE TABLE Singers (
     &ast.Synonym{
       Synonym: 72,
       Rparen:  88,
-      Name:    &ast.Ident{
-        NamePos: 81,
-        NameEnd: 88,
-        Name:    "Ignored",
+      Name:    &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 81,
+            NameEnd: 88,
+            Name:    "Ignored",
+          },
+        },
       },
     },
     &ast.Synonym{
       Synonym: 153,
       Rparen:  169,
-      Name:    &ast.Ident{
-        NamePos: 162,
-        NameEnd: 169,
-        Name:    "Artists",
+      Name:    &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 162,
+            NameEnd: 169,
+            Name:    "Artists",
+          },
+        },
       },
     },
   },

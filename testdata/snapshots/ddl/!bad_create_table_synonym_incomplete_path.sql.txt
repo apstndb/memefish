@@ -1,0 +1,163 @@
+--- !bad_create_table_synonym_incomplete_path.sql
+CREATE TABLE sch.T (
+  Id INT64,
+  SYNONYM (sch.)
+) PRIMARY KEY (Id)
+
+--- Error
+syntax error: testdata/inputs/ddl/!bad_create_table_synonym_incomplete_path.sql:3:16: expected token: <ident>, but: )
+  3|    SYNONYM (sch.)
+   |                 ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 68,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "CREATE",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TABLE",
+        AsString: "TABLE",
+        Pos:      7,
+        End:      12,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "sch",
+        AsString: "sch",
+        Pos:      13,
+        End:      16,
+      },
+      &token.Token{
+        Kind: ".",
+        Raw:  ".",
+        Pos:  16,
+        End:  17,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "T",
+        AsString: "T",
+        Pos:      17,
+        End:      18,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   19,
+        End:   20,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n  ",
+        Raw:      "Id",
+        AsString: "Id",
+        Pos:      23,
+        End:      25,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INT64",
+        AsString: "INT64",
+        Pos:      26,
+        End:      31,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  31,
+        End:  32,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n  ",
+        Raw:      "SYNONYM",
+        AsString: "SYNONYM",
+        Pos:      35,
+        End:      42,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   43,
+        End:   44,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "sch",
+        AsString: "sch",
+        Pos:      44,
+        End:      47,
+      },
+      &token.Token{
+        Kind: ".",
+        Raw:  ".",
+        Pos:  47,
+        End:  48,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  48,
+        End:  49,
+      },
+      &token.Token{
+        Kind:  ")",
+        Space: "\n",
+        Raw:   ")",
+        Pos:   50,
+        End:   51,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "PRIMARY",
+        AsString: "PRIMARY",
+        Pos:      52,
+        End:      59,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "KEY",
+        AsString: "KEY",
+        Pos:      60,
+        End:      63,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   64,
+        End:   65,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "Id",
+        AsString: "Id",
+        Pos:      65,
+        End:      67,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  67,
+        End:  68,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE sch.T ( Id INT64, SYNONYM (sch.) ) PRIMARY KEY (Id)

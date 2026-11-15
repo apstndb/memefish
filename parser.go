@@ -4141,7 +4141,7 @@ func (p *Parser) parseCheck() *ast.Check {
 func (p *Parser) parseSynonym() *ast.Synonym {
 	pos := p.expectKeywordLike("SYNONYM").Pos
 	p.expect("(")
-	name := p.parseIdent()
+	name := p.parsePath()
 	rparen := p.expect(")").Pos
 
 	return &ast.Synonym{

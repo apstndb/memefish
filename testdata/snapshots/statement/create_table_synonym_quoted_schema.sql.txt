@@ -1,0 +1,79 @@
+--- create_table_synonym_quoted_schema.sql
+CREATE TABLE `order`.`group` (
+  Id INT64,
+  SYNONYM (`order`.`select`)
+) PRIMARY KEY (Id)
+
+--- AST
+&ast.CreateTable{
+  Rparen:           72,
+  PrimaryKeyRparen: 89,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 20,
+        Name:    "order",
+      },
+      &ast.Ident{
+        NamePos: 21,
+        NameEnd: 28,
+        Name:    "group",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 33,
+        NameEnd: 35,
+        Name:    "Id",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 36,
+        Name:    "INT64",
+      },
+      Hidden: -1,
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
+      Name:   &ast.Ident{
+        NamePos: 87,
+        NameEnd: 89,
+        Name:    "Id",
+      },
+    },
+  },
+  Synonyms: []*ast.Synonym{
+    &ast.Synonym{
+      Synonym: 45,
+      Rparen:  70,
+      Name:    &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 54,
+            NameEnd: 61,
+            Name:    "order",
+          },
+          &ast.Ident{
+            NamePos: 62,
+            NameEnd: 70,
+            Name:    "select",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE `order`.`group` (
+  Id INT64,
+  SYNONYM (`order`.`select`)
+) PRIMARY KEY (Id)
