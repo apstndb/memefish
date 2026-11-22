@@ -1,0 +1,35 @@
+--- grant_execute_on_function.sql
+GRANT EXECUTE ON FUNCTION udfscope.f TO ROLE udf_reader
+
+--- AST
+&ast.Grant{
+  Privilege: &ast.ExecutePrivilegeOnFunction{
+    Execute: 6,
+    Names:   []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 26,
+            NameEnd: 34,
+            Name:    "udfscope",
+          },
+          &ast.Ident{
+            NamePos: 35,
+            NameEnd: 36,
+            Name:    "f",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 45,
+      NameEnd: 55,
+      Name:    "udf_reader",
+    },
+  },
+}
+
+--- SQL
+GRANT EXECUTE ON FUNCTION udfscope.f TO ROLE udf_reader

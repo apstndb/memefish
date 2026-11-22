@@ -1278,6 +1278,10 @@ func (s *SelectPrivilegeOnAllViewsInSchema) SQL() string {
 	return "SELECT ON ALL VIEWS IN SCHEMA " + sqlJoin(s.Schemas, ", ")
 }
 
+func (e *ExecutePrivilegeOnFunction) SQL() string {
+	return "EXECUTE ON FUNCTION " + sqlJoin(e.Names, ", ")
+}
+
 func (e *ExecutePrivilegeOnTableFunction) SQL() string {
 	return "EXECUTE ON TABLE FUNCTION " + sqlJoin(e.Names, ", ")
 }

@@ -1990,6 +1990,14 @@ func (s *SelectPrivilegeOnAllViewsInSchema) End() token.Pos {
 	return nodeEnd(nodeSliceLast(s.Schemas))
 }
 
+func (e *ExecutePrivilegeOnFunction) Pos() token.Pos {
+	return e.Execute
+}
+
+func (e *ExecutePrivilegeOnFunction) End() token.Pos {
+	return nodeEnd(nodeSliceLast(e.Names))
+}
+
 func (e *ExecutePrivilegeOnTableFunction) Pos() token.Pos {
 	return e.Execute
 }
