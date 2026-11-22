@@ -3878,13 +3878,15 @@ type PrivilegeOnQueue struct {
 
 // PrivilegeOnAllTablesInSchema is ON ALL TABLES IN SCHEMA privilege node in GRANT and REVOKE.
 //
-//	{{.Privileges | sqlJoin ","}} ON ALL TABLES IN SCHEMA {{.Schemas | sqlJoin ", "}}
+//	{{.Privileges | sqlJoin ","}} ON ALL TABLES IN SCHEMA {{if .Schemas}}{{.Schemas | sqlJoin ", "}}{{else}}DEFAULT{{end}}
 type PrivilegeOnAllTablesInSchema struct {
 	// pos = Privileges[0].pos
-	// end = Schemas[$].end
+	// end = Schemas[$].end || Default + 7
 
 	Privileges []TablePrivilege // len(Privileges) > 0
-	Schemas    []*Path          // len(Schemas) > 0
+	Default    token.Pos        // position of "DEFAULT" keyword, optional
+
+	Schemas []*Path // len(Schemas) > 0 when Default is not specified
 }
 
 // PrivilegeOnSequence is ON SEQUENCE privilege node in GRANT and REVOKE.
@@ -3904,13 +3906,15 @@ type PrivilegeOnSequence struct {
 //
 // Privileges are SELECT and/or UPDATE (no column list).
 //
-//	{{.Privileges | sqlJoin ", "}} ON ALL SEQUENCES IN SCHEMA {{.Schemas | sqlJoin ", "}}
+//	{{.Privileges | sqlJoin ", "}} ON ALL SEQUENCES IN SCHEMA {{if .Schemas}}{{.Schemas | sqlJoin ", "}}{{else}}DEFAULT{{end}}
 type PrivilegeOnAllSequencesInSchema struct {
 	// pos = Privileges[0].pos
-	// end = Schemas[$].end
+	// end = Schemas[$].end || Default + 7
 
 	Privileges []TablePrivilege // SELECT and/or UPDATE only; len(Privileges) > 0
-	Schemas    []*Path          // len(Schemas) > 0
+	Default    token.Pos        // position of "DEFAULT" keyword, optional
+
+	Schemas []*Path // len(Schemas) > 0 when Default is not specified
 }
 
 // SelectPrivilege is SELECT ON TABLE privilege node in GRANT and REVOKE.
@@ -3976,14 +3980,15 @@ type SelectPrivilegeOnChangeStream struct {
 
 // SelectPrivilegeOnAllChangeStreamsInSchema is SELECT ON ALL CHANGE STREAMS IN SCHEMA privilege node in GRANT and REVOKE.
 //
-//	SELECT ON ALL CHANGE STREAMS IN SCHEMA {{.Schemas | sqlJoin ", "}}
+//	SELECT ON ALL CHANGE STREAMS IN SCHEMA {{if .Schemas}}{{.Schemas | sqlJoin ", "}}{{else}}DEFAULT{{end}}
 type SelectPrivilegeOnAllChangeStreamsInSchema struct {
 	// pos = Select
-	// end = Schemas[$].end
+	// end = Schemas[$].end || Default + 7
 
-	Select token.Pos
+	Select  token.Pos
+	Default token.Pos // position of "DEFAULT" keyword, optional
 
-	Schemas []*Path // len(Schemas) > 0
+	Schemas []*Path // len(Schemas) > 0 when Default is not specified
 }
 
 // SelectPrivilegeOnView is SELECT ON VIEW privilege node in GRANT and REVOKE.
@@ -4000,14 +4005,15 @@ type SelectPrivilegeOnView struct {
 
 // SelectPrivilegeOnAllViewsInSchema is SELECT ON ALL VIEWS IN SCHEMA privilege node in GRANT and REVOKE.
 //
-//	SELECT ON ALL VIEWS IN SCHEMA {{.Schemas | sqlJoin ", "}}
+//	SELECT ON ALL VIEWS IN SCHEMA {{if .Schemas}}{{.Schemas | sqlJoin ", "}}{{else}}DEFAULT{{end}}
 type SelectPrivilegeOnAllViewsInSchema struct {
 	// pos = Select
-	// end = Schemas[$].end
+	// end = Schemas[$].end || Default + 7
 
-	Select token.Pos
+	Select  token.Pos
+	Default token.Pos // position of "DEFAULT" keyword, optional
 
-	Schemas []*Path // len(Schemas) > 0
+	Schemas []*Path // len(Schemas) > 0 when Default is not specified
 }
 
 // ExecutePrivilegeOnTableFunction is EXECUTE ON TABLE FUNCTION privilege node in GRANT and REVOKE.

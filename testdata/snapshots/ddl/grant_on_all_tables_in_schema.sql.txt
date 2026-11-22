@@ -13,6 +13,7 @@ GRANT SELECT, DELETE ON ALL TABLES IN SCHEMA sch1, sch2 TO ROLE r
         Delete: 14,
       },
     },
+    Default: -1,
     Schemas: []*ast.Path{
       &ast.Path{
         Idents: []*ast.Ident{

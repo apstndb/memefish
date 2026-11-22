@@ -9,6 +9,7 @@ GRANT SELECT ON ALL SEQUENCES IN SCHEMA sch1, sch2 TO ROLE r
         Rparen: -1,
       },
     },
+    Default: -1,
     Schemas: []*ast.Path{
       &ast.Path{
         Idents: []*ast.Ident{

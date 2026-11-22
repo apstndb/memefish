@@ -1,0 +1,25 @@
+--- grant_on_all_tables_in_default_schema.sql
+GRANT SELECT ON ALL TABLES IN SCHEMA DEFAULT TO ROLE role1
+
+--- AST
+&ast.Grant{
+  Privilege: &ast.PrivilegeOnAllTablesInSchema{
+    Privileges: []ast.TablePrivilege{
+      &ast.SelectPrivilege{
+        Select: 6,
+        Rparen: -1,
+      },
+    },
+    Default: 37,
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 53,
+      NameEnd: 58,
+      Name:    "role1",
+    },
+  },
+}
+
+--- SQL
+GRANT SELECT ON ALL TABLES IN SCHEMA DEFAULT TO ROLE role1

@@ -1,0 +1,29 @@
+--- revoke_on_all_sequences_in_default_schema.sql
+REVOKE SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA DEFAULT FROM ROLE role1
+
+--- AST
+&ast.Revoke{
+  Privilege: &ast.PrivilegeOnAllSequencesInSchema{
+    Privileges: []ast.TablePrivilege{
+      &ast.SelectPrivilege{
+        Select: 7,
+        Rparen: -1,
+      },
+      &ast.UpdatePrivilege{
+        Update: 15,
+        Rparen: -1,
+      },
+    },
+    Default: 49,
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 67,
+      NameEnd: 72,
+      Name:    "role1",
+    },
+  },
+}
+
+--- SQL
+REVOKE SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA DEFAULT FROM ROLE role1

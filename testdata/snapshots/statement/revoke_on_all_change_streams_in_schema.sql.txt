@@ -5,6 +5,7 @@ REVOKE SELECT ON ALL CHANGE STREAMS IN SCHEMA sch1, sch2 FROM ROLE r
 &ast.Revoke{
   Privilege: &ast.SelectPrivilegeOnAllChangeStreamsInSchema{
     Select:  7,
+    Default: -1,
     Schemas: []*ast.Path{
       &ast.Path{
         Idents: []*ast.Ident{

@@ -1907,7 +1907,7 @@ func (p *PrivilegeOnAllTablesInSchema) Pos() token.Pos {
 }
 
 func (p *PrivilegeOnAllTablesInSchema) End() token.Pos {
-	return nodeEnd(nodeSliceLast(p.Schemas))
+	return posChoice(nodeEnd(nodeSliceLast(p.Schemas)), posAdd(p.Default, 7))
 }
 
 func (p *PrivilegeOnSequence) Pos() token.Pos {
@@ -1923,7 +1923,7 @@ func (p *PrivilegeOnAllSequencesInSchema) Pos() token.Pos {
 }
 
 func (p *PrivilegeOnAllSequencesInSchema) End() token.Pos {
-	return nodeEnd(nodeSliceLast(p.Schemas))
+	return posChoice(nodeEnd(nodeSliceLast(p.Schemas)), posAdd(p.Default, 7))
 }
 
 func (s *SelectPrivilege) Pos() token.Pos {
@@ -1971,7 +1971,7 @@ func (s *SelectPrivilegeOnAllChangeStreamsInSchema) Pos() token.Pos {
 }
 
 func (s *SelectPrivilegeOnAllChangeStreamsInSchema) End() token.Pos {
-	return nodeEnd(nodeSliceLast(s.Schemas))
+	return posChoice(nodeEnd(nodeSliceLast(s.Schemas)), posAdd(s.Default, 7))
 }
 
 func (s *SelectPrivilegeOnView) Pos() token.Pos {
@@ -1987,7 +1987,7 @@ func (s *SelectPrivilegeOnAllViewsInSchema) Pos() token.Pos {
 }
 
 func (s *SelectPrivilegeOnAllViewsInSchema) End() token.Pos {
-	return nodeEnd(nodeSliceLast(s.Schemas))
+	return posChoice(nodeEnd(nodeSliceLast(s.Schemas)), posAdd(s.Default, 7))
 }
 
 func (e *ExecutePrivilegeOnTableFunction) Pos() token.Pos {

@@ -5,6 +5,7 @@ GRANT SELECT ON ALL CHANGE STREAMS IN SCHEMA sch TO ROLE r
 &ast.Grant{
   Privilege: &ast.SelectPrivilegeOnAllChangeStreamsInSchema{
     Select:  6,
+    Default: -1,
     Schemas: []*ast.Path{
       &ast.Path{
         Idents: []*ast.Ident{

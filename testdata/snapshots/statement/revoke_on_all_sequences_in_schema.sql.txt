@@ -13,6 +13,7 @@ REVOKE SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA sch1 FROM ROLE data_analyst
         Rparen: -1,
       },
     },
+    Default: -1,
     Schemas: []*ast.Path{
       &ast.Path{
         Idents: []*ast.Ident{

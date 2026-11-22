@@ -1232,7 +1232,7 @@ func (p *PrivilegeOnTable) SQL() string {
 }
 
 func (p *PrivilegeOnAllTablesInSchema) SQL() string {
-	return sqlJoin(p.Privileges, ", ") + " ON ALL TABLES IN SCHEMA " + sqlJoin(p.Schemas, ", ")
+	return sqlJoin(p.Privileges, ", ") + " ON ALL TABLES IN SCHEMA " + privilegeSchemasSQL(p.Schemas, p.Default)
 }
 
 func (p *PrivilegeOnSequence) SQL() string {
@@ -1240,7 +1240,7 @@ func (p *PrivilegeOnSequence) SQL() string {
 }
 
 func (p *PrivilegeOnAllSequencesInSchema) SQL() string {
-	return sqlJoin(p.Privileges, ", ") + " ON ALL SEQUENCES IN SCHEMA " + sqlJoin(p.Schemas, ", ")
+	return sqlJoin(p.Privileges, ", ") + " ON ALL SEQUENCES IN SCHEMA " + privilegeSchemasSQL(p.Schemas, p.Default)
 }
 
 func (s *SelectPrivilege) SQL() string {
@@ -1267,7 +1267,7 @@ func (p *SelectPrivilegeOnChangeStream) SQL() string {
 }
 
 func (p *SelectPrivilegeOnAllChangeStreamsInSchema) SQL() string {
-	return "SELECT ON ALL CHANGE STREAMS IN SCHEMA " + sqlJoin(p.Schemas, ", ")
+	return "SELECT ON ALL CHANGE STREAMS IN SCHEMA " + privilegeSchemasSQL(p.Schemas, p.Default)
 }
 
 func (s *SelectPrivilegeOnView) SQL() string {
@@ -1275,7 +1275,7 @@ func (s *SelectPrivilegeOnView) SQL() string {
 }
 
 func (s *SelectPrivilegeOnAllViewsInSchema) SQL() string {
-	return "SELECT ON ALL VIEWS IN SCHEMA " + sqlJoin(s.Schemas, ", ")
+	return "SELECT ON ALL VIEWS IN SCHEMA " + privilegeSchemasSQL(s.Schemas, s.Default)
 }
 
 func (e *ExecutePrivilegeOnTableFunction) SQL() string {
@@ -1287,6 +1287,13 @@ func (u *UsagePrivilegeOnSchema) SQL() string {
 		return "USAGE ON SCHEMA DEFAULT"
 	}
 	return "USAGE ON SCHEMA " + sqlJoin(u.Schemas, ", ")
+}
+
+func privilegeSchemasSQL(schemas []*Path, defaultPos token.Pos) string {
+	if len(schemas) == 0 && !defaultPos.Invalid() {
+		return "DEFAULT"
+	}
+	return sqlJoin(schemas, ", ")
 }
 
 func (r *RolePrivilege) SQL() string {

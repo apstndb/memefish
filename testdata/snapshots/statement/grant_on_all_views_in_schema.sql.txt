@@ -5,6 +5,7 @@ GRANT SELECT ON ALL VIEWS IN SCHEMA sch TO ROLE r
 &ast.Grant{
   Privilege: &ast.SelectPrivilegeOnAllViewsInSchema{
     Select:  6,
+    Default: -1,
     Schemas: []*ast.Path{
       &ast.Path{
         Idents: []*ast.Ident{

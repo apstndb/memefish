@@ -5487,9 +5487,10 @@ func (p *Parser) tryParseSelectPrivilegeOnAllViewsInSchema() *ast.SelectPrivileg
 	p.expectKeywordLike("VIEWS")
 	p.expect("IN")
 	p.expectKeywordLike("SCHEMA")
-	schemas := parseCommaSeparatedList(p, p.parsePath)
+	defaultPos, schemas := p.parsePrivilegeSchemas()
 	return &ast.SelectPrivilegeOnAllViewsInSchema{
 		Select:  pos,
+		Default: defaultPos,
 		Schemas: schemas,
 	}
 }
@@ -5539,20 +5540,20 @@ func (p *Parser) tryParseUsagePrivilegeOnSchema() *ast.UsagePrivilegeOnSchema {
 	pos := p.expectKeywordLike("USAGE").Pos
 	p.expect("ON")
 	p.expectKeywordLike("SCHEMA")
-
-	defaultPos := token.InvalidPos
-	var schemas []*ast.Path
-	if p.Token.Kind == "DEFAULT" {
-		defaultPos = p.expect("DEFAULT").Pos
-	} else {
-		schemas = parseCommaSeparatedList(p, p.parsePath)
-	}
+	defaultPos, schemas := p.parsePrivilegeSchemas()
 
 	return &ast.UsagePrivilegeOnSchema{
 		Usage:   pos,
 		Default: defaultPos,
 		Schemas: schemas,
 	}
+}
+
+func (p *Parser) parsePrivilegeSchemas() (token.Pos, []*ast.Path) {
+	if p.Token.Kind == "DEFAULT" {
+		return p.expect("DEFAULT").Pos, nil
+	}
+	return token.InvalidPos, parseCommaSeparatedList(p, p.parsePath)
 }
 
 func (p *Parser) tryParseRolePrivilege() *ast.RolePrivilege {
@@ -5591,10 +5592,11 @@ func (p *Parser) tryParseSelectPrivilegeOnAllChangeStreamsInSchema() *ast.Select
 	p.expectKeywordLike("STREAMS")
 	p.expect("IN")
 	p.expectKeywordLike("SCHEMA")
-	schemas := parseCommaSeparatedList(p, p.parsePath)
+	defaultPos, schemas := p.parsePrivilegeSchemas()
 
 	return &ast.SelectPrivilegeOnAllChangeStreamsInSchema{
 		Select:  pos,
+		Default: defaultPos,
 		Schemas: schemas,
 	}
 }
@@ -5645,9 +5647,10 @@ func (p *Parser) tryParsePrivilegeOnAllSequencesInSchema() *ast.PrivilegeOnAllSe
 	p.requireSequencePrivileges(privileges)
 	p.expect("IN")
 	p.expectKeywordLike("SCHEMA")
-	schemas := parseCommaSeparatedList(p, p.parsePath)
+	defaultPos, schemas := p.parsePrivilegeSchemas()
 	return &ast.PrivilegeOnAllSequencesInSchema{
 		Privileges: privileges,
+		Default:    defaultPos,
 		Schemas:    schemas,
 	}
 }
@@ -5704,9 +5707,10 @@ func (p *Parser) tryParsePrivilegeOnAllTablesInSchema() *ast.PrivilegeOnAllTable
 	p.expectKeywordLike("TABLES")
 	p.expect("IN")
 	p.expectKeywordLike("SCHEMA")
-	schemas := parseCommaSeparatedList(p, p.parsePath)
+	defaultPos, schemas := p.parsePrivilegeSchemas()
 	return &ast.PrivilegeOnAllTablesInSchema{
 		Privileges: privileges,
+		Default:    defaultPos,
 		Schemas:    schemas,
 	}
 }
