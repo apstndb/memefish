@@ -1,0 +1,21 @@
+--- revoke_execute_on_all_table_functions_in_default_schema.sql
+REVOKE EXECUTE ON ALL TABLE FUNCTIONS IN SCHEMA DEFAULT FROM ROLE consumer
+
+--- AST
+&ast.Revoke{
+  Privilege: &ast.ExecutePrivilegeOnAllFunctionsInSchema{
+    Execute: 7,
+    Table:   22,
+    Default: 48,
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 66,
+      NameEnd: 74,
+      Name:    "consumer",
+    },
+  },
+}
+
+--- SQL
+REVOKE EXECUTE ON ALL TABLE FUNCTIONS IN SCHEMA DEFAULT FROM ROLE consumer

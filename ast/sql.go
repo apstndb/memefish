@@ -1282,11 +1282,22 @@ func (e *ExecutePrivilegeOnTableFunction) SQL() string {
 	return "EXECUTE ON TABLE FUNCTION " + sqlJoin(e.Names, ", ")
 }
 
+func (e *ExecutePrivilegeOnAllFunctionsInSchema) SQL() string {
+	return "EXECUTE ON ALL " + strOpt(!e.Table.Invalid(), "TABLE ") + "FUNCTIONS IN SCHEMA " + privilegeSchemasSQL(e.Schemas, e.Default)
+}
+
 func (u *UsagePrivilegeOnSchema) SQL() string {
 	if !u.Default.Invalid() {
 		return "USAGE ON SCHEMA DEFAULT"
 	}
 	return "USAGE ON SCHEMA " + sqlJoin(u.Schemas, ", ")
+}
+
+func privilegeSchemasSQL(schemas []*Path, defaultPos token.Pos) string {
+	if len(schemas) == 0 && !defaultPos.Invalid() {
+		return "DEFAULT"
+	}
+	return sqlJoin(schemas, ", ")
 }
 
 func (r *RolePrivilege) SQL() string {

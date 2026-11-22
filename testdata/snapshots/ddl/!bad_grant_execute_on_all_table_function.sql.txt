@@ -1,0 +1,110 @@
+--- !bad_grant_execute_on_all_table_function.sql
+GRANT EXECUTE ON ALL TABLE FUNCTION IN SCHEMA inventory TO ROLE consumer
+
+--- Error
+syntax error: testdata/inputs/ddl/!bad_grant_execute_on_all_table_function.sql:1:28: expected pseudo keyword: FUNCTIONS, but: FUNCTION
+  1|  GRANT EXECUTE ON ALL TABLE FUNCTION IN SCHEMA inventory TO ROLE consumer
+   |                             ^~~~~~~~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 72,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "GRANT",
+        AsString: "GRANT",
+        End:      5,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "EXECUTE",
+        AsString: "EXECUTE",
+        Pos:      6,
+        End:      13,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   14,
+        End:   16,
+      },
+      &token.Token{
+        Kind:  "ALL",
+        Space: " ",
+        Raw:   "ALL",
+        Pos:   17,
+        End:   20,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TABLE",
+        AsString: "TABLE",
+        Pos:      21,
+        End:      26,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "FUNCTION",
+        AsString: "FUNCTION",
+        Pos:      27,
+        End:      35,
+      },
+      &token.Token{
+        Kind:  "IN",
+        Space: " ",
+        Raw:   "IN",
+        Pos:   36,
+        End:   38,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "SCHEMA",
+        AsString: "SCHEMA",
+        Pos:      39,
+        End:      45,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "inventory",
+        AsString: "inventory",
+        Pos:      46,
+        End:      55,
+      },
+      &token.Token{
+        Kind:  "TO",
+        Space: " ",
+        Raw:   "TO",
+        Pos:   56,
+        End:   58,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "ROLE",
+        AsString: "ROLE",
+        Pos:      59,
+        End:      63,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "consumer",
+        AsString: "consumer",
+        Pos:      64,
+        End:      72,
+      },
+    },
+  },
+}
+
+--- SQL
+GRANT EXECUTE ON ALL TABLE FUNCTION IN SCHEMA inventory TO ROLE consumer

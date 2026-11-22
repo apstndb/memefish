@@ -5437,7 +5437,7 @@ func (p *Parser) parsePrivilege() ast.Privilege {
 	if s := p.tryParseSelectPrivilegeOnView(); s != nil {
 		return s
 	}
-	if e := p.tryParseExecutePrivilegeOnTableFunction(); e != nil {
+	if e := p.tryParseExecutePrivilege(); e != nil {
 		return e
 	}
 	if u := p.tryParseUsagePrivilegeOnSchema(); u != nil {
@@ -5517,18 +5517,40 @@ func (p *Parser) tryParseSelectPrivilegeOnView() *ast.SelectPrivilegeOnView {
 	}
 }
 
-func (p *Parser) tryParseExecutePrivilegeOnTableFunction() *ast.ExecutePrivilegeOnTableFunction {
+func (p *Parser) tryParseExecutePrivilege() ast.Privilege {
 	if !p.Token.IsKeywordLike("EXECUTE") {
 		return nil
 	}
 	pos := p.expectKeywordLike("EXECUTE").Pos
 	p.expect("ON")
+	if p.Token.Kind == "ALL" {
+		return p.parseExecutePrivilegeOnAllFunctionsInSchema(pos)
+	}
 	p.expectKeywordLike("TABLE")
 	p.expectKeywordLike("FUNCTION")
 	names := parseCommaSeparatedList(p, p.parsePath)
 	return &ast.ExecutePrivilegeOnTableFunction{
 		Execute: pos,
 		Names:   names,
+	}
+}
+
+func (p *Parser) parseExecutePrivilegeOnAllFunctionsInSchema(pos token.Pos) *ast.ExecutePrivilegeOnAllFunctionsInSchema {
+	p.expect("ALL")
+	table := token.InvalidPos
+	if p.Token.IsKeywordLike("TABLE") {
+		table = p.expectKeywordLike("TABLE").Pos
+	}
+	p.expectKeywordLike("FUNCTIONS")
+	p.expect("IN")
+	p.expectKeywordLike("SCHEMA")
+	defaultPos, schemas := p.parsePrivilegeSchemas()
+
+	return &ast.ExecutePrivilegeOnAllFunctionsInSchema{
+		Execute: pos,
+		Table:   table,
+		Default: defaultPos,
+		Schemas: schemas,
 	}
 }
 
@@ -5539,20 +5561,20 @@ func (p *Parser) tryParseUsagePrivilegeOnSchema() *ast.UsagePrivilegeOnSchema {
 	pos := p.expectKeywordLike("USAGE").Pos
 	p.expect("ON")
 	p.expectKeywordLike("SCHEMA")
-
-	defaultPos := token.InvalidPos
-	var schemas []*ast.Path
-	if p.Token.Kind == "DEFAULT" {
-		defaultPos = p.expect("DEFAULT").Pos
-	} else {
-		schemas = parseCommaSeparatedList(p, p.parsePath)
-	}
+	defaultPos, schemas := p.parsePrivilegeSchemas()
 
 	return &ast.UsagePrivilegeOnSchema{
 		Usage:   pos,
 		Default: defaultPos,
 		Schemas: schemas,
 	}
+}
+
+func (p *Parser) parsePrivilegeSchemas() (token.Pos, []*ast.Path) {
+	if p.Token.Kind == "DEFAULT" {
+		return p.expect("DEFAULT").Pos, nil
+	}
+	return token.InvalidPos, parseCommaSeparatedList(p, p.parsePath)
 }
 
 func (p *Parser) tryParseRolePrivilege() *ast.RolePrivilege {

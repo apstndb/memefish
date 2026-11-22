@@ -548,6 +548,7 @@ func (SelectPrivilegeOnAllChangeStreamsInSchema) isPrivilege() {}
 func (SelectPrivilegeOnView) isPrivilege()                     {}
 func (SelectPrivilegeOnAllViewsInSchema) isPrivilege()         {}
 func (ExecutePrivilegeOnTableFunction) isPrivilege()           {}
+func (ExecutePrivilegeOnAllFunctionsInSchema) isPrivilege()    {}
 func (UsagePrivilegeOnSchema) isPrivilege()                    {}
 func (RolePrivilege) isPrivilege()                             {}
 
@@ -4020,6 +4021,20 @@ type ExecutePrivilegeOnTableFunction struct {
 	Execute token.Pos
 
 	Names []*Path // len(Names) > 0
+}
+
+// ExecutePrivilegeOnAllFunctionsInSchema is the schema-wide EXECUTE privilege node in GRANT and REVOKE.
+//
+//	EXECUTE ON ALL {{if .Table}}TABLE {{end}}FUNCTIONS IN SCHEMA {{if .Schemas}}{{.Schemas | sqlJoin ", "}}{{else}}DEFAULT{{end}}
+type ExecutePrivilegeOnAllFunctionsInSchema struct {
+	// pos = Execute
+	// end = Schemas[$].end || Default + 7
+
+	Execute token.Pos
+	Table   token.Pos // position of "TABLE" pseudo keyword, optional
+	Default token.Pos // position of "DEFAULT" keyword, optional
+
+	Schemas []*Path // len(Schemas) > 0 when Default is not specified
 }
 
 // UsagePrivilegeOnSchema is USAGE ON SCHEMA privilege node in GRANT and REVOKE.

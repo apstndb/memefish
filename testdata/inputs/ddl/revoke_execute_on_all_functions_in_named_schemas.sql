@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA inventory, accounts FROM ROLE consumer
